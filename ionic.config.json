@@ -1,0 +1,7 @@
+{
+  "name": "muebleria-solaris",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
