@@ -1,0 +1,45 @@
+// src/app/app.component.scss
+
+:root {
+    --ion-color-primary: #3880ff; /* Your secondary blue color */
+    --ion-color-light-blue: #fafafa; /* Your very light blue color */
+  }
+  
+
+  // Other styles related to the app component can go here
+  // src/app/app.component.scss
+// src/app/app.component.scss
+
+// src/app/app.component.scss
+
+ion-app {
+  --ion-color-primary: #3880ff; /* Secondary blue color */
+  --ion-color-light-blue: #fafafa; /* Very light blue color */
+  --ion-background-color: var(--ion-color-light-blue); /* Set background to light blue */
+}
+
+ion-menu {
+  background-color: var(--ion-color-primary); /* Set menu background to secondary blue */
+  width: 304px; /* Adjust this value to set the width of the side menu */
+}
+
+ion-list-header {
+  color: grey; /* Change the note text color in the menu to grey */
+}
+
+ion-item {
+  color: black; /* Change the item text color in the menu to black */
+}
+
+ion-note {
+  color: grey; /* Change the note text color in the menu to grey */
+}
+
+ion-toolbar {
+  --background: var(--ion-color-primary); /* Toolbar background color */
+  color: white; /* Toolbar text color */
+}
+
+
+  
+  

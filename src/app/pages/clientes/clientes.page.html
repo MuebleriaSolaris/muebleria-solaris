@@ -1,0 +1,42 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Clientes</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Barra de búsqueda -->
+  <ion-searchbar 
+    class="search-bar"
+    [(ngModel)]="searchTerm" 
+    (ionInput)="onSearchInput()"
+    placeholder="Buscar por nombre o teléfono">
+  </ion-searchbar>
+
+
+  <!-- Tabla de clientes -->
+  <ion-grid class="customer-table">
+    <ion-row class="header-row">
+      <ion-col size="3"><strong>Nombre</strong></ion-col>
+      <ion-col size="3"><strong>Dirección</strong></ion-col>
+      <ion-col size="3"><strong>Teléfono</strong></ion-col>
+      <ion-col size="3"><strong>Tipo de Cliente</strong></ion-col>
+    </ion-row>
+    <ion-row *ngFor="let customer of paginatedCustomers" class="data-row">
+      <ion-col size="3">{{ customer.name }}</ion-col>
+      <ion-col size="3">{{ customer.address }}</ion-col>
+      <ion-col size="3">{{ customer.phone }}</ion-col>
+      <ion-col size="3" class="customer-type">
+        <span [ngClass]="getCustomerTypeClass(customer.type)" class="type-label">
+          {{ getCustomerTypeName(customer.type) }}
+        </span>
+      </ion-col>      
+    </ion-row>
+  </ion-grid>
+
+  <!-- Controles de paginación -->
+  <div class="pagination-controls">
+    <ion-button (click)="prevPage()" [disabled]="currentPage === 1">Anterior</ion-button>
+    <ion-button (click)="nextPage()" [disabled]="currentPage * itemsPerPage >= customers.length">Siguiente</ion-button>
+  </div>
+</ion-content>

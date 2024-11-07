@@ -1,0 +1,111 @@
+.customer-table {
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+  border-collapse: collapse;
+}
+
+.header-row {
+  background-color: #f0f0f0;
+  font-weight: bold;
+  text-align: center;
+  border-bottom: 2px solid #ccc;
+  padding: 10px 0;
+}
+
+.data-row {
+  text-align: center;
+  padding: 10px 0;
+  border-bottom: 2px solid #ccc;
+}
+
+.customer-type {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Efecto y tamaño del círculo indicador */
+.type-indicator {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin-right: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.type-indicator:hover {
+  transform: scale(1.2);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+.type-label {
+  display: inline-block;
+  padding: 4px 10px;
+  color: white;
+  font-weight: bold;
+  border-radius: 12px; /* Border-radius suave */
+  text-align: center;
+  min-width: 60px; /* Asegura que el texto tenga un mínimo de ancho */
+}
+
+/* Colores de fondo para cada tipo de cliente */
+.type-label.success {
+  background-color: #4CAF50; /* Verde */
+}
+
+.type-label.warning {
+  background-color: #FFA500; /* Naranja */
+}
+
+.type-label.danger {
+  background-color: #FF0000; /* Rojo */
+}
+
+.type-label.medium {
+  background-color: #9E9E9E; /* Gris para tipos desconocidos */
+}
+
+.search-bar {
+  margin-top: 20px; /* Ajusta el margen superior según prefieras */
+}
+
+
+/* Controles de paginación */
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.pagination-controls ion-button {
+  margin: 5px;
+}
+
+/* Ajustes para pantallas pequeñas */
+@media (max-width: 576px) {
+  .customer-table {
+    width: 100%;
+    margin: 0;
+  }
+
+  .header-row ion-col, .data-row ion-col {
+    font-size: 12px;
+  }
+
+  .pagination-controls {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0 10px;
+  }
+
+  .pagination-controls ion-button {
+    flex: 1;
+    margin: 5px;
+    min-width: 45%;
+    display: block; /* Asegura que los botones se vean en móviles */
+  }
+}
+

@@ -35,3 +35,16 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import "@ionic/angular/css/palettes/dark.system.css";
+
+@import './app/_variables.scss';
+
+// src/global.scss
+
+ion-app {
+    background-color: var(--ion-color-light-blue); /* Use the very light blue for background */
+  }
+  
+  ion-content {
+    background-color: transparent; /* Keeps the content area transparent */
+  }
+  

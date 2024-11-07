@@ -1,0 +1,48 @@
+ion-content {
+    --background: #f7f7f7;
+  }
+  
+  .profile-header {
+    text-align: center;
+    padding: 20px;
+    background: linear-gradient(to bottom, #3880ff, #dfdfdf);
+    color: white;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    padding: 50px 0px;
+  }
+  
+  .profile-avatar {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 10px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid white;
+  }
+  
+  .account-info {
+    padding: 20px;
+    margin-top: 20px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  ion-list h2 {
+    font-size: 1.1rem;
+    color: #333;
+  }
+  
+  ion-list p {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: #666;
+  }
+  
+  ion-button {
+    width: 50%;
+    margin: 0 auto;
+    margin-top: -25px;
+  }
+  

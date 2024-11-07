@@ -1,3 +1,59 @@
+
+/* Ocultar el footer en pantallas pequeñas */
+@media (max-width: 576px) {
+  ion-footer {
+    display: none;
+  }
+}
+
+ion-menu ion-item {
+  --border-width: 0;
+  text-decoration: none; /* Removes the underline */
+  border-bottom: none; /* In case there is a border */
+}
+ion-item {
+  a {
+    text-decoration: none;
+  }
+}
+.small-title {
+  font-size: 1.1rem; /* Adjust the font size as desired */
+  font-weight: normal; /* Optional: adjust font weight */
+}
+.footer-title {
+  font-size: 0.8rem; /* Adjust this value as needed */
+  font-weight: normal; /* Optional: adjust font weight */
+  text-align: center; /* Ensures it stays centered */
+}
+
+
+ion-menu {
+  --background: #ffffff;
+}
+
+ion-toolbar {
+  --background: #3880ff; /* Primary color */
+}
+
+ion-card {
+  --background: #f3f4f6;
+}
+
+ion-title {
+  color: white;
+}
+
+.menu-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: -15px;
+}
+
+.logo {
+  width: 50px; /* Adjust size as needed */
+}
+
 ion-menu ion-content {
   --background: var(--ion-item-background, var(--ion-background-color, #fff));
 }
@@ -10,13 +66,15 @@ ion-menu.md ion-content {
 }
 
 ion-menu.md ion-list {
-  padding: 20px 0;
+  padding: 0px 0px 20px 0px;
 }
 
 ion-menu.md ion-note {
   margin-bottom: 30px;
 }
-
+ion-list-header{
+  font-size: 20px;
+}
 ion-menu.md ion-list-header,
 ion-menu.md ion-note {
   padding-left: 10px;
@@ -116,4 +174,40 @@ ion-note {
 
 ion-item.selected {
   --color: var(--ion-color-primary);
+}
+
+.sidemenu-logo{
+  padding: 10px;
+  margin-right: 20px;
+}
+.menu-perfil-header{
+  padding: 10px;
+}
+.button-close-sidemenu{
+  margin: 0 auto;
+  margin-top: -10px;
+}
+ion-menu ion-header {
+  height: 70px; /* Ajusta la altura para que coincida con el header principal */
+}
+
+ion-menu ion-header ion-toolbar {
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.menu-title {
+  margin-left: 16px; /* Ajusta el margen izquierdo para alinear el título */
+}
+
+ion-toolbar {
+  display: flex;
+  justify-content: start; /* Aligns all content to the left */
+}
+
+ion-title.small-title {
+  margin-left: -25px; /* Optional: Adjust as needed for exact spacing */
+  text-align: left; /* Ensures text aligns to the left within ion-title */
+  flex-grow: 1; /* Allows the title to take available space */
 }

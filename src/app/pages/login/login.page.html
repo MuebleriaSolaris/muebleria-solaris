@@ -1,0 +1,51 @@
+<ion-content class="page-content ion-padding">
+  <div class="wrapper">
+    <!-- Background Effect Div -->
+    <div class="background-effect"></div>
+    
+    <!-- Login Container with Logo and Title -->
+    <div class="login-container">
+      <img src="assets/logo_img.png" alt="Logo" class="logo" />
+      <!-- <h2>Iniciar Sesión</h2>-->
+      <!-- Tab for "Existing" user -->
+      <ion-segment [(ngModel)]="segment" class="segment-custom">
+        <ion-segment-button value="existing">Iniciar Sesión</ion-segment-button>
+      </ion-segment>
+
+      <!-- Login Form -->
+      <form (ngSubmit)="login()">
+        <ion-item>
+          <ion-icon name="person-outline" slot="start" class="input-icon"></ion-icon>
+          <ion-label position="floating">Usuario</ion-label>
+          <ion-input [(ngModel)]="username" name="username" required></ion-input>
+        </ion-item>
+        
+        <ion-item>
+          <ion-icon name="lock-closed-outline" slot="start" class="input-icon"></ion-icon>
+          <ion-label position="floating">Contraseña</ion-label>
+          <ion-input
+            [(ngModel)]="password"
+            name="password"
+            [type]="showPassword ? 'text' : 'password'"
+            required
+          ></ion-input>
+          <ion-icon
+            name="eye-outline"
+            slot="end"
+            class="toggle-password-icon"
+            (click)="togglePasswordVisibility()"
+          ></ion-icon>
+        </ion-item>
+        <!-- Gradient Login Button positioned at the bottom -->
+        <ion-button expand="block" type="submit" class="login-button">Entrar</ion-button>
+      </form>
+
+      
+
+      <!-- Forgot Password Link -->
+      <p class="forgot-password">
+        <a href="#">¿Olvidaste tu contraseña?</a>
+      </p>
+    </div>
+  </div>
+</ion-content>
