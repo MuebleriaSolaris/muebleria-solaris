@@ -1,5 +1,8 @@
+// src/app/pages/clientes/clientes.page.ts
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { AuthService } from '../../services/auth.service'; // Import AuthService
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-clientes',
@@ -12,29 +15,32 @@ export class ClientesPage implements OnInit {
   itemsPerPage = 10; // Número de elementos por página
   currentPage = 1; // Página actual
   searchTerm: string = ''; // Término de búsqueda actual
+  isAdmin: boolean = false; // Variable to check if user is admin
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
   ngOnInit() {
-    this.loadCustomers(); // Cargar todos los clientes al iniciar
+    this.loadCustomers();
+    this.isAdmin = this.authService.isAdmin(); // Check if user has admin privileges
   }
 
   // Cargar clientes con o sin filtro de búsqueda
   loadCustomers(searchTerm: string = '') {
     let apiUrl = 'http://localhost/ionic-users/clientes.php';
     
-    // Cambia el endpoint si hay un término de búsqueda
     if (searchTerm) {
       apiUrl = 'http://localhost/ionic-users/clientes_search.php';
     }
 
-    // Configura los parámetros de la consulta (si se está usando un término de búsqueda)
     let params = new HttpParams();
     if (searchTerm) {
       params = params.set('search', searchTerm);
     }
 
-    // Realiza la solicitud HTTP con el término de búsqueda si corresponde
     this.http.get<any>(apiUrl, { params })
       .subscribe(
         response => {
@@ -54,7 +60,7 @@ export class ClientesPage implements OnInit {
 
   // Método para manejar la entrada de búsqueda
   onSearchInput() {
-    this.loadCustomers(this.searchTerm); // Llamar a la API de búsqueda con el término de búsqueda
+    this.loadCustomers(this.searchTerm);
   }
 
   // Método para paginar los clientes
@@ -92,7 +98,7 @@ export class ClientesPage implements OnInit {
         return 'Desconocido';
     }
   }
-  
+  // Método para obtener el color del tipo de cliente
   getCustomerTypeClass(type: any): string {
     const customerType = parseInt(type, 10);
     switch (customerType) {
@@ -106,6 +112,13 @@ export class ClientesPage implements OnInit {
         return 'medium';
     }
   }
-  
-  
+
+  // Función para ver los detalles del cliente
+  viewCustomerDetails(customerId: number) {
+    if (this.isAdmin) {
+      this.router.navigate(['/cliente-info', customerId]); // Navega a la página con el ID del cliente
+    }else {
+      console.warn('Access denied. Only admins can view customer details.');
+    }
+  }
 }

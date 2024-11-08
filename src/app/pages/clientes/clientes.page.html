@@ -13,7 +13,6 @@
     placeholder="Buscar por nombre o teléfono">
   </ion-searchbar>
 
-
   <!-- Tabla de clientes -->
   <ion-grid class="customer-table">
     <ion-row class="header-row">
@@ -22,16 +21,27 @@
       <ion-col size="3"><strong>Teléfono</strong></ion-col>
       <ion-col size="3"><strong>Tipo de Cliente</strong></ion-col>
     </ion-row>
-    <ion-row *ngFor="let customer of paginatedCustomers" class="data-row">
-      <ion-col size="3">{{ customer.name }}</ion-col>
-      <ion-col size="3">{{ customer.address }}</ion-col>
-      <ion-col size="3">{{ customer.phone }}</ion-col>
-      <ion-col size="3" class="customer-type">
-        <span [ngClass]="getCustomerTypeClass(customer.type)" class="type-label">
-          {{ getCustomerTypeName(customer.type) }}
-        </span>
-      </ion-col>      
-    </ion-row>
+    
+    <!-- Add swipe gestures to each row -->
+    <ion-item-sliding *ngFor="let customer of paginatedCustomers">
+      <ion-item (click)="isAdmin && viewCustomerDetails(customer.id)">
+        <ion-col size="3">{{ customer.name }}</ion-col>
+        <ion-col size="3">{{ customer.address }}</ion-col>
+        <ion-col size="3">{{ customer.phone }}</ion-col>
+        <ion-col size="3" class="customer-type">
+          <span [ngClass]="getCustomerTypeClass(customer.type)" class="type-label">
+            {{ getCustomerTypeName(customer.type) }}
+          </span>
+        </ion-col>
+      </ion-item>
+      
+      <!-- Only admins see this "View Details" button on swipe -->
+      <ion-item-options side="end" *ngIf="isAdmin">
+        <ion-item-option color="primary" (click)="viewCustomerDetails(customer.id)">
+          Ver Perfil
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
   </ion-grid>
 
   <!-- Controles de paginación -->

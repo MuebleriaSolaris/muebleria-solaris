@@ -9,55 +9,55 @@ const routes: Routes = [
   },
   {
     path: 'folder/:id',
-    loadChildren: () => import('./folder/folder.module').then( m => m.FolderPageModule)
+    loadChildren: () => import('./folder/folder.module').then(m => m.FolderPageModule)
   },
   {
     path: 'loader',
-    loadChildren: () => import('./pages/loader/loader.module').then( m => m.LoaderPageModule)
+    loadChildren: () => import('./pages/loader/loader.module').then(m => m.LoaderPageModule)
   },
   {
     path: 'login',
-    loadChildren: () => import('./pages/login/login.module').then( m => m.LoginPageModule)
+    loadChildren: () => import('./pages/login/login.module').then(m => m.LoginPageModule)
   },
   {
     path: 'dashboard',
-    loadChildren: () => import('./pages/dashboard/dashboard.module').then( m => m.DashboardPageModule)
+    loadChildren: () => import('./pages/dashboard/dashboard.module').then(m => m.DashboardPageModule)
   },
   {
     path: 'clientes',
-    loadChildren: () => import('./pages/clientes/clientes.module').then( m => m.ClientesPageModule)
+    loadChildren: () => import('./pages/clientes/clientes.module').then(m => m.ClientesPageModule)
   },
   {
     path: 'agregar-clientes',
-    loadChildren: () => import('./pages/agregar-clientes/agregar-clientes.module').then( m => m.AgregarClientesPageModule)
+    loadChildren: () => import('./pages/agregar-clientes/agregar-clientes.module').then(m => m.AgregarClientesPageModule)
   },
   {
     path: 'inventario',
-    loadChildren: () => import('./pages/inventario/inventario.module').then( m => m.InventarioPageModule)
+    loadChildren: () => import('./pages/inventario/inventario.module').then(m => m.InventarioPageModule)
   },
   {
     path: 'proveedores',
-    loadChildren: () => import('./pages/proveedores/proveedores.module').then( m => m.ProveedoresPageModule)
+    loadChildren: () => import('./pages/proveedores/proveedores.module').then(m => m.ProveedoresPageModule)
   },
   {
     path: 'perfil',
-    loadChildren: () => import('./pages/perfil/perfil.module').then( m => m.PerfilPageModule)
+    loadChildren: () => import('./pages/perfil/perfil.module').then(m => m.PerfilPageModule)
   },
   {
     path: 'crear-usuario',
-    loadChildren: () => import('./pages/crear-usuario/crear-usuario.module').then( m => m.CrearUsuarioPageModule)
+    loadChildren: () => import('./pages/crear-usuario/crear-usuario.module').then(m => m.CrearUsuarioPageModule)
   },
   {
     path: 'agregar-inventario',
-    loadChildren: () => import('./pages/agregar-inventario/agregar-inventario.module').then( m => m.AgregarInventarioPageModule)
+    loadChildren: () => import('./pages/agregar-inventario/agregar-inventario.module').then(m => m.AgregarInventarioPageModule)
   },
   {
     path: 'agregar-proveedor',
-    loadChildren: () => import('./pages/agregar-proveedor/agregar-proveedor.module').then( m => m.AgregarProveedorPageModule)
+    loadChildren: () => import('./pages/agregar-proveedor/agregar-proveedor.module').then(m => m.AgregarProveedorPageModule)
   },
   {
-    path: 'cliente-info',
-    loadChildren: () => import('./pages/cliente-info/cliente-info.module').then( m => m.ClienteInfoPageModule)
+    path: 'cliente-info/:id',  // Updated route with :id parameter
+    loadChildren: () => import('./pages/cliente-info/cliente-info.module').then(m => m.ClienteInfoPageModule)
   }
 ];
 
