@@ -1,0 +1,14 @@
+.footer-title {
+    font-size: 0.8rem; /* Adjust this value as needed */
+    font-weight: normal; /* Optional: adjust font weight */
+    text-align: center; /* Ensures it stays centered */
+  }
+  .footer-top{
+    margin-top: 20px;
+  }
+    /* Ocultar el footer en pantallas pequeñas */
+@media (max-width: 770px) {
+    ion-footer {
+      display: none;
+    }
+  }

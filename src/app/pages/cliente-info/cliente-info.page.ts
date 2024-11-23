@@ -68,6 +68,8 @@ export class ClienteInfoPage implements OnInit {
 
   saveChanges() {
     if (this.customerInfo) {
+      // Log the customer info data to verify before sending
+    console.log('Customer Info to be updated:', this.customerInfo);
       this.http.post('http://localhost/ionic-users/update_cliente_info.php', this.customerInfo)
         .subscribe({
           next: () => {

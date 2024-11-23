@@ -24,10 +24,10 @@
     
     <!-- Add swipe gestures to each row -->
     <ion-item-sliding *ngFor="let customer of paginatedCustomers">
-      <ion-item (click)="isAdmin && viewCustomerDetails(customer.id)">
+      <ion-item  class="item-val">
         <ion-col size="3">{{ customer.name }}</ion-col>
         <ion-col size="3">{{ customer.address }}</ion-col>
-        <ion-col size="3">{{ customer.phone }}</ion-col>
+        <ion-col size="3" class="cel-center">{{ customer.phone }}</ion-col>
         <ion-col size="3" class="customer-type">
           <span [ngClass]="getCustomerTypeClass(customer.type)" class="type-label">
             {{ getCustomerTypeName(customer.type) }}
@@ -36,7 +36,7 @@
       </ion-item>
       
       <!-- Only admins see this "View Details" button on swipe -->
-      <ion-item-options side="end" *ngIf="isAdmin">
+      <ion-item-options side="start" *ngIf="isAdmin">
         <ion-item-option color="primary" (click)="viewCustomerDetails(customer.id)">
           Ver Perfil
         </ion-item-option>
@@ -50,3 +50,5 @@
     <ion-button (click)="nextPage()" [disabled]="currentPage * itemsPerPage >= customers.length">Siguiente</ion-button>
   </div>
 </ion-content>
+<!-- Footer -->
+<app-footer></app-footer>

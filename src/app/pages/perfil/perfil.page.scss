@@ -1,48 +1,81 @@
 ion-content {
-    --background: #f7f7f7;
-  }
-  
+  --background: #f7f7f7;
+}
+
+/* Profile header styling */
+.profile-header {
+  text-align: center;
+  padding: 50px 20px;
+  background: linear-gradient(to bottom, #3880ff, #dfdfdf);
+  color: white;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Profile avatar styling */
+.profile-avatar {
+  width: 120px;
+  height: 120px;
+  margin-bottom: 10px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid white;
+}
+
+/* Center button and adjust width */
+ion-button.button-mid {
+  width: 50%;
+  max-width: 250px;
+  margin: 0 auto;
+  margin-top: -20px;
+}
+
+/* Account info container */
+.account-info {
+  padding: 20px;
+  margin: 20px auto;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  text-align: left; /* For consistency in layout */
+}
+
+/* Adjusting ion-list headers and paragraph text */
+ion-list h2 {
+  font-size: 1.1rem;
+  color: #333;
+}
+
+ion-list p {
+  margin-top: 4px;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* Media Query for Larger Screens */
+@media (min-width: 768px) {
+  /* Profile header styling for larger screens */
   .profile-header {
-    text-align: center;
-    padding: 20px;
-    background: linear-gradient(to bottom, #3880ff, #dfdfdf);
-    color: white;
-    border-bottom-left-radius: 20px;
-    border-bottom-right-radius: 20px;
-    padding: 50px 0px;
+      padding: 60px 20px;
+      max-width: 800px;
+      margin: 0 auto;
   }
-  
-  .profile-avatar {
-    width: 120px;
-    height: 120px;
-    margin: 0 auto 10px;
-    border-radius: 50%;
-    overflow: hidden;
-    border: 3px solid white;
+
+  /* Center and align the 'Regresar al Inicio' button */
+  ion-button.button-mid {
+      width: auto;
+      max-width: 200px;
+      margin: 20px auto;
   }
-  
+
+  /* Center the account-info section */
   .account-info {
-    padding: 20px;
-    margin-top: 20px;
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      max-width: 700px;
+      padding: 30px;
   }
-  
-  ion-list h2 {
-    font-size: 1.1rem;
-    color: #333;
-  }
-  
-  ion-list p {
-    margin-top: 4px;
-    font-size: 0.9rem;
-    color: #666;
-  }
-  
-  ion-button {
-    width: 50%;
-    margin: 0 auto;
-    margin-top: -25px;
-  }
-  
+}

@@ -1,0 +1,63 @@
+ion-content {
+    --background: #f7f7f7;
+  }
+  
+  .form-container {
+    max-width: 500px;
+    margin: 40px auto;
+    background: white;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  h2 {
+    font-size: 1.4em;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 25px;
+  }
+  
+  .form-item {
+    margin: 12px 0; /* Space between form items */
+    --padding-start: 10px; /* Adds padding inside input */
+    border-radius: 8px;
+    background: #f9f9f9;
+    border-bottom: 1px solid #cfc8c8;
+  }
+  
+  ion-label {
+    color: #555;
+    font-size: 0.9em;
+    padding-left: 5px;
+    z-index: 1;
+  }
+  
+  ion-select,
+  ion-input {
+    padding: 10px 0;
+    background-color: #f7f5f5;
+    z-index: -1;
+  }
+
+  ::ng-deep .custom-input .input-wrapper {
+    padding-left: 10px;
+  }  
+  
+  
+  .footer {
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+  }
+  
+  ion-button {
+    --background: #3880ff;
+    color: white;
+    width: 80%;
+    border-radius: 8px;
+    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  

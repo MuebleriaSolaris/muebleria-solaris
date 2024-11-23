@@ -16,7 +16,7 @@ export class ClientesPage implements OnInit {
   currentPage = 1; // Página actual
   searchTerm: string = ''; // Término de búsqueda actual
   isAdmin: boolean = false; // Variable to check if user is admin
-
+ 
   constructor(
     private http: HttpClient,
     private authService: AuthService,

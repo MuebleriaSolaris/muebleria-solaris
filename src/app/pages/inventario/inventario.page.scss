@@ -1,0 +1,102 @@
+/* General styling */
+ion-list {
+    margin: 10px;
+    border-radius: 15px;
+    overflow: hidden;
+    background-color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  ion-item {
+    --background: #fff;
+    margin: 5px 0;
+    border-radius: 10px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  ion-item:hover {
+    transform: scale(1.02); /* Animación al pasar sobre el elemento */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Imagen del producto */
+  ion-thumbnail {
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  ion-img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+  }
+  
+  /* Texto del producto */
+  ion-label h2 {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #333;
+    margin: 0;
+  }
+  
+  ion-label p {
+    font-size: 0.9rem;
+    color: #666;
+    margin: 2px 0;
+  }
+  
+  /* Precio o acción a la derecha */
+  .product-price {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #444;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Responsividad */
+  @media (min-width: 768px) {
+    ion-list {
+      max-width: 700px;
+      margin: 20px auto;
+    }
+  
+    ion-item {
+      --background: #f9f9f9;
+      padding: 15px;
+    }
+  
+    ion-thumbnail {
+      width: 100px;
+      height: 100px;
+    }
+  
+    ion-label h2 {
+      font-size: 1.2rem;
+    }
+  
+    ion-label p {
+      font-size: 1rem;
+    }
+  
+    .product-price {
+      font-size: 1.1rem;
+    }
+  }
+/* Estilo del texto adicional */
+ion-label p {
+    font-size: 0.85rem; /* Ajustar tamaño del texto */
+    color: #666;
+    margin: 2px 0;
+  }
+
+ion-list.list-ios ion-item.item div.item-native {
+    border-bottom: none;
+  }

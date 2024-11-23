@@ -92,7 +92,7 @@
   }
 
   .header-row ion-col, .data-row ion-col {
-    font-size: 12px;
+    font-size: 14px;
   }
 
   .pagination-controls {
@@ -108,4 +108,12 @@
     display: block; /* Asegura que los botones se vean en móviles */
   }
 }
-
+/* Ocultar el footer en pantallas pequeñas */
+@media (max-width: 770px) {
+  .item-val{
+    font-size: 12px;
+  }
+}
+.cel-center{
+  text-align: center;
+}

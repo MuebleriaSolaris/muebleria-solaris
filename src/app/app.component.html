@@ -15,7 +15,7 @@
         </ion-button>
         <ion-button>
           <ion-avatar slot="end" class="menu-perfil-header">
-            <img src="https://via.placeholder.com/110x110">
+            <img src="assets/user_src.png" >
           </ion-avatar>
         </ion-button>
       </ion-buttons>
@@ -27,11 +27,4 @@
 
   <!-- Main Content Area -->
   <ion-router-outlet id="main-content"></ion-router-outlet>
-
-  <!-- Footer, also conditionally shown if not on login page -->
-  <ion-footer *ngIf="!isLoginPage">
-    <ion-toolbar>
-      <ion-title class="footer-title">Copyright © 2024 Muebleria Solaris</ion-title>
-    </ion-toolbar>
-  </ion-footer>
 </ion-app>

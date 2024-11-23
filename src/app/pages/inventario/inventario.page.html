@@ -1,13 +1,31 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
-    <ion-title>inventario</ion-title>
+    <ion-title>Inventario</ion-title>
+    
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">inventario</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content>
+  
+  <ion-list>
+    <ion-searchbar 
+      [(ngModel)]="searchTerm" 
+      (ionInput)="onSearchChange($event)" 
+      placeholder="Buscar por ID, Nombre o Proveedor">
+    </ion-searchbar>
+    <ion-item *ngFor="let product of filteredProducts" lines="full">
+      <ion-thumbnail slot="start">
+        <ion-img src="https://via.placeholder.com/100" alt="{{ product.product_name }}"></ion-img>
+      </ion-thumbnail>
+      <ion-label>
+        <h2>{{ product.product_name }}</h2>
+        <p>ID: {{ product.product_id }}</p>
+        <p>Stock: {{ product.current_stock }}</p>
+        <p>Provedor: {{ product.provider_name }}</p>
+      </ion-label>
+      <div class="product-price">
+        $ {{ product.credit_price }}
+      </div>
+    </ion-item>
+  </ion-list>
 </ion-content>

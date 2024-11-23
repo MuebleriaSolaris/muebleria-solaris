@@ -11,6 +11,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from './services/auth.service';  // Import AuthService
 
+
 // Import the new MenuComponent
 import { MenuComponent } from './components/menu/menu.component';
 

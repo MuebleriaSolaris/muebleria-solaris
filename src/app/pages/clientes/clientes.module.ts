@@ -8,6 +8,8 @@ import { ClientesPageRoutingModule } from './clientes-routing.module';
 
 import { ClientesPage } from './clientes.page';
 
+import { FooterComponent } from '../../components/footer/footer.component'; // Import the FooterComponent
+
 @NgModule({
   imports: [
     CommonModule,
@@ -15,6 +17,6 @@ import { ClientesPage } from './clientes.page';
     IonicModule,
     ClientesPageRoutingModule
   ],
-  declarations: [ClientesPage]
+  declarations: [ClientesPage, FooterComponent]
 })
 export class ClientesPageModule {}
