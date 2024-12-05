@@ -60,4 +60,8 @@ ion-content {
     font-weight: bold;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
-  
+  /* Styling for "Guardar" button */
+.guardar-button::part(native) {
+  --background: linear-gradient(to right, #28a745, #218838);
+  color: white;
+}

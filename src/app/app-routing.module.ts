@@ -58,6 +58,14 @@ const routes: Routes = [
   {
     path: 'cliente-info/:id',  // Updated route with :id parameter
     loadChildren: () => import('./pages/cliente-info/cliente-info.module').then(m => m.ClienteInfoPageModule)
+  },
+  // {
+  //   path: 'producto',
+  //   loadChildren: () => import('./pages/producto/producto.module').then( m => m.ProductoPageModule)
+  // }
+  {
+    path: 'producto/:id',
+    loadChildren: () => import('./pages/producto/producto.module').then(m => m.ProductoPageModule)
   }
 ];
 

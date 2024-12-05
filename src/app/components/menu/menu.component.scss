@@ -67,7 +67,7 @@
     color: #ffffff;
     font-weight: bold;
     font-size: 18px;
-    margin-left: -75px;
+    //margin-left: -75px;
     padding-right: 55px;
   }
   
@@ -81,5 +81,20 @@
   /* Optional: Align the avatar and title for better visual appeal */
   .menu-avatar ion-img {
     border-radius: 50%;
+  }
+  
+  ion-item.active-item {
+    background-color: #ffebee; /* Fondo rojo claro */
+    --background: #ffebee; /* Para asegurar compatibilidad */
+    color: #d32f2f; /* Texto rojo oscuro */
+    font-weight: bold; /* Resaltar la opción activa */
+  }
+  
+  ion-item.active-item ion-icon {
+    color: #d32f2f; /* Ícono rojo oscuro */
+  }
+  
+  ion-item.active-item ion-label {
+    color: #d32f2f; /* Texto del label en rojo oscuro */
   }
   

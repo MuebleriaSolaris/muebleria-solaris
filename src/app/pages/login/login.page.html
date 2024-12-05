@@ -26,16 +26,11 @@
           <ion-input
             [(ngModel)]="password"
             name="password"
-            [type]="showPassword ? 'text' : 'password'"
+            type="text"
             required
           ></ion-input>
-          <ion-icon
-            name="eye-outline"
-            slot="end"
-            class="toggle-password-icon"
-            (click)="togglePasswordVisibility()"
-          ></ion-icon>
         </ion-item>
+        
         <!-- Gradient Login Button positioned at the bottom -->
         <ion-button expand="block" type="submit" class="login-button">Entrar</ion-button>
       </form>

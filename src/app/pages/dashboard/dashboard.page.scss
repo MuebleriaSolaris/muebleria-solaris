@@ -1,0 +1,44 @@
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+  }
+  
+  .card {
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .card h3 {
+    font-size: 1.2rem;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  
+  .card .big-number {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #007bff;
+  }
+  
+  .product-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .product-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  
+  .product-list li:last-child {
+    border-bottom: none;
+  }
+  

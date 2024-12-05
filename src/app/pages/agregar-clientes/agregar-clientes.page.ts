@@ -41,4 +41,22 @@ export class AgregarClientesPage {
       }
     });
   }
+
+  validateNumericInput(event: any) {
+    let input = event.target.value;
+  
+    // Reemplaza caracteres no numéricos
+    input = input.replace(/[^0-9]/g, '');
+  
+    // Limita a 10 caracteres
+    if (input.length > 10) {
+      input = input.slice(0, 10);
+    }
+  
+    // Actualiza el valor del campo
+    event.target.value = input;
+    this.newClient.phone = input; // Sincroniza con el modelo
+  }
+  
+  
 }

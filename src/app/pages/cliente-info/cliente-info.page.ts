@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 
+
 interface CustomerInfo {
   id: number;
   name: string;
@@ -25,7 +26,7 @@ export class ClienteInfoPage implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private http: HttpClient,
-    private router: Router
+    private router: Router,
   ) {}
 
   ngOnInit() {
@@ -108,4 +109,6 @@ export class ClienteInfoPage implements OnInit {
         return 'Desconocido';
     }
   }
+
+  
 }

@@ -1,13 +1,72 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>agregar-inventario</ion-title>
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Agregar Inventario</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">agregar-inventario</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content>
+  <div class="form-card">
+    <h2>Introduce los detalles del producto</h2>
+
+    <!-- Formulario para agregar producto -->
+    <form (submit)="saveProduct()">
+      <ion-list lines="none">
+        <!-- Nombre del Producto -->
+        <ion-item class="form-item">
+          <ion-label class="title-item" position="stacked">Nombre del Producto</ion-label>
+          <ion-input [(ngModel)]="newProduct.name" name="name" required></ion-input>
+        </ion-item>
+
+        <!-- Categoría -->
+        <ion-item class="form-item">
+          <ion-label class="title-item" position="stacked">Categoría</ion-label>
+          <ion-select [(ngModel)]="newProduct.category_id" name="category_id" placeholder="Seleccione una" required>
+            <ion-select-option *ngFor="let category of categories" [value]="category.id">{{ category.name }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <!-- Subcategoría -->
+        <ion-item class="form-item">
+          <ion-label class="title-item" position="stacked">Subcategoría</ion-label>
+          <ion-select [(ngModel)]="newProduct.sub_category_id" name="sub_category_id" placeholder="Seleccione una" required>
+            <ion-select-option *ngFor="let subCategory of subCategories" [value]="subCategory.id">{{ subCategory.name }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <!-- Detalles del Producto -->
+        <ion-item class="form-item">
+          <ion-label class="title-item" position="stacked">Detalles del Producto</ion-label>
+          <ion-textarea [(ngModel)]="newProduct.product_details" name="product_details"></ion-textarea>
+        </ion-item>
+
+        <!-- Novedad -->
+        <ion-item class="form-item">
+          <ion-label class="title-item" >Novedad</ion-label>
+          <ion-toggle [(ngModel)]="newProduct.novedad_act" name="novedad_act" (ionChange)="toggleNovedad($event)"></ion-toggle>
+        </ion-item>
+
+        <!-- Precio de Crédito -->
+        <ion-item class="form-item">
+          <ion-label class="title-item"  position="stacked">Precio de Crédito</ion-label>
+          <ion-input [(ngModel)]="newProduct.credit_price" name="credit_price" type="number" required></ion-input>
+        </ion-item>
+
+        <!-- Marca -->
+        <ion-item class="form-item">
+          <ion-label class="title-item" position="stacked">Marca</ion-label>
+          <ion-select [(ngModel)]="newProduct.brand_id" name="brand_id" placeholder="Seleccione una" required>
+            <ion-select-option *ngFor="let brand of brands" [value]="brand.id">{{ brand.name }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-list>
+
+      <!-- Botón Guardar -->
+      <ion-footer class="footer">
+        <ion-button expand="block" color="primary" type="submit">
+          <ion-icon slot="start" name="checkmark-outline"></ion-icon>
+          Guardar Producto
+        </ion-button>
+      </ion-footer>
+    </form>
+  </div>
 </ion-content>

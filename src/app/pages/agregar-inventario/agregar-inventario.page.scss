@@ -1,0 +1,66 @@
+/* Contenedor principal */
+.form-card {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 25px;
+    border-radius: 10px;
+    background-color: #ffffff;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Título */
+  h2 {
+    text-align: center;
+    font-size: 1.6rem;
+    color: #333;
+    margin-bottom: 30px;
+    font-weight: bold;
+  }
+  
+  /* Elementos del formulario */
+  .form-item {
+    margin-bottom: 20px;
+    padding-right: 15px;
+  }
+  
+  ion-label {
+    font-weight: bold;
+    color: #666;
+    margin-bottom: 5px;
+  }
+  
+  ion-input,
+  ion-textarea,
+  ion-select {
+    --padding-start: 12px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    --background: #f9f9f9;
+  }
+  
+  ion-select {
+    --placeholder-color: #999;
+    margin-top: 5px;
+  }
+  
+  /* Espaciado entre elementos */
+  ion-item {
+    --inner-padding-end: 0;
+    --inner-padding-start: 0;
+  }
+  
+  /* Botón de guardar */
+  .footer ion-button {
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+  }
+.title-item{
+    margin-bottom: 15px;
+}  
+
+.footer {
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+  }

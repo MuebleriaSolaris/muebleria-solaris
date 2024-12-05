@@ -26,6 +26,7 @@ ion-content {
     border-radius: 50%;
     overflow: hidden;
     border: 3px solid white;
+    background-color: white;
 }
 
 /* Button container with Regresar and Editar buttons */
@@ -51,7 +52,7 @@ ion-content {
 /* Specific styling for "Regresar" button */
 .regresar-button::part(native) {
     background-color: white !important;
-    color: darkslategrey;
+    color: darkslategray;
 }
 
 /* Account information section styling */
@@ -120,12 +121,6 @@ ion-list p {
         margin-top: -15px;
     }
 }
-.ver-historial::part(native){
-    --background-color: linear-gradient(to right, #3880ff, #8fb1ee);
-    padding: 8px;
-    color: white;
-}
-
 .edit-footer{
     box-shadow: none;
 }

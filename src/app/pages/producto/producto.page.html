@@ -1,0 +1,121 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Detalles del Producto</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Encabezado con avatar y datos -->
+  <div class="profile-header">
+    <ion-avatar class="profile-avatar">
+      <img src="assets/product_placeholder.png" alt="Imagen del Producto">
+    </ion-avatar>
+    <h2>{{ product?.product_name }}</h2>
+    <p>ID: {{ product?.product_id }}</p>
+  </div>
+
+  <!-- Botones principales -->
+  <div class="top-button-container">
+    <ion-button color="light" class="regresar-button" (click)="goBack()">
+      <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+      Regresar
+    </ion-button>
+    <ion-button color="secondary" (click)="toggleEditMode()">
+      <ion-icon name="create-outline" slot="start"></ion-icon>
+      Editar
+    </ion-button>
+  </div>
+
+  <!-- Detalles del producto -->
+  <div class="account-info">
+    <div class="top-cliente"><h3>Detalles del Producto</h3></div>
+      <ion-list lines="none">
+        <ion-item>
+          <ion-icon name="pricetag-outline" slot="start"></ion-icon>
+          <ion-label>
+            <h2 [ngStyle]="{ 'font-weight': isEditMode ? 'bold' : 'normal' }">Precio Crédito</h2>
+            <p *ngIf="!isEditMode">$ {{ product?.credit_price | number:'1.2-2' }}</p>
+            <ion-input
+              *ngIf="isEditMode"
+              [(ngModel)]="product!.credit_price"
+              placeholder="Precio Crédito"
+              type="text"
+              inputmode="decimal"
+              (ionInput)="validateCreditPriceInput($event)">
+            </ion-input>
+          </ion-label>
+        </ion-item>
+        
+
+        <ion-item>
+          <ion-icon name="layers-outline" slot="start"></ion-icon>
+
+          <ion-label>
+            <h2 [ngStyle]="{ 'font-weight': isEditMode ? 'bold' : 'normal' }">Stock Disponible</h2>
+            <p *ngIf="!isEditMode">{{ product?.current_stock }}</p>
+            <ion-input
+              *ngIf="isEditMode"
+              [(ngModel)]="product!.current_stock"
+              placeholder="Stock"
+              type="tel"
+              inputmode="numeric"
+              (ionInput)="validateStockInput($event)">
+            </ion-input>
+          </ion-label>
+        </ion-item>
+        
+        <ion-item>
+          <ion-icon name="analytics-outline" slot="start"></ion-icon>
+
+          <ion-label>
+            <h2 [ngStyle]="{ 'font-weight': isEditMode ? 'bold' : 'normal' }">Max Stock</h2>
+            <p *ngIf="!isEditMode">{{ product?.max_amount }}</p>
+            <ion-input
+              *ngIf="isEditMode"
+              [(ngModel)]="product!.max_amount"
+              placeholder="Stock"
+              type="tel"
+              inputmode="numeric"
+              (ionInput)="validateStockInput($event)">
+            </ion-input>
+          </ion-label>
+        </ion-item>
+
+        <ion-item>
+          <ion-icon name="business-outline" slot="start"></ion-icon>
+          <ion-label>
+            <h2 [ngStyle]="{ 'font-weight': isEditMode ? 'bold' : 'normal' }">Proveedor</h2>
+            <!-- Modo visual (no edición) -->
+            <p *ngIf="!isEditMode">{{ product?.provider_name }}</p>
+            <!-- Modo edición (lista desplegable) -->
+            <ion-select *ngIf="isEditMode" [(ngModel)]="product!.provider_id" placeholder="Seleccionar Proveedor">
+              <ion-select-option *ngFor="let provider of providers" [value]="provider.id">
+                {{ provider.name }}
+              </ion-select-option>
+            </ion-select>
+          </ion-label>
+        </ion-item>        
+
+        <ion-item>
+          <ion-icon name="time-outline" slot="start"></ion-icon>
+          <ion-label>
+            <h2 [ngStyle]="{ 'font-weight': isEditMode ? 'bold' : 'normal' }">Última Actualización</h2>
+            <p>{{ product?.updated_at }}</p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+      <ion-footer *ngIf="isEditMode" class="edit-footer">
+        <div class="bottom-action-buttons">
+          <ion-button class="guardar-button" expand="block" color="success" (click)="saveChanges()">
+            <ion-icon slot="start" name="checkmark-outline"></ion-icon>
+            Guardar
+          </ion-button>
+          <ion-button class="cancelar-button" expand="block" color="danger" (click)="cancelEdit()">
+            <ion-icon slot="start" name="close-outline"></ion-icon>
+            Cancelar
+          </ion-button>
+        </div>
+      </ion-footer>
+  </div>
+  
+</ion-content>

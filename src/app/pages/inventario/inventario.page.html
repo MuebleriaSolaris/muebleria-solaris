@@ -1,31 +1,87 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>Inventario</ion-title>
-    
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  
   <ion-list>
     <ion-searchbar 
       [(ngModel)]="searchTerm" 
       (ionInput)="onSearchChange($event)" 
       placeholder="Buscar por ID, Nombre o Proveedor">
     </ion-searchbar>
-    <ion-item *ngFor="let product of filteredProducts" lines="full">
-      <ion-thumbnail slot="start">
-        <ion-img src="https://via.placeholder.com/100" alt="{{ product.product_name }}"></ion-img>
-      </ion-thumbnail>
-      <ion-label>
-        <h2>{{ product.product_name }}</h2>
-        <p>ID: {{ product.product_id }}</p>
-        <p>Stock: {{ product.current_stock }}</p>
-        <p>Provedor: {{ product.provider_name }}</p>
-      </ion-label>
-      <div class="product-price">
-        $ {{ product.credit_price }}
-      </div>
-    </ion-item>
+
+    <!-- Elemento deslizable -->
+    <ion-item-sliding *ngFor="let product of filteredProducts">
+      <!-- Elemento principal -->
+      <ion-item class="inventory-item">
+        <ion-thumbnail slot="start">
+          <ion-img src="https://via.placeholder.com/100" alt="{{ product.product_name }}"></ion-img>
+        </ion-thumbnail>
+        <ion-label>
+          <h2 class="product-name">{{ product.product_name }}</h2>
+          <p>Proveedor: {{ product.provider_name }}</p>
+          <p>Precio a Crédito: ${{ product.credit_price }}</p>
+        </ion-label>
+      
+        <!-- Counter and Controls -->
+        <div class="counter-container">
+          <!-- Dynamic Text -->
+          <div *ngIf="product.current_count !== product.current_stock || product.current_count === product.current_stock" class="dynamic-text">
+            {{ getDynamicText(product) }}
+          </div>
+      
+          <!-- Counter Controls -->
+          <div class="counter-controls">
+            <ion-button
+              fill="clear"
+              size="small"
+              (click)="decreaseCount(product)"
+              [color]="getButtonColor(product)">
+              <ion-icon name="remove-circle-outline"></ion-icon>
+            </ion-button>
+      
+            <div class="counter-value-container">
+              <span class="counter-value">{{ product.current_count }}</span>
+              <!-- <p class="stock-label">Stock Disponible</p> -->
+            </div>
+      
+            <ion-button
+              fill="clear"
+              size="small"
+              (click)="increaseCount(product)"
+              [color]="getButtonColor(product)">
+              <ion-icon name="add-circle-outline"></ion-icon>
+            </ion-button>
+          </div>
+      
+          <!-- Confirmation Button -->
+          <ion-button
+            expand="block"
+            size="small"
+            class="confirm-button"
+            [color]="getButtonColor(product)"
+            (click)="confirmAction(product)" 
+            style="color:white;">
+            OK
+          </ion-button>
+        </div>
+      </ion-item>
+      
+      
+      
+          
+
+      <!-- Botón deslizante -->
+      <ion-item-options side="end">
+        <ion-item-option 
+          color="primary" 
+          (click)="viewProduct(product.product_id)">
+          Ver Artículo
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
   </ion-list>
 </ion-content>
+

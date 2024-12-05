@@ -33,8 +33,19 @@
         <!-- Teléfono -->
         <ion-item class="form-item">
           <ion-label position="floating">Teléfono</ion-label>
-          <ion-input [(ngModel)]="newClient.phone" class="custom-input" name="phone" type="tel" required></ion-input>
+          <ion-input 
+            [(ngModel)]="newClient.phone" 
+            class="custom-input" 
+            name="phone" 
+            type="tel" 
+            inputmode="numeric" 
+            maxlength="10" 
+            required 
+            (ionInput)="validateNumericInput($event)">
+          </ion-input>
         </ion-item>
+        
+        
 
         <!-- Tipo de Cliente -->
         <ion-item class="form-item">
@@ -50,7 +61,7 @@
 
       <!-- Submit Button -->
       <ion-footer class="footer">
-        <ion-button expand="block" color="primary" type="submit">
+        <ion-button  class="guardar-button" expand="block" color="success" type="submit">
           <ion-icon slot="start" name="checkmark-outline"></ion-icon>
           Guardar Cliente
         </ion-button>
