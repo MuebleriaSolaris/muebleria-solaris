@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { InventoryService } from '../../services/inventory.service';
 import { AuthService } from '../../services/auth.service';
+import { IonItemSliding } from '@ionic/angular';
 
 @Component({
   selector: 'app-inventario',
@@ -54,11 +55,18 @@ export class InventarioPage implements OnInit {
   }
 
   increaseCount(product: any) {
-    console.log("Se incrementa valor de: ", product.current_count);
-    this.inventoryService.syncStock(product.product_id); // Asegurar valores actualizados
-    product.current_count = product.current_count ? product.current_count + 1 : product.current_stock + 1;
-    console.log("Se incrementa valor a: ", product.current_count);
-    console.log("Valor Stock: ", product.current_stock);
+    if (product.current_count < product.max_amount){
+      console.log("Se incrementa valor de: ", product.current_count);
+      this.inventoryService.syncStock(product.product_id); // Asegurar valores actualizados
+      product.current_count = product.current_count ? product.current_count + 1 : product.current_stock + 1;
+      console.log("Se incrementa valor a: ", product.current_count);
+      console.log("Valor Stock: ", product.current_stock);
+    }else {
+      console.warn(`No se puede incrementar, valor máximo alcanzado (${product.max_amount})`);
+      // Opcional: Agrega un mensaje visual para el usuario
+      alert(`Has alcanzado el stock máximo permitido: ${product.max_amount}`);
+    }
+    
   }
   
   decreaseCount(product: any) {
@@ -74,15 +82,27 @@ export class InventarioPage implements OnInit {
   
   
   confirmAction(product: any) {
-    if (product.current_count > product.current_stock) {
-      console.log(`Pedido confirmado: ${product.current_count - product.current_stock} unidades adicionales.`);
-    } else if (product.current_count < product.current_stock) {
-      console.log(`Venta confirmada: ${product.current_stock - product.current_count} unidades.`);
-    } else {
-      console.log(`Sin cambios en el stock.`);
+    const adjustment = product.current_count - product.current_stock;
+
+    if (adjustment === 0) {
+      console.log('Sin cambios en el stock.');
+      return;
     }
-    // Opcional: Reinicia el contador
-    product.current_count = product.current_stock;
+
+    this.inventoryService.updateInventory(product.product_id, adjustment).subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          console.log('Stock actualizado correctamente:', response.new_stock);
+          product.current_stock = response.new_stock; // Actualiza el stock localmente
+          product.current_count = response.new_stock; // Reinicia el contador
+        } else {
+          console.warn('Error al actualizar el stock:', response.message);
+        }
+      },
+      error: (error) => {
+        console.error('Error al realizar la solicitud:', error);
+      },
+    });
   }
   
   getButtonColor(product: any): string {
@@ -118,6 +138,11 @@ export class InventarioPage implements OnInit {
     }
   }
   
-  
+  onDrag(slidingItem: IonItemSliding) {
+    // Cierra el elemento si no hay interacción completa
+    setTimeout(() => {
+      slidingItem.close();
+    }, 300); // Ajusta el tiempo según sea necesario
+  }
 
 }

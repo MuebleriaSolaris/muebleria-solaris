@@ -13,26 +13,26 @@
     </ion-searchbar>
 
     <!-- Elemento deslizable -->
-    <ion-item-sliding *ngFor="let product of filteredProducts">
+    <ion-item-sliding #slidingItem *ngFor="let product of filteredProducts">
       <!-- Elemento principal -->
       <ion-item class="inventory-item">
-        <ion-thumbnail slot="start">
-          <ion-img src="https://via.placeholder.com/100" alt="{{ product.product_name }}"></ion-img>
-        </ion-thumbnail>
-        <ion-label>
-          <h2 class="product-name">{{ product.product_name }}</h2>
-          <p>Proveedor: {{ product.provider_name }}</p>
-          <p>Precio a Crédito: ${{ product.credit_price }}</p>
-        </ion-label>
-      
-        <!-- Counter and Controls -->
+        <div class="left-info">
+          <ion-thumbnail slot="start">
+            <ion-img src="https://via.placeholder.com/100" alt="{{ product.product_name }}"></ion-img>
+          </ion-thumbnail>
+          <ion-label>
+            <h2 class="product-name">{{ product.product_name }}</h2>
+            <p>Proveedor: {{ product.provider_name }}</p>
+            <p>Precio a Crédito: ${{ product.credit_price }}</p>
+          </ion-label>
+        </div>
+    
         <div class="counter-container">
-          <!-- Dynamic Text -->
-          <div *ngIf="product.current_count !== product.current_stock || product.current_count === product.current_stock" class="dynamic-text">
+          <!-- Texto dinámico -->
+          <div class="dynamic-text">
             {{ getDynamicText(product) }}
           </div>
-      
-          <!-- Counter Controls -->
+    
           <div class="counter-controls">
             <ion-button
               fill="clear"
@@ -41,12 +41,13 @@
               [color]="getButtonColor(product)">
               <ion-icon name="remove-circle-outline"></ion-icon>
             </ion-button>
-      
             <div class="counter-value-container">
               <span class="counter-value">{{ product.current_count }}</span>
-              <!-- <p class="stock-label">Stock Disponible</p> -->
+              <p *ngIf="product.current_count === product.max_amount" class="warning-text">
+                ¡Stock máximo!
+              </p>
+              
             </div>
-      
             <ion-button
               fill="clear"
               size="small"
@@ -55,26 +56,20 @@
               <ion-icon name="add-circle-outline"></ion-icon>
             </ion-button>
           </div>
-      
-          <!-- Confirmation Button -->
+    
           <ion-button
             expand="block"
             size="small"
             class="confirm-button"
             [color]="getButtonColor(product)"
-            (click)="confirmAction(product)" 
-            style="color:white;">
+            (click)="confirmAction(product)">
             OK
           </ion-button>
         </div>
       </ion-item>
-      
-      
-      
-          
-
-      <!-- Botón deslizante -->
-      <ion-item-options side="end">
+    
+      <!-- Opciones de deslizamiento -->
+      <ion-item-options side="end" (ionDrag)="onDrag(slidingItem)">
         <ion-item-option 
           color="primary" 
           (click)="viewProduct(product.product_id)">
@@ -82,6 +77,7 @@
         </ion-item-option>
       </ion-item-options>
     </ion-item-sliding>
+    
   </ion-list>
 </ion-content>
 

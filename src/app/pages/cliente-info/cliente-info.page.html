@@ -1,88 +1,87 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Información del Cliente</ion-title>
+    <ion-title>Actualizar Información del Cliente</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <div class="profile-header">
-    <ion-avatar class="profile-avatar">
-      <img src="assets/user_src.png" alt="Client Picture">
-    </ion-avatar>
-    <h2>{{ customerInfo?.name }}</h2>
-    <p>{{ customerInfo?.phone }}</p>
-  </div>
 
-  <div class="top-button-container">
-    <ion-button color="light" class="regresar-button" (click)="goBack()">
-      <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
-      Regresar
-    </ion-button>
-    <ion-button color="secondary" (click)="toggleEditMode()">
-      <ion-icon name="create-outline" slot="start"></ion-icon>
-      Editar
-    </ion-button>
-  </div>
+  <!-- Formulario de actualización del cliente -->
+  <form *ngIf="customerInfo" (ngSubmit)="saveChanges()" #updateForm="ngForm">
+    <div class="profile-header">
+      <ion-avatar class="profile-avatar">
+        <img src="assets/user_src.png" alt="Client Picture">
+      </ion-avatar>
+      <h2>{{ customerInfo.name }}</h2>
+      <p>{{ customerInfo.phone }}</p>
+    </div>
 
-  <div class="account-info">
-    <div class="top-cliente"><h3>Detalles del Cliente</h3></div>
-    <ion-list lines="none">
-      <ion-item>
-        <ion-icon name="location-outline" slot="start"></ion-icon>
-        <ion-label>
-          <h2 [ngStyle]="{ 'font-weight': isEditMode ? 'bold' : 'normal' }">Dirección</h2>
-          <p *ngIf="!isEditMode">{{ customerInfo?.address }}</p>
-          <ion-input *ngIf="isEditMode" [(ngModel)]="customerInfo!.address" placeholder="Dirección" [ngClass]="{ 'edit-background': isEditMode }"></ion-input>
-        </ion-label>
-      </ion-item>
+    <div class="top-button-container">
+      <!-- Botón para regresar -->
+      <ion-button color="light" class="regresar-button" (click)="goBack()">
+        <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+        Regresar
+      </ion-button>
+  
+      <!-- Botón para editar -->
+      <ion-button color="secondary" (click)="toggleEditMode()">
+        <ion-icon name="create-outline" slot="start"></ion-icon>
+        Editar
+      </ion-button>
+  
+      <!-- Botón para eliminar -->
+      <ion-button color="danger" (click)="confirmDelete()">
+        <ion-icon name="trash-outline" slot="start"></ion-icon>
+        Eliminar
+      </ion-button>
+    </div>
 
-      <ion-item>
-        <ion-icon name="call-outline" slot="start"></ion-icon>
-        <ion-label>
-          <h2 [ngStyle]="{ 'font-weight': isEditMode ? 'bold' : 'normal' }">Teléfono</h2>
-          <p *ngIf="!isEditMode">{{ customerInfo?.phone }}</p>
-          <ion-input *ngIf="isEditMode" [(ngModel)]="customerInfo!.phone" placeholder="Teléfono" [ngClass]="{ 'edit-background': isEditMode }"></ion-input>
-        </ion-label>
-      </ion-item>
+    <div class="account-info">
+      <div class="top-cliente">
+        <h3>Detalles del Cliente</h3>
+      </div>
+      <ion-list lines="none">
+        <ion-item>
+          <ion-icon name="location-outline" slot="start"></ion-icon>
+          <ion-label>
+            <h2>Dirección</h2>
+            <ion-input [(ngModel)]="customerInfo.address" name="address" placeholder="Dirección" [readonly]="!isEditMode" required></ion-input>
+          </ion-label>
+        </ion-item>
 
-      <ion-item>
-        <ion-icon name="person-outline" slot="start"></ion-icon>
-        <ion-label>
-          <h2 [ngStyle]="{ 'font-weight': isEditMode ? 'bold' : 'normal' }">Tipo de Cliente</h2>
-          <p *ngIf="!isEditMode">{{ customerInfo?.type === 1 ? 'Bueno' : customerInfo?.type === 2 ? 'Regular' : 'Malo' }}</p>
-          <ion-select *ngIf="isEditMode" [(ngModel)]="customerInfo!.type">
-            <ion-select-option value="1">Bueno</ion-select-option>
-            <ion-select-option value="2">Regular</ion-select-option>
-            <ion-select-option value="0">Malo</ion-select-option>
-          </ion-select>
-        </ion-label>
-      </ion-item>
+        <ion-item>
+          <ion-icon name="call-outline" slot="start"></ion-icon>
+          <ion-label>
+            <h2>Teléfono</h2>
+            <ion-input [(ngModel)]="customerInfo.phone" name="phone" placeholder="Teléfono" [readonly]="!isEditMode" required></ion-input>
+          </ion-label>
+        </ion-item>
 
-      <ion-item>
-        <ion-icon name="time-outline" slot="start"></ion-icon>
-        <ion-label>
-          <h2>Última Actualización</h2>
-          <p>{{ customerInfo?.updated_at }}</p>
-        </ion-label>
-        <ion-button class="ver-historial" expand="block" color="success">
-          <ion-icon slot="start" name="eye"></ion-icon>
-          Historial
-        </ion-button>
-      </ion-item>
-    </ion-list>
+        <ion-item>
+          <ion-icon name="person-outline" slot="start"></ion-icon>
+          <ion-label>
+            <h2>Tipo de Cliente</h2>
+            <ion-select [(ngModel)]="customerInfo.type" name="type" [disabled]="!isEditMode" required>
+              <ion-select-option value="1">Bueno</ion-select-option>
+              <ion-select-option value="2">Regular</ion-select-option>
+              <ion-select-option value="0">Malo</ion-select-option>
+            </ion-select>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </div>
+
     <ion-footer *ngIf="isEditMode" class="edit-footer">
       <div class="bottom-action-buttons">
-        <ion-button class="guardar-button" expand="block" color="success" (click)="saveChanges()">
+        <ion-button type="submit" class="guardar-button" expand="block" color="success">
           <ion-icon slot="start" name="checkmark-outline"></ion-icon>
           Guardar
         </ion-button>
-        <ion-button class="cancelar-button" expand="block" color="danger" (click)="cancelEdit()">
+        <ion-button type="button" class="cancelar-button" expand="block" color="danger" (click)="cancelEdit()">
           <ion-icon slot="start" name="close-outline"></ion-icon>
           Cancelar
         </ion-button>
       </div>
     </ion-footer>
-  </div>
-  
-  
+  </form>
 </ion-content>

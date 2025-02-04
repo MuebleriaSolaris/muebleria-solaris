@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ClientesService {
-  private apiUrl = 'http://localhost/ionic-users/add_cliente.php'; // Adjust this to your backend URL
+  private apiUrl = 'https://muebleriasolaris.com/ionic-users'; // Adjust this to your backend URL
 
   constructor(private http: HttpClient) {}
 

@@ -66,6 +66,26 @@ const routes: Routes = [
   {
     path: 'producto/:id',
     loadChildren: () => import('./pages/producto/producto.module').then(m => m.ProductoPageModule)
+  },
+  {
+    path: 'historial-cliente/:id',
+    loadChildren: () => import('./pages/historial-cliente/historial-cliente.module').then( m => m.HistorialClientePageModule)
+  },
+  {
+    path: 'pedidos',
+    loadChildren: () => import('./pages/pedidos/pedidos.module').then( m => m.PedidosPageModule)
+  },
+  {
+    path: 'proveedores-info/:id',
+    loadChildren: () => import('./pages/proveedores-info/proveedores-info.module').then( m => m.ProveedoresInfoPageModule)
+  },
+  {
+    path: 'lista-pedido/:id',
+    loadChildren: () => import('./pages/lista-pedido/lista-pedido.module').then( m => m.ListaPedidoPageModule)
+  },
+  {
+    path: 'agregar-marca-producto',
+    loadChildren: () => import('./pages/agregar-marca-producto/agregar-marca-producto.module').then( m => m.AgregarMarcaProductoPageModule)
   }
 ];
 

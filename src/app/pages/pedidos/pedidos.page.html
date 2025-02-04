@@ -1,0 +1,25 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Proveedores</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list class="provider-list">
+    <!-- Lista de proveedores -->
+    <ion-item-sliding *ngFor="let provider of providers">
+      <ion-item class="provider-card">
+        <ion-thumbnail slot="start">
+          <img src="assets/user_src.png" alt="Proveedor">
+        </ion-thumbnail>
+        <ion-label>
+          <h3>{{ provider.name }}</h3>
+        </ion-label>
+        <ion-button slot="end" color="primary" (click)="viewOrderList(provider.id)">
+          Ver Pedido
+        </ion-button>
+      </ion-item>
+    </ion-item-sliding>
+    
+  </ion-list>
+</ion-content>

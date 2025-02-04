@@ -1,13 +1,29 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>proveedores</ion-title>
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Proveedores</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">proveedores</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content>
+  <ion-list class="provider-list">
+    <!-- Proveedor deslizante -->
+    <ion-item-sliding *ngFor="let provider of providers">
+      <ion-item class="provider-card">
+        <ion-thumbnail slot="start">
+          <img src="assets/user_src.png" alt="{{ provider.name }}">
+        </ion-thumbnail>
+        <ion-label>
+          <p>Nombre Proveedor</p>
+          <h2 class="provider-name">{{ provider.name }}</h2>
+          <!-- <p class="provider-id">ID: {{ provider.id }}</p> -->
+        </ion-label>
+      </ion-item>
+      <!-- Opciones al deslizar -->
+      <ion-item-options side="end">
+        <ion-item-option color="primary" (click)="viewProviderDetails(provider.id)">
+          Ver Detalles
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
 </ion-content>

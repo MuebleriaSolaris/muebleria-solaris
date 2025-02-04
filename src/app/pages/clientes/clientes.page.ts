@@ -30,10 +30,10 @@ export class ClientesPage implements OnInit {
 
   // Cargar clientes con o sin filtro de búsqueda
   loadCustomers(searchTerm: string = '') {
-    let apiUrl = 'http://localhost/ionic-users/clientes.php';
+    let apiUrl = 'https://muebleriasolaris.com/ionic-users/clientes.php';
     
     if (searchTerm) {
-      apiUrl = 'http://localhost/ionic-users/clientes_search.php';
+      apiUrl = 'https://muebleriasolaris.com/ionic-users/clientes_search.php';
     }
 
     let params = new HttpParams();

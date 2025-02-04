@@ -10,7 +10,7 @@
   /* Primary list styles (top menu items) */
   .ion-list-primary {
     flex: 1; /* Take remaining space, so logout stays at the bottom */
-    margin-top: 20px;
+    // margin-top: 20px;
     padding: 0;
     height: 90%;
   }
@@ -49,8 +49,8 @@
     color: white;
     font-weight: bold;
     --border-radius: 8px;
-    padding: 10px 0;
-    margin: 5px 0 0;
+    padding: 5px 0px 10px 0px; 
+    margin: 5px 0px;
     width: 100%;
     justify-content: center; /* Center-align the button text */
     font-size: 15px;
@@ -96,5 +96,41 @@
   
   ion-item.active-item ion-label {
     color: #d32f2f; /* Texto del label en rojo oscuro */
+  }
+  
+  .item-native .item-inner{
+    border-bottom: none;
+  }
+  
+  .ion-list-primary:nth-child(1){
+    margin-top: 10px;
+  }
+
+  ion-content.menu-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Ocupa toda la altura del menú */
+  
+    .ion-list-primary {
+      flex: 1; /* Esto hace que la lista principal ocupe el espacio disponible */
+      overflow-y: auto; /* Permite el desplazamiento vertical */
+    }
+  
+    .logout-list {
+      flex-shrink: 0; /* Evita que el botón de logout sea redimensionado */
+    }
+  }
+  
+  /* Ajuste para dispositivos pequeños */
+  @media (max-width: 425px) {
+    .menu-avatar {
+      display: flex;
+      justify-content: center;
+      margin: 0 auto;
+    }
+  
+    .logout_st_btn {
+      margin-bottom: 16px; /* Espaciado adicional para el botón */
+    }
   }
   

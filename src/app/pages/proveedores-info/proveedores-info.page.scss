@@ -1,0 +1,131 @@
+ion-content {
+    --background: #f7f7f7;
+}
+
+/* Profile header styling */
+.profile-header {
+    text-align: center;
+    padding: 50px 20px;
+    background: linear-gradient(to bottom, #3880ff, #dfdfdf);
+    color: white;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Profile avatar styling */
+.profile-avatar {
+    width: 120px;
+    height: 120px;
+    margin-bottom: 10px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid white;
+}
+
+/* Button container with Regresar and Editar buttons */
+.top-button-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* Adds space between buttons */
+    padding: 10px 0;
+    background: #3880ff;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    max-width: 800px;
+    margin: -20px auto 0 auto;
+}
+
+/* Styling for the buttons inside the top container */
+.top-button-container ion-button {
+    width: auto;
+    font-size: 0.9rem;
+    padding: 0 20px; /* Adjust padding for better spacing */
+}
+
+/* Specific styling for "Regresar" button */
+.regresar-button::part(native) {
+    background-color: white !important;
+    color: darkslategrey;
+}
+
+/* Account information section styling */
+.account-info {
+    padding: 30px;
+    margin: 30px auto;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 700px;
+    text-align: left;
+}
+
+/* Style adjustments for list items in account info */
+ion-list h2 {
+    font-size: 1.1rem;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+ion-list p {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+/* Styling for bottom action buttons */
+.bottom-action-buttons {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 0px 0px 0px;
+    margin: 0 auto;
+    max-width: 700px;
+}
+
+/* Styling for individual bottom buttons */
+.bottom-action-buttons ion-button {
+    flex: 1;
+    margin: 0 10px;
+    font-weight: bold;
+    color: #ffffff;
+    --border-radius: 8px;
+    --padding: 10px 0;
+}
+
+/* Styling for "Guardar" button */
+.guardar-button::part(native) {
+    --background: linear-gradient(to right, #28a745, #218838);
+    color: white;
+}
+
+/* Styling for "Cancelar" button */
+.cancelar-button::part(native) {
+    --background: linear-gradient(to right, #dc3545, #c82333);
+}
+
+/* Adjustments for large screens */
+@media (min-width: 768px) {
+    .profile-header,
+    .account-info,
+    .top-button-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    .top-button-container{
+        margin-top: -15px;
+    }
+}
+.ver-historial::part(native){
+    --background-color: linear-gradient(to right, #3880ff, #8fb1ee);
+    padding: 8px;
+    color: white;
+}
+
+.edit-footer{
+    box-shadow: none;
+}

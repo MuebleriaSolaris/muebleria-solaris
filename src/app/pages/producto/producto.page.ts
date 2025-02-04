@@ -60,10 +60,28 @@ export class ProductoPage implements OnInit {
   }
 
   saveChanges() {
-    console.log('Guardando cambios:', this.product);
-    this.originalProduct = { ...this.product }; // Actualiza la copia original con los valores guardados
-    this.isEditMode = false;
+    if (!this.product || !this.product.product_id) {
+      console.error('El producto no tiene un ID válido.');
+      return;
+    }
+  
+    this.inventoryService.saveProduct(this.product).subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          alert('Producto actualizado correctamente.');
+          this.originalProduct = { ...this.product }; // Actualiza la copia original
+          this.isEditMode = false; // Sale del modo de edición
+        } else {
+          alert('Error al actualizar el producto: ' + response.message);
+        }
+      },
+      error: (error) => {
+        console.error('Error al actualizar el producto:', error);
+        alert('Ocurrió un error al actualizar el producto.');
+      }
+    });
   }
+  
 
   cancelEdit() {
     console.log('Cancelando edición');

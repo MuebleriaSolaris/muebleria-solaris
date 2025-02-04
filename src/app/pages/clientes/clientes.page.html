@@ -33,8 +33,7 @@
             {{ getCustomerTypeName(customer.type) }}
           </span>
         </ion-col>
-      </ion-item>
-      
+      </ion-item> 
       <!-- Only admins see this "View Details" button on swipe -->
       <ion-item-options side="start" *ngIf="isAdmin">
         <ion-item-option color="primary" (click)="viewCustomerDetails(customer.id)">

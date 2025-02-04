@@ -36,7 +36,7 @@ export class PerfilPage implements OnInit {
 loadUserProfile() {
   const userId = this.authService.getUserId();
   if (userId) {
-    this.http.get<UserProfile>(`http://localhost/ionic-login/login_usuario.php?id=${userId}`)
+    this.http.get<UserProfile>(`https://muebleriasolaris.com/ionic-login/login_usuario.php?id=${userId}`)
       .subscribe(
         (data) => {
           this.user = data;
@@ -61,5 +61,4 @@ loadUserProfile() {
       console.warn('Unrecognized role:', role); // In case of unexpected role
     }
   }
-
 }

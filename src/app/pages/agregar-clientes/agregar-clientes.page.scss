@@ -65,3 +65,15 @@ ion-content {
   --background: linear-gradient(to right, #28a745, #218838);
   color: white;
 }
+
+.edit-footer{
+  box-shadow: none;
+  margin-top: 20px;
+}
+
+/* Adjustments for large screens */
+@media (max-width: 450px){
+  .form-container{
+    margin: 0px auto;
+  }
+}

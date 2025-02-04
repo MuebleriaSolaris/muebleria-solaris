@@ -1,13 +1,42 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>agregar-proveedor</ion-title>
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Agregar Proveedor</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">agregar-proveedor</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content>
+  <div class="form-card">
+    <h2>Introduce los detalles del proveedor</h2>
+
+    <!-- Formulario para agregar proveedor -->
+    <form (submit)="saveProvider()">
+      <ion-list lines="none">
+        <!-- Nombre del Proveedor -->
+        <ion-item class="form-item">
+          <ion-label class="title-item" position="stacked">Nombre del Proveedor</ion-label>
+          <ion-input [(ngModel)]="newProvider.name" name="name" required></ion-input>
+        </ion-item>
+
+        <!-- Fecha de Creación (Solo Lectura) -->
+        <ion-item class="form-item">
+          <ion-label class="title-item" position="stacked">Fecha de Creación</ion-label>
+          <ion-input [(ngModel)]="newProvider.created_at" name="created_at" readonly></ion-input>
+        </ion-item>
+
+        <!-- Última Actualización (Solo Lectura) -->
+        <ion-item class="form-item">
+          <ion-label class="title-item" position="stacked">Última Actualización</ion-label>
+          <ion-input [(ngModel)]="newProvider.updated_at" name="updated_at" readonly></ion-input>
+        </ion-item>
+      </ion-list>
+
+      <!-- Botón Guardar -->
+      <ion-footer class="footer edit-footer">
+        <ion-button expand="block" color="primary" type="submit">
+          <ion-icon slot="start" name="checkmark-outline"></ion-icon>
+          Guardar Proveedor
+        </ion-button>
+      </ion-footer>
+    </form>
+  </div>
 </ion-content>

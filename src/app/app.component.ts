@@ -68,6 +68,9 @@ export class AppComponent implements OnInit {
       case url.startsWith('/cliente-info/'):
         this.setClienteTitle(); // Llama al método para manejar títulos de cliente
         break;
+        case url.startsWith('/historial-cliente/'):
+          this.setHistorialClienteTitle(); // Llama al método para manejar títulos del historial
+        break;
       default:
         this.menuTitle = "";  // Default title for other routes
     }
@@ -89,6 +92,24 @@ export class AppComponent implements OnInit {
       );
     } else {
       this.menuTitle = 'Cliente Info';
+    }
+  }
+  private setHistorialClienteTitle() {
+    const customerId = this.activatedRoute.snapshot.paramMap.get('id');
+    if (customerId) {
+      this.infoClienteService.getCustomerById(customerId).subscribe(
+        (customer) => {
+          // this.menuTitle = `Cliente | ${customer.name}`;
+          this.menuTitle = `Historial Movimientos`;
+          console.log(`cliente: ${customer.name}`);
+        },
+        (error) => {
+          console.error('Error al obtener cliente:', error);
+          this.menuTitle = 'Información del cliente'; // Valor predeterminado en caso de error
+        }
+      );
+    } else {
+      this.menuTitle = 'Historial Movimientos';
     }
   }
 }

@@ -1,5 +1,13 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+
+export interface LoginResponse {
+  status: string;
+  message: string;
+  userId: string;
+  role?: string;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -9,9 +17,10 @@ export class AuthService {
   role$ = this.roleSubject.asObservable();
 
   private userId: string | null = null;
+  private apiUrl = 'https://muebleriasolaris.com/ionic-login'; // Base API URL
 
-  constructor() {
-    // Restaurar datos desde localStorage al iniciar la aplicación
+  constructor(private http: HttpClient) {
+    // Restore session data from localStorage
     const storedRole = localStorage.getItem('role');
     const storedUserId = localStorage.getItem('userId');
     const storedToken = localStorage.getItem('remember_token');
@@ -24,6 +33,17 @@ export class AuthService {
     }
   }
 
+  // Login API
+  login(username: string, password: string): Observable<LoginResponse> {
+    const userCredentials = { username, password };
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+      }),
+    };
+    return this.http.post<LoginResponse>(`${this.apiUrl}/login.php`, userCredentials, httpOptions);
+  }
+
   // Roles
   getRole() {
     return this.roleSubject.value;
@@ -31,21 +51,21 @@ export class AuthService {
 
   setRole(role: string) {
     this.roleSubject.next(role);
-    localStorage.setItem('role', role); // Guardar en localStorage
+    localStorage.setItem('role', role); // Save to localStorage
   }
 
   isAdmin(): boolean {
-    return this.roleSubject.value === '1';
-  }
-
-  isSeller(): boolean {
     return this.roleSubject.value === '4';
   }
 
-  // Usuario ID
+  isSeller(): boolean {
+    return this.roleSubject.value === '1';
+  }
+
+  // User ID
   setUserId(id: string) {
     this.userId = id;
-    localStorage.setItem('userId', id); // Guardar en localStorage
+    localStorage.setItem('userId', id); // Save to localStorage
   }
 
   getUserId(): string | null {
@@ -55,27 +75,27 @@ export class AuthService {
     return this.userId;
   }
 
-  // Token Persistente
+  // Persistent Token
   setRememberToken(token: string) {
-    localStorage.setItem('remember_token', token); // Guardar token en localStorage
+    localStorage.setItem('remember_token', token); // Save token to localStorage
   }
 
   getRememberToken(): string | null {
-    return localStorage.getItem('remember_token'); // Obtener token de localStorage
+    return localStorage.getItem('remember_token'); // Retrieve token from localStorage
   }
 
-  // Método para limpiar la sesión
+  // Clear session
   clearSession() {
-    this.roleSubject.next(null); // Limpiar el rol en el BehaviorSubject
-    this.userId = null; // Limpiar el ID del usuario
-    localStorage.removeItem('role'); // Eliminar rol de localStorage
-    localStorage.removeItem('userId'); // Eliminar ID de usuario de localStorage
-    localStorage.removeItem('remember_token'); // Eliminar token de localStorage
-    console.log('Sesión limpiada correctamente.');
+    this.roleSubject.next(null); // Clear role from BehaviorSubject
+    this.userId = null; // Clear user ID
+    localStorage.removeItem('role'); // Remove role from localStorage
+    localStorage.removeItem('userId'); // Remove user ID from localStorage
+    localStorage.removeItem('remember_token'); // Remove token from localStorage
+    console.log('Session cleared successfully.');
   }
 
-  // Logout que utiliza clearSession
+  // Logout using clearSession
   logout() {
-    this.clearSession(); // Limpia la sesión completamente
+    this.clearSession();
   }
 }

@@ -1,0 +1,68 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Información del Proveedor</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="profile-header">
+    <ion-avatar class="profile-avatar">
+      <img src="assets/user_src.png" alt="Proveedor">
+    </ion-avatar>
+    <h2>{{ provider?.name }}</h2>
+    <p>ID: {{ provider?.id }}</p>
+  </div>
+
+  <div class="top-button-container">
+    <ion-button color="light" class="regresar-button" (click)="goBack()">
+      <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+      Regresar
+    </ion-button>
+    <ion-button color="secondary" (click)="toggleEditMode()">
+      <ion-icon name="create-outline" slot="start"></ion-icon>
+      Editar
+    </ion-button>
+  </div>
+
+  <div class="account-info">
+    <div class="top-cliente"><h3>Detalles del Proveedor</h3></div>
+    <ion-list lines="none">
+      <ion-item>
+        <ion-icon name="time-outline" slot="start"></ion-icon>
+        <ion-label>
+          <h2 [ngStyle]="{ 'font-weight': isEditMode ? 'bold' : 'normal' }">Fecha de Creación</h2>
+          <p *ngIf="!isEditMode">{{ provider?.created_at }}</p>
+        </ion-label>
+      </ion-item>
+
+      <ion-item>
+        <ion-icon name="refresh-outline" slot="start"></ion-icon>
+        <ion-label>
+          <h2 [ngStyle]="{ 'font-weight': isEditMode ? 'bold' : 'normal' }">Última Actualización</h2>
+          <p *ngIf="!isEditMode">{{ provider?.last_updated }}</p>
+        </ion-label>
+      </ion-item>
+
+      <ion-item>
+        <ion-icon name="create-outline" slot="start"></ion-icon>
+        <ion-label>
+          <h2 [ngStyle]="{ 'font-weight': isEditMode ? 'bold' : 'normal' }">Nombre</h2>
+          <p *ngIf="!isEditMode">{{ provider?.name }}</p>
+          <ion-input *ngIf="isEditMode" [(ngModel)]="provider!.name" placeholder="Nombre del Proveedor"></ion-input>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+    <ion-footer *ngIf="isEditMode" class="edit-footer">
+      <div class="bottom-action-buttons">
+        <ion-button class="guardar-button" expand="block" color="success" (click)="saveChanges()">
+          <ion-icon slot="start" name="checkmark-outline"></ion-icon>
+          Guardar
+        </ion-button>
+        <ion-button class="cancelar-button" expand="block" color="danger" (click)="cancelEdit()">
+          <ion-icon slot="start" name="close-outline"></ion-icon>
+          Cancelar
+        </ion-button>
+      </div>
+    </ion-footer>
+  </div>
+</ion-content>

@@ -11,7 +11,7 @@ ion-list {
     --background: #fff;
     margin: 5px 0;
     border-radius: 10px;
-    padding: 10px;
+    padding: 0px 10px;
     display: flex;
     align-items: center;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -63,6 +63,9 @@ ion-list {
   
   /* Responsividad */
   @media (min-width: 768px) {
+    .counter-container {
+      padding: 0px 0px 10px 0px;
+    }
     ion-list {
       max-width: 700px;
       margin: 20px auto;
@@ -109,6 +112,7 @@ ion-list.list-ios ion-item.item div.item-native {
     flex-direction: column;
     justify-content: space-evenly;
     height: 100%;
+    padding: 10px 0px;
   }
   
   .counter-value {
@@ -177,16 +181,6 @@ ion-list.list-ios ion-item.item div.item-native {
   gap: 10px;
 }
 
-.counter-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin-left: auto;
-  gap: 5px;
-  text-align: center;
-}
-
 .counter-controls {
   display: flex;
   align-items: center;
@@ -198,7 +192,7 @@ ion-list.list-ios ion-item.item div.item-native {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 60px; /* Adjust width for consistency */
+  min-width: 70px; /* Adjust width for consistency */
 }
 
 .counter-value {
@@ -227,4 +221,50 @@ ion-list.list-ios ion-item.item div.item-native {
 
 .confirm-button:active {
   transform: scale(1.05);
+}
+
+.confirm-button::navitve{
+  color: white;
+}
+
+.left-info{
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  align-items: center;
+  justify-content: flex-start;
+}
+ion-thumbnail{
+  padding: 7px;
+  margin-right: 20px;
+}
+@media (max-width: 450px) {
+  .left-info{
+    flex-direction: column;
+    align-items: center;
+  }
+  // ion-thumbnail {
+  //   padding: 7px;
+  // }
+  ion-label{
+    text-align: center;
+  }
+  ion-label p{
+    font-size: 0.75rem;
+    text-align: center;
+  }
+  ion-list {
+    max-width: 700px;
+    margin: 0 auto;
+    margin-top: 10px;
+  }
+}
+ion-item.inventory-item::part(native){
+  padding-left: 0px;
+}
+.warning-text {
+  color: red;
+  font-size: 0.6rem;
+  text-align: center;
+  margin-top: 5px;
 }

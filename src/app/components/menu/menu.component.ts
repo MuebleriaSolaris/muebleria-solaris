@@ -15,12 +15,13 @@ export class MenuComponent implements OnInit {
   public role: number | null = null;
   public appPages = [
     { title: 'Clientes', url: '/clientes', icon: 'people', roles: [1, 4] },
-    { title: 'Agregar Clientes', url: '/agregar-clientes', icon: 'person-add', roles: [1] },
-    { title: 'Inventario', url: '/inventario', icon: 'list', roles: [1] },
-    { title: 'Proveedores', url: '/proveedores', icon: 'business', roles: [1] },
+    { title: 'Agregar Clientes', url: '/agregar-clientes', icon: 'person-add', roles: [4] },
+    { title: 'Inventario', url: '/inventario', icon: 'list', roles: [4] },
+    { title: 'Proveedores', url: '/proveedores', icon: 'business', roles: [4] },
     { title: 'Perfil', url: '/perfil', icon: 'person', roles: [1, 4] }
   ];
   public filteredPages: { title: string; url: string; icon: string; roles: number[] }[] = [];
+  isAdmin: boolean = false; // Variable to check if user is admin
 
   constructor(
     public authService: AuthService,
@@ -29,6 +30,7 @@ export class MenuComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.isAdmin = this.authService.isAdmin(); // Check if user has admin privileges
     // Subscribe to role$ to reactively set role and update filteredPages
     this.authService.role$.subscribe((roleString) => {
       this.role = roleString ? parseInt(roleString, 10) : null;
@@ -45,6 +47,7 @@ export class MenuComponent implements OnInit {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.updateMenuTitle(event.urlAfterRedirects);
+        this.closeMenu(); // Cierra el menú
       }
     });
   }
@@ -66,10 +69,13 @@ export class MenuComponent implements OnInit {
   }
 
   logout() {
-    this.authService.logout();  // Call the logout function from AuthService (implement it if not already)
-    this.router.navigate(['/login']);  // Redirect to login page after logout
-    this.closeMenu();  // Close the side menu
+    this.authService.logout(); // Call the logout function from AuthService
+    this.router.navigate(['/']).then(() => {
+      window.location.reload(); // Reload the page to reset everything
+    });
+    this.closeMenu(); // Close the side menu
   }
+  
 
   isCompact = false;
 

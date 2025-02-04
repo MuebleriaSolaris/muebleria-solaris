@@ -1,0 +1,42 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Agregar Marca de Producto</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="form-card">
+    <h2>Introduce los detalles de la marca de producto</h2>
+
+    <!-- Formulario para agregar marca de producto -->
+    <form (submit)="saveBrand()">
+      <ion-list lines="none">
+        <!-- Nombre de la Marca -->
+        <ion-item class="form-item">
+          <ion-label class="title-item" position="stacked">Nombre de la Marca</ion-label>
+          <ion-input [(ngModel)]="newBrand.name" name="name" required></ion-input>
+        </ion-item>
+
+        <!-- Fecha de Creación (Solo Lectura) -->
+        <ion-item class="form-item">
+          <ion-label class="title-item" position="stacked">Fecha de Creación</ion-label>
+          <ion-input [(ngModel)]="newBrand.created_at" name="created_at" readonly></ion-input>
+        </ion-item>
+
+        <!-- Última Actualización (Solo Lectura) -->
+        <ion-item class="form-item">
+          <ion-label class="title-item" position="stacked">Última Actualización</ion-label>
+          <ion-input [(ngModel)]="newBrand.updated_at" name="updated_at" readonly></ion-input>
+        </ion-item>
+      </ion-list>
+
+      <!-- Botón Guardar -->
+      <ion-footer class="footer edit-footer">
+        <ion-button expand="block" color="primary" type="submit">
+          <ion-icon slot="start" name="checkmark-outline"></ion-icon>
+          Guardar Marca
+        </ion-button>
+      </ion-footer>
+    </form>
+  </div>
+</ion-content>

@@ -33,6 +33,16 @@
           </ion-select>
         </ion-item>
 
+        
+        <!-- Proveedores -->
+        <ion-item class="form-item">
+          <ion-label class="title-item" position="stacked">Proveedor</ion-label>
+          <ion-select [(ngModel)]="newProduct.proveedor_id" name="proveedor_id" placeholder="Seleccione un proveedor" required>
+            <ion-select-option *ngFor="let provider of providers" [value]="provider.id">{{ provider.name }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+
         <!-- Detalles del Producto -->
         <ion-item class="form-item">
           <ion-label class="title-item" position="stacked">Detalles del Producto</ion-label>
@@ -61,7 +71,7 @@
       </ion-list>
 
       <!-- Botón Guardar -->
-      <ion-footer class="footer">
+      <ion-footer class="footer edit-footer">
         <ion-button expand="block" color="primary" type="submit">
           <ion-icon slot="start" name="checkmark-outline"></ion-icon>
           Guardar Producto

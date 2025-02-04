@@ -1,0 +1,65 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>Lista de Pedido</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="pedido-container">
+    <h2>Pedido para el proveedor: {{ providerName }}</h2>
+    
+    <!-- Mostrar el costo total y botón de regresar para vistas pequeñas -->
+    <div class="mobile-total" *ngIf="!isLargeScreen">
+      <p><strong>Costo total:</strong> ${{ totalCost }}</p>
+      <ion-button expand="full" (click)="goBack()">Regresar</ion-button>
+    </div>
+
+    <!-- Tabla para pantallas grandes -->
+    <div class="pedido-table" *ngIf="isLargeScreen">
+      <table>
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>En Existencia</th>
+            <th>Faltantes</th>
+            <!-- <th>Precio Unitario</th>
+            <th>Total</th> -->
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of providerProducts">
+            <td>{{ item.product_name }}</td>
+            <td>{{ item.current_stock }}</td>
+            <td>{{ item.max_amount - item.current_stock }}</td>
+            <!-- <td>${{ item.credit_price }}</td>
+            <td>${{ (item.max_amount - item.current_stock) * item.credit_price }}</td> -->
+          </tr>
+          <!-- Fila del total general -->
+          <!-- <tr>
+            <td colspan="3"></td>
+            <td colspan="1" style="text-align: center; font-weight: bold;">Total general</td>
+            <td style="font-weight: bold;">${{ totalCost }}</td>
+          </tr> -->
+        </tbody>
+      </table>
+      <!-- Total general para vistas grandes -->
+      <div class="table-total">
+        <ion-button (click)="goBack()">Regresar</ion-button>
+      </div>
+    </div>    
+
+    <!-- Tarjetas para pantallas pequeñas -->
+    <div class="pedido-list" *ngIf="!isLargeScreen">
+      <div class="pedido-card" *ngFor="let item of providerProducts">
+        <h3>{{ item.product_name }}</h3>
+        <p><strong>En existencia:</strong> {{ item.current_stock }}</p>
+        <p><strong>Faltantes:</strong> {{ item.max_amount - item.current_stock }}</p>
+        <!-- <p><strong>Precio Unitario:</strong> ${{ item.credit_price }}</p>
+        <p><strong>Total:</strong> ${{ (item.max_amount - item.current_stock) * item.credit_price }}</p> -->
+      </div>
+    </div>
+  </div>
+</ion-content>

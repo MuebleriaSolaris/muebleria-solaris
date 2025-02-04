@@ -17,12 +17,6 @@
           <ion-label position="floating">Nombre Completo</ion-label>
           <ion-input [(ngModel)]="newClient.name" class="custom-input" name="name" required (ionInput)="capitalizeName()"></ion-input>
         </ion-item>
-          
-        <!-- Correo Electrónico -->
-        <!-- <ion-item class="form-item">
-          <ion-label position="floating">Correo Electrónico</ion-label>
-          <ion-input [(ngModel)]="newClient.email" class="custom-input" name="email" type="email" required></ion-input>
-        </ion-item> -->
 
         <!-- Dirección -->
         <ion-item class="form-item">
@@ -36,7 +30,7 @@
           <ion-input 
             [(ngModel)]="newClient.phone" 
             class="custom-input" 
-            name="phone" 
+            name="phone"
             type="tel" 
             inputmode="numeric" 
             maxlength="10" 
@@ -44,8 +38,6 @@
             (ionInput)="validateNumericInput($event)">
           </ion-input>
         </ion-item>
-        
-        
 
         <!-- Tipo de Cliente -->
         <ion-item class="form-item">
@@ -56,11 +48,10 @@
             <ion-select-option value="0">Malo</ion-select-option>
           </ion-select>
         </ion-item>
-
       </ion-list>
 
       <!-- Submit Button -->
-      <ion-footer class="footer">
+      <ion-footer class="footer edit-footer">
         <ion-button  class="guardar-button" expand="block" color="success" type="submit">
           <ion-icon slot="start" name="checkmark-outline"></ion-icon>
           Guardar Cliente

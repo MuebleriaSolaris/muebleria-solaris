@@ -1,0 +1,38 @@
+<ion-content>
+  <!-- Tabla de historial -->
+  <ion-grid class="customer-history-table">
+    <ion-row class="header-row">
+      <ion-col [ngClass]="isMobile ? 'size-4' : 'size-2'"><strong>Nombre</strong></ion-col>
+      <ion-col [ngClass]="isMobile ? 'size-4' : 'size-3'"><strong>Dirección</strong></ion-col>
+      <ion-col [ngClass]="isMobile ? 'size-2' : 'size-2'"><strong>Teléfono</strong></ion-col>
+      <ion-col size="2" class="desktop-only"><strong>Tipo</strong></ion-col>
+      <ion-col [ngClass]="isMobile ? 'size-2' : 'size-1'"><strong>Fecha Mov</strong></ion-col>
+      <ion-col size="2" class="desktop-only"><strong>Razón</strong></ion-col>
+    </ion-row>
+
+    <ion-row *ngFor="let change of customerHistory" class="data-row">
+      <ion-col [ngClass]="isMobile ? 'size-4' : 'size-2'">{{ change.name }}</ion-col>
+      <ion-col [ngClass]="isMobile ? 'size-4' : 'size-3'">{{ change.address }}</ion-col>
+      <ion-col [ngClass]="isMobile ? 'size-2' : 'size-2'">{{ change.phone }}</ion-col>
+      <ion-col size="2" class="desktop-only">
+        <span class="type-label" [ngClass]="{
+          'success': change.type === 1,
+          'warning': change.type === 2,
+          'danger': change.type === 0
+        }">
+          {{ change.type === 1 ? 'Bueno' : change.type === 2 ? 'Regular' : 'Malo' }}
+        </span>
+      </ion-col>
+      <ion-col [ngClass]="isMobile ? 'size-2' : 'size-1'">{{ change.change_timestamp }}</ion-col>
+      <ion-col size="2" class="desktop-only">{{ change.change_reason }}</ion-col>
+    </ion-row>
+  </ion-grid>
+  <ion-grid>
+    <ion-row>
+        <ion-button (click)="goBack()">
+          <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+          Regresar
+        </ion-button>
+    </ion-row>
+  </ion-grid>
+</ion-content>

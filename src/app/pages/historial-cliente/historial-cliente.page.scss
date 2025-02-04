@@ -1,0 +1,94 @@
+.customer-history-table {
+    width: 100%;
+    margin: 0 auto;
+    text-align: center;
+    border-collapse: collapse;
+    margin-top: 70px;
+  }
+  
+  .header-row {
+    background-color: #1e88e5; /* Azul primario */
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    border-bottom: 2px solid #ccc;
+  }
+  
+  .data-row {
+    background-color: #f9f9f9;
+    border-bottom: 1px solid #e0e0e0;
+    padding: 10px 0;
+  }
+  
+  .customer-type {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .type-label {
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-weight: bold;
+    color: white;
+  }
+  
+  /* Colores de fondo para los tipos */
+  .type-label.success {
+    background-color: #4caf50; /* Verde */
+  }
+  
+  .type-label.danger {
+    background-color: #f44336; /* Rojo */
+  }
+  
+  .type-label.warning {
+    background-color: #1e3a8a; /* Azul oscuro */
+  }
+  
+  .pagination-controls {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  .pagination-controls ion-button {
+    margin: 5px;
+  }
+  
+  ion-button.ios::part(native){
+    padding: 10px;
+    font-size: 1rem;
+    }
+    
+  /* Ajustes para dispositivos móviles */
+  @media (max-width: 576px) {
+    .header-row ion-col {
+      font-size: 0.8rem;
+    }
+  
+    .data-row ion-col {
+      font-size: 0.6rem;
+    }
+  
+    .customer-type {
+      justify-content: center;
+    }
+  
+    .customer-history-table {
+      margin: 0;
+      margin-top: 60px;
+      padding: 0px;
+    }
+  
+    /* Ocultar columnas no necesarias en móviles */
+    .desktop-only {
+      display: none;
+    }
+
+    ion-button.ios::part(native){
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+  }
+  

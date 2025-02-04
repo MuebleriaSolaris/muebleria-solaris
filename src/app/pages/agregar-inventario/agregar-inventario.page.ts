@@ -16,11 +16,13 @@ export class AgregarInventarioPage implements OnInit {
     novedad_act: 0,
     credit_price: null,
     brand_id: null,
+    proveedor_id: null,
   };
 
   categories: any[] = [];
   subCategories: any[] = [];
   brands: any[] = [];
+  providers: any[] = [];
 
   constructor(private inventoryService: InventoryService, private navCtrl: NavController) {}
 
@@ -28,6 +30,7 @@ export class AgregarInventarioPage implements OnInit {
     this.loadCategories();
     this.loadBrands();
     this.loadSubCategories();
+    this.loadprovider();
   }
 
   // Cargar categorías desde el backend
@@ -72,12 +75,30 @@ export class AgregarInventarioPage implements OnInit {
     );
   }
 
+  // Cargar proveedor desde el backend
+  loadprovider() {
+    this.inventoryService.getProviders().subscribe(
+      (response) => {
+        if(response.success){
+          this.providers = response.data;
+        }
+      },
+      (error) => {
+        console.error('Error al cargar proveedores:', error);
+      }
+    );
+  }
+
   // Guardar producto
   saveProduct() {
+    if (!this.newProduct.proveedor_id) {
+      console.error('Proveedor no seleccionado');
+      return;
+    }
+  
     this.inventoryService.saveProduct(this.newProduct).subscribe(
       (response) => {
         console.log('Producto guardado:', response);
-        // Navegar a la lista de productos o mostrar confirmación
         this.navCtrl.navigateBack('/inventario');
       },
       (error) => {
@@ -85,6 +106,7 @@ export class AgregarInventarioPage implements OnInit {
       }
     );
   }
+  
 
   toggleNovedad(event: any) {
     this.newProduct.novedad_act = event.detail.checked ? 1 : 0;
