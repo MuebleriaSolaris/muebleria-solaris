@@ -203,5 +203,4 @@ export class ClienteInfoPage implements OnInit {
         },
       });
   }
-
 }

@@ -59,6 +59,10 @@ export class InventoryService {
     return this.http.post(`${this.apiUrl}/save_product.php`, product);
   }
 
+  addInventory(product: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/save_new_product.php`, product);
+  }
+
   updateInventory(id_product: number, adjustment: number): Observable<any> {
     const payload = {
       id_product: id_product,
@@ -68,6 +72,25 @@ export class InventoryService {
     return this.http.post(`${this.apiUrl}/update_inventory.php`, payload);
   }
   
+  deleteProduct(productId: number): Observable<any> {
+    return this.http.post(`${this.apiUrl}/delete_product.php`,
+      { product_id: productId }
+    );
+  }
+
+  deleteProvider(providerId: number): Observable<any> {
+    return this.http.post(`${this.apiUrl}/delete_provider.php`,
+      { id: providerId }
+    );
+  }
+
+  // Método para actualizar un proveedor
+  updateProvider(provider: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/update_provider.php`,
+      provider
+    );
+  }
+
   /**
    * Sincronizar stock actual de un producto
    * @param product El producto a sincronizar

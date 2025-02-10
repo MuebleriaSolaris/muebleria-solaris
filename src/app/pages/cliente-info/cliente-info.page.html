@@ -41,6 +41,15 @@
         <h3>Detalles del Cliente</h3>
       </div>
       <ion-list lines="none">
+        <!-- Nuevo campo para editar el nombre -->
+        <ion-item *ngIf="isEditMode">
+          <ion-icon name="person-outline" slot="start"></ion-icon>
+          <ion-label>
+            <h2>Nombre</h2>
+            <ion-input [(ngModel)]="customerInfo.name" name="name" placeholder="Nombre" required></ion-input>
+          </ion-label>
+        </ion-item>
+        
         <ion-item>
           <ion-icon name="location-outline" slot="start"></ion-icon>
           <ion-label>
@@ -60,14 +69,29 @@
         <ion-item>
           <ion-icon name="person-outline" slot="start"></ion-icon>
           <ion-label>
-            <h2>Tipo de Cliente</h2>
-            <ion-select [(ngModel)]="customerInfo.type" name="type" [disabled]="!isEditMode" required>
+            <h2 [ngStyle]="{ 'font-weight': isEditMode ? 'bold' : 'normal' }">Tipo de Cliente</h2>
+            <p *ngIf="!isEditMode">{{ customerInfo?.type === 1 ? 'Bueno' : customerInfo?.type === 2 ? 'Regular' : 'Malo' }}</p>
+            <ion-select *ngIf="isEditMode" [(ngModel)]="customerInfo!.type">
               <ion-select-option value="1">Bueno</ion-select-option>
               <ion-select-option value="2">Regular</ion-select-option>
               <ion-select-option value="0">Malo</ion-select-option>
             </ion-select>
           </ion-label>
         </ion-item>
+
+        <ion-item>
+          <ion-icon name="time-outline" slot="start"></ion-icon>
+          <ion-label>
+            <h2>Última Actualización</h2>
+            <p>{{ customerInfo?.updated_at }}</p>
+          </ion-label>
+          <!-- Botón "Historial" con evento (click) -->
+          <ion-button class="ver-historial" expand="block" color="success" (click)="viewCustomerHistory()">
+            <ion-icon slot="start" name="eye"></ion-icon>
+            Historial
+          </ion-button>
+        </ion-item>
+
       </ion-list>
     </div>
 

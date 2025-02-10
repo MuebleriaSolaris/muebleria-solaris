@@ -18,7 +18,7 @@
       <ion-item class="inventory-item">
         <div class="left-info">
           <ion-thumbnail slot="start">
-            <ion-img src="https://via.placeholder.com/100" alt="{{ product.product_name }}"></ion-img>
+            <ion-img src="assets/product_placeholder.png" alt="{{ product.product_name }}"></ion-img>
           </ion-thumbnail>
           <ion-label>
             <h2 class="product-name">{{ product.product_name }}</h2>
@@ -35,6 +35,7 @@
     
           <div class="counter-controls">
             <ion-button
+              *ngIf="isAdmin"
               fill="clear"
               size="small"
               (click)="decreaseCount(product)"
@@ -49,6 +50,7 @@
               
             </div>
             <ion-button
+              *ngIf="isAdmin"
               fill="clear"
               size="small"
               (click)="increaseCount(product)"
@@ -58,6 +60,7 @@
           </div>
     
           <ion-button
+            *ngIf="isAdmin"
             expand="block"
             size="small"
             class="confirm-button"
@@ -69,7 +72,7 @@
       </ion-item>
     
       <!-- Opciones de deslizamiento -->
-      <ion-item-options side="end" (ionDrag)="onDrag(slidingItem)">
+      <ion-item-options *ngIf="isAdmin" side="end" (ionDrag)="onDrag(slidingItem)">
         <ion-item-option 
           color="primary" 
           (click)="viewProduct(product.product_id)">

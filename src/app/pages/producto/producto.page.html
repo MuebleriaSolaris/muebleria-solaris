@@ -24,12 +24,28 @@
       <ion-icon name="create-outline" slot="start"></ion-icon>
       Editar
     </ion-button>
+    <!-- Botón para eliminar -->
+    <ion-button color="danger" (click)="confirmDelete()">
+      <ion-icon name="trash-outline" slot="start"></ion-icon>
+      Eliminar
+    </ion-button>
   </div>
 
   <!-- Detalles del producto -->
   <div class="account-info">
     <div class="top-cliente"><h3>Detalles del Producto</h3></div>
       <ion-list lines="none">
+
+        <!-- Nuevo campo para editar el nombre -->
+        <ion-item *ngIf="isEditMode">
+          <ion-icon name="person-outline" slot="start"></ion-icon>
+          <ion-label>
+            <h2 [ngStyle]="{ 'font-weight': isEditMode ? 'bold' : 'normal' }">Nombre</h2>
+            
+            <ion-input [(ngModel)]="product.product_name" name="name" placeholder="Nombre" required></ion-input>
+          </ion-label>
+        </ion-item>
+
         <ion-item>
           <ion-icon name="pricetag-outline" slot="start"></ion-icon>
           <ion-label>
@@ -37,7 +53,7 @@
             <p *ngIf="!isEditMode">$ {{ product?.credit_price | number:'1.2-2' }}</p>
             <ion-input
               *ngIf="isEditMode"
-              [(ngModel)]="product!.credit_price"
+              [(ngModel)]="product.credit_price"
               placeholder="Precio Crédito"
               type="text"
               inputmode="decimal"
