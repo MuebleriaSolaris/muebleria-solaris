@@ -50,6 +50,12 @@ export class InventoryService {
       },
     });
   }
+
+  deleteBrand(brandId: number): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/delete_brand.php`,
+      { id: brandId }
+    );
+  }
   
   getSubCategories(): Observable<any> {
     return this.http.get(`${this.apiUrl}/sub_categories.php`);

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { InventoryService } from '../../services/inventory.service';
-import { NavController } from '@ionic/angular';
+import { NavController, AlertController } from '@ionic/angular'; // Importa AlertController
 
 @Component({
   selector: 'app-agregar-marca-producto',
@@ -16,22 +16,53 @@ export class AgregarMarcaProductoPage implements OnInit {
 
   constructor(
     private inventoryService: InventoryService,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    private alertController: AlertController // Inyecta AlertController
   ) {}
 
   ngOnInit() {}
 
   // Método para guardar la marca
-  saveBrand() {
-    this.inventoryService.saveBrand(this.newBrand).subscribe({
-      next: (response) => {
-        console.log('API Response:', response)
-        // Redirige a la lista de marcas o muestra una confirmación
-        // this.navCtrl.navigateBack('/marcas');
-      },
-      error: (error) => {
-        console.error('API Error:', error);
-      },
+  async saveBrand() {
+    // Mostrar confirmación antes de guardar
+    const confirmAlert = await this.alertController.create({
+      header: 'Confirmar',
+      message: '¿Estás seguro de que deseas guardar esta marca?',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+        },
+        {
+          text: 'Guardar',
+          handler: () => {
+            this.inventoryService.saveBrand(this.newBrand).subscribe({
+              next: async (response) => {
+                console.log('API Response:', response);
+                await this.showAlert('Éxito', 'Marca guardada correctamente.');
+                this.navCtrl.navigateBack('/marcas-productos');
+              },
+              error: async (error) => {
+                console.error('API Error:', error);
+                await this.showAlert('Error', 'Ocurrió un error al guardar la marca.');
+              },
+            });
+          },
+        },
+      ],
     });
+
+    await confirmAlert.present();
+  }
+
+  // Método para mostrar alertas
+  async showAlert(header: string, message: string) {
+    const alert = await this.alertController.create({
+      header: header,
+      message: message,
+      buttons: ['OK'],
+    });
+
+    await alert.present();
   }
 }

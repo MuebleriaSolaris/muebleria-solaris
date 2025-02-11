@@ -86,6 +86,14 @@ const routes: Routes = [
   {
     path: 'agregar-marca-producto',
     loadChildren: () => import('./pages/agregar-marca-producto/agregar-marca-producto.module').then( m => m.AgregarMarcaProductoPageModule)
+  },
+  {
+    path: 'marcas-productos',
+    loadChildren: () => import('./pages/marcas-productos/marcas-productos.module').then( m => m.MarcasProductosPageModule)
+  },
+  {
+    path: 'usuarios-sistema',
+    loadChildren: () => import('./pages/usuarios-sistema/usuarios-sistema.module').then( m => m.UsuariosSistemaPageModule)
   }
 ];
 

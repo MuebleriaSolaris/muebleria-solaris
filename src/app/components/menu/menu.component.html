@@ -77,6 +77,14 @@
 
       <ion-item
         *ngIf="isAdmin"
+        routerLink="/marcas-productos"
+        routerLinkActive="active-item">
+        <ion-icon slot="start" name="pricetag-outline"></ion-icon>
+        <ion-label>Marcas</ion-label>
+      </ion-item>
+
+      <ion-item
+        *ngIf="isAdmin"
         routerLink="/agregar-marca-producto"
         routerLinkActive="active-item">
         <ion-icon slot="start" name="pricetag-outline"></ion-icon>
