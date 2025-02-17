@@ -1,0 +1,106 @@
+<!-- usuarios-info.page.html -->
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Información del Usuario</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="profile-header">
+    <ion-avatar class="profile-avatar">
+      <img src="assets/user_src.png" alt="Usuario">
+    </ion-avatar>
+    <h2>{{ user?.name }}</h2>
+  </div>
+
+  <div class="top-button-container">
+    <ion-button color="light" class="regresar-button" (click)="goBack()">
+      <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+      Regresar
+    </ion-button>
+    <ion-button color="secondary" (click)="toggleEditMode()">
+      <ion-icon name="create-outline" slot="start"></ion-icon>
+      Editar
+    </ion-button>
+    <ion-button color="danger" (click)="confirmDelete()">
+      <ion-icon name="trash-outline" slot="start"></ion-icon>
+      Eliminar
+    </ion-button>
+  </div>
+
+  <div class="account-info">
+    <div class="top-cliente"><h3>Detalles del Usuario</h3></div>
+    <ion-list lines="none">
+      <ion-item>
+        <ion-icon name="person-outline" slot="start"></ion-icon>
+        <ion-label>
+          <h2 [ngStyle]="{ 'font-weight': isEditMode ? 'bold' : 'normal' }">Nombre Completo</h2>
+          <p *ngIf="!isEditMode">{{ user?.name }}</p>
+          <ion-input *ngIf="isEditMode" [(ngModel)]="user.name" placeholder="Nombre completo"></ion-input>
+        </ion-label>
+      </ion-item>
+
+      <!-- Nombre de Usuario -->
+      <ion-item *ngIf="user?.username">
+        <ion-icon name="person-circle-outline" slot="start"></ion-icon>
+        <ion-label>
+          <h2 [ngStyle]="{ 'font-weight': isEditMode ? 'bold' : 'normal' }">Nombre de Usuario</h2>
+          <p *ngIf="!isEditMode">{{ user?.username }}</p>
+          <ion-input *ngIf="isEditMode" [(ngModel)]="user.username" placeholder="Nombre de usuario"></ion-input>
+        </ion-label>
+      </ion-item>
+        <!-- Correo Electrónico -->
+        <ion-item *ngIf="user?.email">
+          <ion-icon name="mail-outline" slot="start"></ion-icon>
+          <ion-label>
+            <h2 [ngStyle]="{ 'font-weight': isEditMode ? 'bold' : 'normal' }">Correo Electrónico</h2>
+            <p *ngIf="!isEditMode">{{ user?.email }}</p>
+            <ion-input *ngIf="isEditMode" [(ngModel)]="user.email" type="email" placeholder="Correo electrónico"></ion-input>
+          </ion-label>
+        </ion-item>
+      
+        <!-- Empresa -->
+        <ion-item *ngIf="user?.company_name">
+          <ion-icon name="business-outline" slot="start"></ion-icon>
+          <ion-label>
+            <h2 [ngStyle]="{ 'font-weight': isEditMode ? 'bold' : 'normal' }">Empresa</h2>
+            <p *ngIf="!isEditMode">{{ user?.company_name }}</p>
+            <ion-input *ngIf="isEditMode" [(ngModel)]="user.company_name" placeholder="Empresa"></ion-input>
+          </ion-label>
+        </ion-item>
+      
+        <!-- Contraseña -->
+        <ion-item *ngIf="user?.password">
+          <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+          <ion-label>
+            <h2 [ngStyle]="{ 'font-weight': isEditMode ? 'bold' : 'normal' }">Contraseña</h2>
+            <p *ngIf="!isEditMode">{{ user?.password }}</p>
+            <ion-input *ngIf="isEditMode" [(ngModel)]="user.password" type="password" placeholder="Contraseña"></ion-input>
+          </ion-label>
+        </ion-item>
+      
+        <!-- Teléfono -->
+        <ion-item *ngIf="user?.phone">
+          <ion-icon name="call-outline" slot="start"></ion-icon>
+          <ion-label>
+            <h2 [ngStyle]="{ 'font-weight': isEditMode ? 'bold' : 'normal' }">Teléfono</h2>
+            <p *ngIf="!isEditMode">{{ user?.phone }}</p>
+            <ion-input *ngIf="isEditMode" [(ngModel)]="user.phone" type="tel" placeholder="Teléfono"></ion-input>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+
+    <ion-footer *ngIf="isEditMode" class="edit-footer">
+      <div class="bottom-action-buttons">
+        <ion-button class="guardar-button" expand="block" color="success" (click)="saveChanges()">
+          <ion-icon slot="start" name="checkmark-outline"></ion-icon>
+          Guardar
+        </ion-button>
+        <ion-button class="cancelar-button" expand="block" color="danger" (click)="cancelEdit()">
+          <ion-icon slot="start" name="close-outline"></ion-icon>
+          Cancelar
+        </ion-button>
+      </div>
+    </ion-footer>
+  </div>
+</ion-content>

@@ -24,6 +24,12 @@ export class AgregarMarcaProductoPage implements OnInit {
 
   // Método para guardar la marca
   async saveBrand() {
+    // Verifica si el campo "name" está vacío
+    if (!this.newBrand.name || this.newBrand.name.trim() === '') {
+      await this.showAlert('Error', 'El nombre de la Marca no puede estar vacío.');
+      return; // Detiene la ejecución si el campo está vacío
+    }
+
     // Mostrar confirmación antes de guardar
     const confirmAlert = await this.alertController.create({
       header: 'Confirmar',

@@ -13,14 +13,14 @@
           <img src="assets/brand.png" alt="{{ brand.name }}">
         </ion-thumbnail>
         <ion-label>
-          <p>Nombre Marcas</p>
+          <p>Nombre</p>
           <h2 class="provider-name">{{ brand.name }}</h2>
           <!-- <p class="provider-id">ID: {{ provider.id }}</p> -->
         </ion-label>
       </ion-item>
       <!-- Opciones al deslizar -->
       <ion-item-options side="end" color="Red">
-        <ion-item-option color="primary" (click)="deleteBrand(brand.id)">
+        <ion-item-option color="danger" (click)="deleteBrand(brand.id)">
           Eliminar
         </ion-item-option>
       </ion-item-options>

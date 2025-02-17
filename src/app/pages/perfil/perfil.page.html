@@ -31,7 +31,7 @@
         </ion-label>
       </ion-item>
 
-      <ion-item>
+      <ion-item *ngIf="user?.company_name">
         <ion-icon name="business-outline" slot="start"></ion-icon>
         <ion-label>
           <h2>Sucursal</h2>
@@ -39,7 +39,7 @@
         </ion-label>
       </ion-item>
 
-      <ion-item>
+      <ion-item *ngIf="user?.address">
         <ion-icon name="location-outline" slot="start"></ion-icon>
         <ion-label>
           <h2>Dirección</h2>
@@ -47,7 +47,7 @@
         </ion-label>
       </ion-item>
 
-      <ion-item>
+      <ion-item *ngIf="user?.phone">
         <ion-icon name="call-outline" slot="start"></ion-icon>
         <ion-label>
           <h2>Teléfono</h2>
@@ -56,7 +56,7 @@
       </ion-item>
 
       <ion-item>
-        <ion-icon name="calendar-outline" slot="start"></ion-icon>
+        <ion-icon [name]="user?.role === '4' ? 'person-outline' : user?.role === '1' ? 'cash-outline' : 'help-outline'" slot="start"></ion-icon>
         <ion-label>
           <h2>Tipo Usuario</h2>
           <p>{{ user?.role === '4' ? 'Administrador' : user?.role === '1' ? 'Vendedor' : 'Unknown Role' }}</p>

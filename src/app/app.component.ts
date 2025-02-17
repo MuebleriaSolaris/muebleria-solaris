@@ -112,4 +112,8 @@ export class AppComponent implements OnInit {
       this.menuTitle = 'Historial Movimientos';
     }
   }
+  // Método para navegar al perfil
+  navigateToProfile() {
+    this.router.navigate(['/perfil']);
+  }
 }

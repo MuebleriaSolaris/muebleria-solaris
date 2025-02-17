@@ -1,13 +1,36 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>usuarios-sistema</ion-title>
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Usuarios del Sistema</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">usuarios-sistema</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content>
+  <ion-list class="user-list">
+    <!-- Usuario deslizante -->
+    <ion-item-sliding *ngFor="let user of users">
+      <ion-item class="user-card">
+        <ion-thumbnail slot="start">
+          <img src="assets/user_src.png" alt="{{ user.name }}">
+        </ion-thumbnail>
+        <ion-label>
+          <h2 class="user-name">{{ user.name }}</h2>
+          <p class="user-info">
+            <span class="label">Nombre Usuario:</span> {{ user.username }}
+          </p>
+          <p class="user-info">
+            <span class="label">Tipo Usuario:</span>
+            <span *ngIf="user.role === '1'">Admin</span>
+            <span *ngIf="user.role === '4'">Vendedor</span>
+            <span *ngIf="user.role !== '4' && user.role !== '1'">{{ user.role }}</span>
+          </p>
+        </ion-label>
+      </ion-item>
+      <!-- Opciones al deslizar -->
+      <ion-item-options side="end">
+        <ion-item-option color="primary" (click)="viewUserDetails(user.id)">
+          Ver Detalles
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
 </ion-content>

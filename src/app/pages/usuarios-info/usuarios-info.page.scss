@@ -1,0 +1,114 @@
+/* usuarios-info.page.scss */
+ion-content {
+    --background: #f7f7f7;
+}
+
+.profile-header {
+    text-align: center;
+    padding: 50px 20px;
+    background: linear-gradient(to bottom, #3880ff, #dfdfdf);
+    color: white;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.profile-avatar {
+    width: 120px;
+    height: 120px;
+    margin-bottom: 10px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid white;
+}
+
+.top-button-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 10px 0;
+    background: #3880ff;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    max-width: 800px;
+    margin: -20px auto 0 auto;
+}
+
+.top-button-container ion-button {
+    width: auto;
+    font-size: 0.9rem;
+}
+
+.regresar-button::part(native) {
+    background-color: white !important;
+    color: darkslategrey;
+}
+
+.account-info {
+    padding: 30px;
+    margin: 30px auto;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 700px;
+    text-align: left;
+}
+
+ion-list h2 {
+    font-size: 1.1rem;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+ion-list p {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.bottom-action-buttons {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 0px 0px 0px;
+    margin: 0 auto;
+    max-width: 700px;
+}
+
+.bottom-action-buttons ion-button {
+    flex: 1;
+    margin: 0 10px;
+    font-weight: bold;
+    color: #ffffff;
+    --border-radius: 8px;
+    --padding: 10px 0;
+}
+
+.guardar-button::part(native) {
+    --background: linear-gradient(to right, #28a745, #218838);
+    color: white;
+}
+
+.cancelar-button::part(native) {
+    --background: linear-gradient(to right, #dc3545, #c82333);
+}
+
+@media (min-width: 768px) {
+    .profile-header,
+    .account-info,
+    .top-button-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    .top-button-container{
+        margin-top: -15px;
+    }
+}
+
+.edit-footer{
+    box-shadow: none;
+}

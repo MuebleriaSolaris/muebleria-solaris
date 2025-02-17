@@ -31,7 +31,7 @@ ion-content {
 /* Button container with Regresar and Editar buttons */
 .top-button-container {
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
     gap: 20px; /* Adds space between buttons */
     padding: 10px 0;
     background: #3880ff;
@@ -45,7 +45,6 @@ ion-content {
 .top-button-container ion-button {
     width: auto;
     font-size: 0.9rem;
-    padding: 0 20px; /* Adjust padding for better spacing */
 }
 
 /* Specific styling for "Regresar" button */

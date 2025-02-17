@@ -33,10 +33,10 @@ export class LoginPage implements OnInit {
 
     if (role && userId) {
       // Redirect based on the role
-      if (role === '1') {
+      if (role === '4') {
+        this.navCtrl.navigateRoot('/clientes'); // Vendedor
+      } else if (role === '1') {
         this.navCtrl.navigateRoot('/dashboard'); // Admin
-      } else if (role === '4') {
-        this.navCtrl.navigateRoot('/clientes'); // Seller
       }
     }
   }

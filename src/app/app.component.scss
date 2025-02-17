@@ -211,3 +211,13 @@ ion-title.small-title {
   text-align: left; /* Ensures text aligns to the left within ion-title */
   flex-grow: 1; /* Allows the title to take available space */
 }
+
+/* app.component.scss */
+.menu-perfil-header {
+  cursor: pointer; /* Cambia el cursor a una mano */
+  transition: transform 0.2s ease; /* Agrega una transición suave */
+}
+
+.menu-perfil-header:hover {
+  transform: scale(1.1); /* Aumenta ligeramente el tamaño al pasar el cursor */
+}

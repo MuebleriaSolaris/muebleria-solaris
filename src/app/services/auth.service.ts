@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, catchError, Observable } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 export interface LoginResponse {
@@ -55,11 +55,11 @@ export class AuthService {
   }
 
   isAdmin(): boolean {
-    return this.roleSubject.value === '4';
+    return this.roleSubject.value === '1';
   }
 
   isSeller(): boolean {
-    return this.roleSubject.value === '1';
+    return this.roleSubject.value === '4';
   }
 
   // User ID
@@ -98,4 +98,33 @@ export class AuthService {
   logout() {
     this.clearSession();
   }
+
+   // Obtener lista de usuarios
+   getUsers(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/get_users.php`).pipe(
+      catchError(error => {
+        console.error('Error en la solicitud:', error);
+        throw error; // Re-lanzar el error para manejarlo en el componente
+      })
+    );
+  }
+
+  // Obtener detalles de un usuario
+  getUserDetails(userId: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/get_user_details.php?id=${userId}`);
+  }
+
+  // Actualizar usuario
+  updateUser(userId: string, userData: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/update_user.php?id=${userId}`, userData);
+  }
+  // Eliminar usuario
+  deleteUser(userId: string): Observable<any> {
+    const body = { id: userId }; // Asegúrate de que el cuerpo de la solicitud tenga la propiedad 'id'
+    return this.http.post(`${this.apiUrl}/delete_user.php`, body, {
+      headers: { 'Content-Type': 'application/json' },
+      responseType: 'json'
+    });
+  }
+  
 }

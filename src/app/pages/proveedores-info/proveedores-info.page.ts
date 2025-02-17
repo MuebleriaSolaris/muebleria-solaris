@@ -137,7 +137,9 @@ export class ProveedoresInfoPage implements OnInit {
       next: (response) => {
         if (response.success) {
           this.showAlert('Éxito', 'Proveedor eliminado correctamente.');
-          this.router.navigate(['/proveedores']); // Redirige a la lista de proveedores
+          this.router.navigate(['/proveedores']).then(() => {
+            window.location.reload(); // Recarga la página después de la redirección
+          });
         } else {
           this.showAlert('Error', 'Error al eliminar el proveedor: ' + response.message);
         }

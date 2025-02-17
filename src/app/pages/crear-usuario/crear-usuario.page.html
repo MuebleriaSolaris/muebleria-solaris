@@ -14,7 +14,7 @@
 
         <!-- Nombre -->
         <ion-item class="form-item">
-          <ion-label position="floating">Nombre Completo</ion-label>
+          <ion-label position="floating">Nombre</ion-label>
           <ion-input [(ngModel)]="newUser.name" class="custom-input" name="name" required required (ionInput)="capitalizeName()"></ion-input>
         </ion-item>
 
@@ -25,22 +25,22 @@
         </ion-item>
 
         <!-- Correo Electrónico -->
-        <ion-item class="form-item">
+        <!-- <ion-item class="form-item">
           <ion-label position="floating">Correo Electrónico</ion-label>
           <ion-input [(ngModel)]="newUser.email" class="custom-input" name="email" type="email" required></ion-input>
-        </ion-item>
+        </ion-item> -->
 
         <!-- Nombre de la Empresa -->
-        <ion-item class="form-item">
+        <!-- <ion-item class="form-item">
           <ion-label position="floating">Nombre de la Empresa</ion-label>
           <ion-input [(ngModel)]="newUser.company_name" class="custom-input" name="company_name"></ion-input>
-        </ion-item>
+        </ion-item> -->
 
         <!-- Dirección -->
-        <ion-item class="form-item">
+        <!-- <ion-item class="form-item">
           <ion-label position="floating">Dirección</ion-label>
           <ion-input [(ngModel)]="newUser.address" class="custom-input" name="address"></ion-input>
-        </ion-item>
+        </ion-item> -->
 
         <!-- Teléfono -->
         <ion-item class="form-item">
@@ -60,8 +60,16 @@
         <ion-item class="form-item">
           <ion-label position="floating">Rol</ion-label>
           <ion-select [(ngModel)]="newUser.role" name="role" placeholder="Seleccione un rol" required>
-            <ion-select-option value="4">Administrador</ion-select-option>
-            <ion-select-option value="1">Vendedor</ion-select-option>
+            <!-- Opción con ícono para Administrador -->
+            <ion-select-option value="4">
+              <ion-icon name="person-outline" slot="start"></ion-icon>
+              Administrador
+            </ion-select-option>
+            <!-- Opción con ícono para Vendedor -->
+            <ion-select-option value="1">
+              <ion-icon name="cash-outline" slot="start"></ion-icon>
+              Vendedor
+            </ion-select-option>
           </ion-select>
         </ion-item>
 

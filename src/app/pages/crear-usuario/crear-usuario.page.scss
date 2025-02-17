@@ -79,3 +79,9 @@ ion-content {
   .form-item{
     align-items: center;
   }
+
+  /* Ajustar el espaciado entre el ícono y el texto */
+ion-select-option ion-icon {
+  margin-right: 8px; /* Espacio entre el ícono y el texto */
+  vertical-align: middle; /* Alinear verticalmente el ícono con el texto */
+}

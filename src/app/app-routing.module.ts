@@ -94,6 +94,10 @@ const routes: Routes = [
   {
     path: 'usuarios-sistema',
     loadChildren: () => import('./pages/usuarios-sistema/usuarios-sistema.module').then( m => m.UsuariosSistemaPageModule)
+  },
+  {
+    path: 'usuarios-info/:id',
+    loadChildren: () => import('./pages/usuarios-info/usuarios-info.module').then( m => m.UsuariosInfoPageModule)
   }
 ];
 
