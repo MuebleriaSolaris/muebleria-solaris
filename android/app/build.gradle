@@ -22,6 +22,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    // Personalizar el nombre del archivo APK
+    applicationVariants.all { variant ->
+      variant.outputs.all {
+        outputFileName = "MuebleriaSolarisApp-${variant.versionName}.apk"
+      }
+    }
 }
 
 repositories {

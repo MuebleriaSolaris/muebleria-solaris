@@ -6,12 +6,22 @@
 
 <ion-content>
   <!-- Barra de búsqueda -->
-  <ion-searchbar 
-    class="search-bar"
-    [(ngModel)]="searchTerm" 
-    (ionInput)="onSearchInput()"
-    placeholder="Buscar por nombre o teléfono">
-  </ion-searchbar>
+  <div class="search-container">
+    <ion-searchbar 
+      class="search-bar"
+      [(ngModel)]="searchTerm" 
+      (ionInput)="onSearchInput()"
+      placeholder="Buscar por nombre o teléfono">
+    </ion-searchbar>
+  
+    <ion-button 
+      class="add-client-button" 
+      color="primary" 
+      (click)="goToAddClient()">
+      <ion-icon slot="start" name="add-outline"></ion-icon>
+      Agregar Cliente
+    </ion-button>
+  </div>
 
   <!-- Tabla de clientes -->
   <ion-grid class="customer-table">

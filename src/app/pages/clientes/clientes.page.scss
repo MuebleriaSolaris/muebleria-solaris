@@ -117,3 +117,40 @@
 .cel-center{
   text-align: center;
 }
+
+/* Contenedor principal */
+.search-container {
+  display: flex;
+  align-items: center; /* Alinea verticalmente los elementos */
+  gap: 10px; /* Espacio entre la barra de búsqueda y el botón */
+  padding: 10px;
+  background-color: #f4f4f4; /* Fondo opcional */
+}
+
+/* Barra de búsqueda */
+.search-bar {
+  flex: 1; /* Ocupa el espacio restante */
+}
+
+/* Botón de agregar cliente */
+.add-client-button {
+  margin-top: 20px;
+  white-space: nowrap; /* Evita que el texto del botón se divida en varias líneas */
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+  .search-container {
+    flex-direction: column-reverse; /* Apila los elementos en móviles */
+  }
+
+  .search-bar {
+    margin-top: 0px;
+    width: 100%; /* Ocupa todo el ancho en móviles */
+  }
+
+  .add-client-button {
+    padding: 0px 10px;
+    width: 100%; /* Ocupa todo el ancho en móviles */
+  }
+}

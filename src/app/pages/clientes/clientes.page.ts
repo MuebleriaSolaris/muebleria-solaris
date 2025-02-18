@@ -121,4 +121,9 @@ export class ClientesPage implements OnInit {
       console.warn('Access denied. Only admins can view customer details.');
     }
   }
+
+  // Método para redirigir a la página de agregar clientes
+  goToAddClient() {
+    this.router.navigate(['/agregar-clientes']); // Cambia la ruta según tu configuración
+  }
 }

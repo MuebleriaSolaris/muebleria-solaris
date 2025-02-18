@@ -93,8 +93,21 @@
         </ion-item>
 
       </ion-list>
-    </div>
 
+      <ion-footer *ngIf="isEditMode" class="edit-footer">
+        <div class="bottom-action-buttons">
+          <ion-button type="submit" class="guardar-button" expand="block" color="success">
+            <ion-icon slot="start" name="checkmark-outline"></ion-icon>
+            Guardar
+          </ion-button>
+          <ion-button type="button" class="cancelar-button" expand="block" color="danger" (click)="cancelEdit()">
+            <ion-icon slot="start" name="close-outline"></ion-icon>
+            Cancelar
+          </ion-button>
+        </div>
+      </ion-footer>
+    </div>
+<!-- 
     <ion-footer *ngIf="isEditMode" class="edit-footer">
       <div class="bottom-action-buttons">
         <ion-button type="submit" class="guardar-button" expand="block" color="success">
@@ -106,6 +119,6 @@
           Cancelar
         </ion-button>
       </div>
-    </ion-footer>
+    </ion-footer> -->
   </form>
 </ion-content>
