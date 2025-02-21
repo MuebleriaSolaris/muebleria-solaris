@@ -15,6 +15,7 @@
     </ion-searchbar>
   
     <ion-button 
+      *ngIf="isAdmin"
       class="add-client-button" 
       color="primary" 
       (click)="goToAddClient()">
@@ -35,7 +36,7 @@
     <!-- Add swipe gestures to each row -->
     <ion-item-sliding *ngFor="let customer of paginatedCustomers">
       <ion-item  class="item-val">
-        <ion-col size="3">{{ customer.name }}</ion-col>
+        <ion-col size="3">{{ customer?.name }}</ion-col>
         <ion-col size="3">{{ customer.address }}</ion-col>
         <ion-col size="3" class="cel-center">{{ customer.phone }}</ion-col>
         <ion-col size="3" class="customer-type">

@@ -59,7 +59,7 @@
         <ion-icon [name]="user?.role === '4' ? 'person-outline' : user?.role === '1' ? 'cash-outline' : 'help-outline'" slot="start"></ion-icon>
         <ion-label>
           <h2>Tipo Usuario</h2>
-          <p>{{ user?.role === '4' ? 'Administrador' : user?.role === '1' ? 'Vendedor' : 'Unknown Role' }}</p>
+          <p>{{ user?.role === '1' ? 'Administrador' : user?.role === '4' ? 'Vendedor' : 'Unknown Role' }}</p>
         </ion-label>
       </ion-item>
       

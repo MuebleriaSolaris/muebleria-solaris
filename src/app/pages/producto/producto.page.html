@@ -40,11 +40,17 @@
         <ion-item *ngIf="isEditMode">
           <ion-icon name="person-outline" slot="start"></ion-icon>
           <ion-label>
-            <h2 [ngStyle]="{ 'font-weight': isEditMode ? 'bold' : 'normal' }">Nombre</h2>
-            
-            <ion-input [(ngModel)]="product.product_name" name="name" placeholder="Nombre" required></ion-input>
+              <h2 [ngStyle]="{ 'font-weight': isEditMode ? 'bold' : 'normal' }">Nombre</h2>
+              <ion-input 
+                  *ngIf="isEditMode"
+                  [(ngModel)]="product.name" 
+                  name="name" 
+                  placeholder="Nuevo Nombre"
+                  type="text" 
+                  required>
+              </ion-input>  
           </ion-label>
-        </ion-item>
+      </ion-item>
 
         <ion-item>
           <ion-icon name="pricetag-outline" slot="start"></ion-icon>
@@ -58,6 +64,22 @@
               type="text"
               inputmode="decimal"
               (ionInput)="validateCreditPriceInput($event)">
+            </ion-input>
+          </ion-label>
+        </ion-item>
+
+        <ion-item *ngIf="esGerente">
+          <ion-icon name="pricetag-outline" slot="start"></ion-icon>
+          <ion-label>
+            <h2 [ngStyle]="{ 'font-weight': isEditMode ? 'bold' : 'normal' }">Precio Provedor</h2>
+            <p *ngIf="!isEditMode">$ {{ product?.prov_price}}</p>
+            <ion-input
+              *ngIf="isEditMode"
+              [(ngModel)]="product.prov_price"
+              placeholder="Precio Provedor"
+              type="text"
+              inputmode="decimal"
+              (ionInput)="validateProvPriceInput($event)">
             </ion-input>
           </ion-label>
         </ion-item>

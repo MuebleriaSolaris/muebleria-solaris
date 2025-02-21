@@ -88,12 +88,12 @@ export class ClientesPage implements OnInit {
   getCustomerTypeName(type: any): string {
     const customerType = parseInt(type, 10);
     switch (customerType) {
-      case 1:
-        return 'Bueno';
       case 2:
+        return 'Malo';
+      case 1:
         return 'Regular';
       case 0:
-        return 'Malo';
+        return 'Bueno';
       default:
         return 'Desconocido';
     }
@@ -102,11 +102,11 @@ export class ClientesPage implements OnInit {
   getCustomerTypeClass(type: any): string {
     const customerType = parseInt(type, 10);
     switch (customerType) {
-      case 1:
-        return 'success';
-      case 2:
-        return 'warning';
       case 0:
+        return 'success';
+      case 1:
+        return 'warning';
+      case 2:
         return 'danger';
       default:
         return 'medium';

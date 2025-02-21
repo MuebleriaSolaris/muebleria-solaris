@@ -46,5 +46,28 @@
         </li>
       </ul>
     </div>
+     <!-- Botón (se oculta si no tiene gerencia) -->
+    <ion-button *ngIf="esGerente" (click)="calcularTotalInventario()">
+      Calcular Total Inventario
+    </ion-button>
+
+    <!-- Tabla para mostrar el resultado -->
+    <ion-card *ngIf="totalInventario !== null">
+      <ion-card-header>
+        <ion-card-title>Resumen de Inventario</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-grid>
+          <ion-row>
+            <ion-col><strong>Producto</strong></ion-col>
+            <ion-col><strong>Total</strong></ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col>Todos los productos</ion-col>
+            <ion-col>${{ totalInventario | number:'1.2-2' }}</ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-card-content>
+    </ion-card>
   </div>
 </ion-content>
