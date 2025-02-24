@@ -6,7 +6,7 @@
 
 <ion-content>
   <!-- Barra de búsqueda -->
-  <div class="search-container">
+  <div [class.is-not-admin]="isAdmin" class="search-container">
     <ion-searchbar 
       class="search-bar"
       [(ngModel)]="searchTerm" 

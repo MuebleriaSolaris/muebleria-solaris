@@ -71,7 +71,6 @@
   margin-top: 20px; /* Ajusta el margen superior según prefieras */
 }
 
-
 /* Controles de paginación */
 .pagination-controls {
   display: flex;
@@ -108,13 +107,15 @@
     display: block; /* Asegura que los botones se vean en móviles */
   }
 }
+
 /* Ocultar el footer en pantallas pequeñas */
 @media (max-width: 770px) {
-  .item-val{
+  .item-val {
     font-size: 12px;
   }
 }
-.cel-center{
+
+.cel-center {
   text-align: center;
 }
 
@@ -142,15 +143,25 @@
 @media (max-width: 768px) {
   .search-container {
     flex-direction: column-reverse; /* Apila los elementos en móviles */
+    /*padding-bottom: 5px;  Ajusta el espacio inferior */
   }
 
   .search-bar {
-    margin-top: 0px;
-    width: 100%; /* Ocupa todo el ancho en móviles */
+    margin-top: 10px;
+    width: 100%;
+    padding-bottom: 0px;
   }
 
   .add-client-button {
     padding: 0px 10px;
     width: 100%; /* Ocupa todo el ancho en móviles */
+  }
+
+  /* Estilos específicos cuando no es admin */
+  .is-not-admin .search-container {
+    padding-top: 15px;
+  }
+  .is-not-admin .search-bar {
+    padding-bottom: 0px;
   }
 }
