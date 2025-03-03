@@ -25,7 +25,10 @@ android {
     // Personalizar el nombre del archivo APK
     applicationVariants.all { variant ->
       variant.outputs.all {
-        outputFileName = "MuebleriaSolarisApp-${variant.versionName}.apk"
+        def projectName = "MuebleriaSolarisApp"
+        def versionName = variant.versionName
+
+        outputFileName = "${projectName}_v${versionName}.apk"
       }
     }
 }

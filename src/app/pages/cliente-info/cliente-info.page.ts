@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AlertController, ToastController } from '@ionic/angular';
-
+import { Location } from '@angular/common';
 
 interface CustomerInfo {
   id: number;
@@ -30,6 +30,7 @@ export class ClienteInfoPage implements OnInit {
     private router: Router,
     private alertController: AlertController,
     private toastController: ToastController,
+    private location: Location,
   ) {}
 
   ngOnInit() {
@@ -110,8 +111,11 @@ export class ClienteInfoPage implements OnInit {
             color: 'success',
           })
           .then((toast) => toast.present());
-          // Redirigir a la página /clientes y recargarla
-          window.location.href = '/clientes'; // Esto redirige y recarga la página
+           // Retrasar la recarga de la página para que el toast se muestre
+           setTimeout(() => {
+            this.location.go('/clientes');
+            window.location.reload();
+          }, 1000); // Retraso de 1 segundos (ajusta según sea necesario)
         },
         error: (error) => {
           console.error('Error updating customer info:', error);
@@ -182,14 +186,18 @@ export class ClienteInfoPage implements OnInit {
       })
       .subscribe({
         next: () => {
-          this.router.navigate(['/clientes']);
           this.toastController
             .create({
               message: 'Cliente eliminado exitosamente.',
-              duration: 2000,
+              duration: 4000,
               color: 'success',
             })
             .then((toast) => toast.present());
+            // Retrasar la recarga de la página para que el toast se muestre
+            setTimeout(() => {
+              this.location.go('/clientes');
+              window.location.reload();
+            }, 1000); // Retraso de 1 segundos (ajusta según sea necesario)
         },
         error: (error) => {
           console.error('Error eliminando cliente:', error);

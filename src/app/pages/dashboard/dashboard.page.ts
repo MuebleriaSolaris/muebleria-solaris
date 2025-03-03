@@ -20,9 +20,17 @@ export class DashboardPage implements AfterViewInit, OnInit {
     
     if (userId) {
       // Realizar la llamada HTTP directamente en el componente
-      this.http.get<boolean>(`https://muebleriasolaris.com/ionic-login/check_gerencia.php?userId=${userId}`)
-        .subscribe((isGerente) => {
-          this.esGerente = isGerente;
+      this.http.get<any>(`https://muebleriasolaris.com/ionic-login/check_gerencia.php?userid=${userId}`)
+        .subscribe((response) => {
+          if (response.success) {
+            this.esGerente = response.isGerente;
+          } else {
+            console.error('Error en la respuesta de la API:', response.error);
+          }
+          console.log('¿Es gerente?', this.esGerente);
+          console.log('ID de usuario:', userId);
+        }, (error) => {
+          console.error('Error en la llamada HTTP:', error);
         });
     }
   }

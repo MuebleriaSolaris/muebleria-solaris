@@ -2,7 +2,8 @@
 import { Component } from '@angular/core';
 import { ClientesService } from '../../services/clientes.services';
 import { Router } from '@angular/router';
-import { AlertController } from '@ionic/angular';
+import { AlertController, ToastController } from '@ionic/angular';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-agregar-clientes',
@@ -20,7 +21,9 @@ export class AgregarClientesPage {
   constructor(
     private clientesService: ClientesService,
     private router: Router,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private toastController: ToastController,
+    private location: Location,
   ) {}
 
   // Capitalizar el nombre
@@ -49,10 +52,20 @@ export class AgregarClientesPage {
     this.clientesService.addClient(this.newClient).subscribe({
       next: async (response) => {
         if (response.status === 'success') {
+          this.toastController
+            .create({
+              message: 'Cliente guardado exitosamente.',
+              duration: 4000,
+              color: 'success',
+            })
+            .then((toast) => toast.present());
           console.log(response.message);
-          await this.showAlert('Éxito', 'Cliente guardado exitosamente.');
           this.resetForm();
-          this.router.navigate(['/clientes']); // Navegar a la lista de clientes
+          // Retrasar la recarga de la página para que el toast se muestre
+          setTimeout(() => {
+            this.location.go('/clientes');
+            window.location.reload();
+          }, 2000); // Retraso de 2 segundos (ajusta según sea necesario)
         } else {
           await this.showAlert('Error', response.message);
           console.error(response.message);

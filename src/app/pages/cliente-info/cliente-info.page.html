@@ -70,11 +70,11 @@
           <ion-icon name="person-outline" slot="start"></ion-icon>
           <ion-label>
             <h2 [ngStyle]="{ 'font-weight': isEditMode ? 'bold' : 'normal' }">Tipo de Cliente</h2>
-            <p *ngIf="!isEditMode">{{ customerInfo?.type === 1 ? 'Bueno' : customerInfo?.type === 2 ? 'Regular' : 'Malo' }}</p>
+            <p *ngIf="!isEditMode">{{ customerInfo?.type === 0 ? 'Bueno' : customerInfo?.type === 2 ? 'Malo' : 'Regular' }}</p>
             <ion-select *ngIf="isEditMode" [(ngModel)]="customerInfo!.type">
-              <ion-select-option value="1">Bueno</ion-select-option>
-              <ion-select-option value="2">Regular</ion-select-option>
-              <ion-select-option value="0">Malo</ion-select-option>
+              <ion-select-option value="0">Bueno</ion-select-option>
+              <ion-select-option value="1">Regular</ion-select-option>
+              <ion-select-option value="2">Malo</ion-select-option>
             </ion-select>
           </ion-label>
         </ion-item>

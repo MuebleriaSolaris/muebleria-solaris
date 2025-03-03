@@ -120,7 +120,7 @@ export class ProductoPage implements OnInit {
     }
 
     // Asegúrate de que los campos numéricos sean números
-    this.product.name = this.product.name.trim(); // Eliminar espacios en blanco al inicio y final
+    this.product.name = this.product.name; // Eliminar espacios en blanco al inicio y final
     this.product.credit_price = parseFloat(this.product.credit_price);
     this.product.prov_price = parseFloat(this.product.prov_price);
     this.product.current_stock = parseInt(this.product.current_stock, 10);

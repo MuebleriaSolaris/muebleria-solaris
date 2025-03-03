@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
-import { NavController } from '@ionic/angular';
+import { NavController, ToastController } from '@ionic/angular';
 import { AuthService, LoginResponse } from '../../services/auth.service';
 
 @Component({
@@ -17,11 +17,11 @@ export class LoginPage implements OnInit {
   constructor(
     private router: Router,
     private navCtrl: NavController,
-    private authService: AuthService // Use AuthService for authentication
+    private authService: AuthService, // Use AuthService for authentication
+    private toastController: ToastController // ToastController for error messages
   ) {}
 
   ngOnInit() {
-
     // Automatically focus the username field when the page initializes
     setTimeout(() => {
       this.usernameInput.nativeElement.focus();
@@ -39,6 +39,17 @@ export class LoginPage implements OnInit {
         this.navCtrl.navigateRoot('/dashboard'); // Admin
       }
     }
+  }
+
+  // Método para mostrar mensajes de error
+  async showErrorToast(message: string) {
+    const toast = await this.toastController.create({
+      message: message,
+      duration: 3000, // Duración de 3 segundos
+      position: 'bottom', // Posición del toast
+      color: 'danger', // Color del toast (rojo para errores)
+    });
+    toast.present();
   }
 
   login() {
@@ -64,12 +75,12 @@ export class LoginPage implements OnInit {
           }
         } else {
           console.warn('Login failed:', response.message);
-          alert('Login failed: ' + response.message);
+          this.showErrorToast('Login failed: ' + response.message); // Mostrar mensaje de error
         }
       },
       error: (error) => {
         console.error('An error occurred:', error);
-        alert('An error occurred. Please try again.');
+        this.showErrorToast('An error occurred. Please try again.'); // Mostrar mensaje de error
       },
     });
   }

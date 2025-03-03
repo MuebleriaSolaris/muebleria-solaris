@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, catchError, Observable } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Platform } from '@ionic/angular'; // Importar Platform para detectar la plataforma
 
 export interface LoginResponse {
   status: string;
@@ -19,7 +20,7 @@ export class AuthService {
   private userId: string | null = null;
   private apiUrl = 'https://muebleriasolaris.com/ionic-login'; // Base API URL
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private platform: Platform) {
     // Restore session data from localStorage
     const storedRole = localStorage.getItem('role');
     const storedUserId = localStorage.getItem('userId');
@@ -33,9 +34,22 @@ export class AuthService {
     }
   }
 
+  // Método para detectar la plataforma
+  getPlatform(): string {
+    if (this.platform.is('android')) {
+      return 'android';
+    } else if (this.platform.is('ios')) {
+      return 'ios';
+    } else {
+      return 'web';
+    }
+  }
+
   // Login API
   login(username: string, password: string): Observable<LoginResponse> {
-    const userCredentials = { username, password };
+    const platform = this.getPlatform(); // Obtener la plataforma
+    console.log(`Acceso desde la plataforma: ${platform}`); // Mostrar la plataforma en la consola
+    const userCredentials = { username, password, platform }; // Incluir la plataforma en el payload
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
@@ -99,10 +113,10 @@ export class AuthService {
     this.clearSession();
   }
 
-   // Obtener lista de usuarios
-   getUsers(): Observable<any> {
+  // Obtener lista de usuarios
+  getUsers(): Observable<any> {
     return this.http.get(`${this.apiUrl}/get_users.php`).pipe(
-      catchError(error => {
+      catchError((error) => {
         console.error('Error en la solicitud:', error);
         throw error; // Re-lanzar el error para manejarlo en el componente
       })
@@ -118,13 +132,13 @@ export class AuthService {
   updateUser(userId: string, userData: any): Observable<any> {
     return this.http.put(`${this.apiUrl}/update_user.php?id=${userId}`, userData);
   }
+
   // Eliminar usuario
   deleteUser(userId: string): Observable<any> {
     const body = { id: userId }; // Asegúrate de que el cuerpo de la solicitud tenga la propiedad 'id'
     return this.http.post(`${this.apiUrl}/delete_user.php`, body, {
       headers: { 'Content-Type': 'application/json' },
-      responseType: 'json'
+      responseType: 'json',
     });
   }
-  
 }
