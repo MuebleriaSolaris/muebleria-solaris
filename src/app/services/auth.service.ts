@@ -49,13 +49,28 @@ export class AuthService {
   login(username: string, password: string): Observable<LoginResponse> {
     const platform = this.getPlatform(); // Obtener la plataforma
     console.log(`Acceso desde la plataforma: ${platform}`); // Mostrar la plataforma en la consola
-    const userCredentials = { username, password, platform }; // Incluir la plataforma en el payload
+  
+    // Crear el objeto con las credenciales del usuario
+    const userCredentials = {
+      username: username,
+      password: password,
+      platform: platform
+    };
+  
+    // Configurar las cabeceras HTTP
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
       }),
     };
-    return this.http.post<LoginResponse>(`${this.apiUrl}/login.php`, userCredentials, httpOptions);
+  
+    // Enviar la solicitud POST al servidor
+    return this.http.post<LoginResponse>(`${this.apiUrl}/login.php`, userCredentials, httpOptions).pipe(
+      catchError((error) => {
+        console.error('Error en la solicitud:', error);
+        throw 'Error en el login. Por favor, inténtalo de nuevo.';
+      })
+    );
   }
 
   // Roles
