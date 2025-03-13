@@ -27,13 +27,21 @@ export class AgregarClientesPage {
   ) {}
 
   // Capitalizar el nombre
-  capitalizeName() {
+  capitalizeName(event: any) {
+    const inputElement = event.target;
+    const cursorPosition = inputElement.selectionStart; // Guarda la posición del cursor
+  
     if (this.newClient.name) {
       this.newClient.name = this.newClient.name
         .toLowerCase()
-        .replace(/\b\w/g, (char) => char.toUpperCase());
+        .replace(/(^|\s)\p{L}/gu, (match) => match.toUpperCase());
     }
+  
+    setTimeout(() => {
+      inputElement.setSelectionRange(cursorPosition, cursorPosition); // Restaura el cursor
+    }, 0);
   }
+  
 
   // Método para validar y guardar el cliente
   async saveClient() {

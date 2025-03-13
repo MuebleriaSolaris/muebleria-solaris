@@ -13,10 +13,15 @@
       <ion-list lines="full">
 
         <!-- Nombre -->
-        <ion-item class="form-item">
-          <ion-label position="floating">Nombre Completo</ion-label>
-          <ion-input [(ngModel)]="newClient.name" class="custom-input" name="name" required (ionInput)="capitalizeName()"></ion-input>
-        </ion-item>
+          <label class="custom-label" [class.shrink]="newClient.name">Nombre Completo</label>
+          <ion-input 
+            [(ngModel)]="newClient.name" 
+            class="custom-input" 
+            name="name" 
+            required 
+            (ionInput)="capitalizeName($event)">
+          </ion-input>
+        
 
         <!-- Dirección -->
         <ion-item class="form-item">

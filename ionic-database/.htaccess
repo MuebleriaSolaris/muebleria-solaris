@@ -1,0 +1,21 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php [QSA,L]
+</IfModule>
+
+# CORS configuration to allow access from your domain
+<IfModule mod_headers.c>
+    <FilesMatch "\.(php|html|js|css|json|xml)$">
+        Header always set Access-Control-Allow-Origin "http://muebleriasolaris.com"
+        Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+        Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With, Accept"
+        Header always set Access-Control-Allow-Credentials "true"
+    </FilesMatch>
+
+    # Handle preflight requests explicitly
+    RewriteCond %{REQUEST_METHOD} OPTIONS
+    RewriteRule ^ - [L]
+</IfModule>
+
