@@ -28,7 +28,8 @@ try {
         !isset($input['brand_id']) ||
         !isset($input['credit_price']) ||
         !isset($input['proveedor_id']) ||
-        !isset($input['product_details'])
+        !isset($input['product_details']) ||
+        !isset($input['prov_price'])
     ) {
         echo json_encode([
             "success" => false,
@@ -48,6 +49,8 @@ try {
     $novedad_act = isset($input['novedad_act']) ? intval($input['novedad_act']) : 0; // Valor predeterminado: 0 (inactivo)
     $created_at = date("Y-m-d H:i:s"); // Fecha y hora actual
     $updated_at = $created_at;
+    $prov_price = floatval($input['prov_price']);
+    $image_url = isset($input['image_url']) ? $conn->real_escape_string($input['image_url']) : null;
 
     // Iniciar una transacción
     $conn->begin_transaction();
@@ -64,12 +67,19 @@ try {
             product_details,
             novedad_act,
             created_at,
-            updated_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            updated_at,
+            prov_price,
+            image
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ";
     $stmtProducts = $conn->prepare($sqlProducts);
+
+    if (!$stmtProducts) {
+        throw new Exception("Error al preparar la consulta: " . $conn->error);
+    }
+
     $stmtProducts->bind_param(
-        "siiidisiss",
+        "siiidississs", // 12 caracteres
         $name,
         $category_id,
         $sub_category_id,
@@ -79,7 +89,9 @@ try {
         $product_details,
         $novedad_act,
         $created_at,
-        $updated_at
+        $updated_at,
+        $prov_price,
+        $image_url
     );
 
     if (!$stmtProducts->execute()) {
@@ -101,6 +113,11 @@ try {
         ) VALUES (?, ?, 15, 10, ?, ?)
     ";
     $stmtInventory = $conn->prepare($sqlInventory);
+
+    if (!$stmtInventory) {
+        throw new Exception("Error al preparar la consulta: " . $conn->error);
+    }
+
     $stmtInventory->bind_param(
         "iiss",
         $product_id,
@@ -121,6 +138,7 @@ try {
         "message" => "Producto e inventario agregados correctamente.",
         "product_id" => $product_id
     ]);
+
 } catch (Exception $e) {
     // Revertir la transacción en caso de error
     $conn->rollback();

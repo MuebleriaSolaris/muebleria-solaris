@@ -7,8 +7,8 @@
 <ion-content>
   <!-- Encabezado con avatar y datos -->
   <div class="profile-header">
-    <ion-avatar class="profile-avatar">
-      <img src="assets/product_placeholder.png" alt="Imagen del Producto">
+    <ion-avatar class="profile-avatar" (click)="presentImageOptions()">
+      <img [src]="imageState.getImageUrl(product)" alt="Imagen del Producto">
     </ion-avatar>
     <h2>{{ product?.product_name }}</h2>
     <p>ID: {{ product?.product_id }}</p>
@@ -53,7 +53,7 @@
       </ion-item>
 
         <ion-item>
-          <ion-icon name="pricetag-outline" slot="start"></ion-icon>
+          <ion-icon name="cash-outline" slot="start"></ion-icon>
           <ion-label>
             <h2 [ngStyle]="{ 'font-weight': isEditMode ? 'bold' : 'normal' }">Precio Crédito</h2>
             <p *ngIf="!isEditMode">$ {{ product?.credit_price | number:'1.2-2' }}</p>
@@ -69,7 +69,7 @@
         </ion-item>
 
         <ion-item *ngIf="esGerente">
-          <ion-icon name="pricetag-outline" slot="start"></ion-icon>
+          <ion-icon name="wallet-outline" slot="start"></ion-icon>
           <ion-label>
             <h2 [ngStyle]="{ 'font-weight': isEditMode ? 'bold' : 'normal' }">Precio Provedor</h2>
             <p *ngIf="!isEditMode">$ {{ product?.prov_price}}</p>
@@ -84,6 +84,21 @@
           </ion-label>
         </ion-item>
         
+        <!-- Campo para la subcategoría -->
+        <ion-item>
+          <ion-icon name="pricetags-outline" slot="start"></ion-icon>
+          <ion-label>
+            <h2 [ngStyle]="{ 'font-weight': isEditMode ? 'bold' : 'normal' }">Sub Categoría</h2>
+            <!-- Modo visual (no edición) -->
+            <p *ngIf="!isEditMode">{{ getSubCategoryName(product.sub_category_id) }}</p>
+            <!-- Modo edición (lista desplegable) -->
+            <ion-select *ngIf="isEditMode" [(ngModel)]="product.sub_category_id" placeholder="Seleccionar Subcategoría">
+              <ion-select-option *ngFor="let subCategory of subCategories" [value]="subCategory.id">
+                {{ subCategory.name }}
+              </ion-select-option>
+            </ion-select>
+          </ion-label>
+        </ion-item>
 
         <ion-item>
           <ion-icon name="layers-outline" slot="start"></ion-icon>

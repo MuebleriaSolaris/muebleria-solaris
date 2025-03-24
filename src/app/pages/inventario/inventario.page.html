@@ -9,30 +9,59 @@
     <ion-searchbar 
       [(ngModel)]="searchTerm" 
       (ionInput)="onSearchChange($event)" 
-      placeholder="Buscar por ID, Nombre o Proveedor">
+      placeholder="Nombre o Proveedor">
     </ion-searchbar>
 
-    <!-- Elemento deslizable -->
-    <ion-item-sliding #slidingItem *ngFor="let product of filteredProducts">
-      <!-- Elemento principal -->
+    <!-- Controles de filtro -->
+    <!-- <ion-item>
+      <ion-label>Categoría</ion-label>
+      <ion-select [(ngModel)]="selectedCategory" (ionChange)="applyFilters()">
+        <ion-select-option value="">Todas</ion-select-option>
+        <ion-select-option *ngFor="let category of categories" [value]="category.id">
+          {{ category.name }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item> -->
+
+    <ion-item>
+      <ion-label>Subcategoría</ion-label>
+      <ion-select [(ngModel)]="selectedSubCategory" (ionChange)="applyFilters()">
+        <ion-select-option value="">Todas</ion-select-option>
+        <ion-select-option *ngFor="let subCategory of subCategories" [value]="subCategory.id">
+          {{ subCategory.name }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item> 
+
+    <ion-item>
+      <ion-label>Ordenar por</ion-label>
+      <ion-select [(ngModel)]="selectedSort" (ionChange)="applyFilters()">
+        <ion-select-option value="recent">Agregado reciente</ion-select-option>
+        <ion-select-option value="alphabetical">Alfabético</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <!-- Lista de productos -->
+    <ion-item-sliding #slidingItem *ngFor="let product of displayedProducts">
       <ion-item class="inventory-item">
         <div class="left-info">
           <ion-thumbnail slot="start">
-            <ion-img src="assets/product_placeholder.png" alt="{{ product.product_name }}"></ion-img>
+            <ion-img 
+              [src]="imageState.getImageUrl(product)" 
+              alt="{{ product?.product_name }}"
+              loading="lazy">
+            </ion-img>
           </ion-thumbnail>
           <ion-label>
-            <h2 class="product-name">{{ product.product_name }}</h2>
-            <p>Proveedor: {{ product.provider_name }}</p>
-            <p>Precio a Crédito: ${{ product.credit_price }}</p>
+            <h2 class="product-name">{{ product?.product_name }}</h2>
+            <p>Proveedor: {{ product?.provider_name }}</p>
+            <p>Precio a Crédito: ${{ product?.credit_price }}</p>
           </ion-label>
         </div>
-    
         <div class="counter-container">
-          <!-- Texto dinámico -->
           <div class="dynamic-text">
             {{ getDynamicText(product) }}
           </div>
-    
           <div class="counter-controls">
             <ion-button
               *ngIf="isAdmin"
@@ -43,11 +72,10 @@
               <ion-icon name="remove-circle-outline"></ion-icon>
             </ion-button>
             <div class="counter-value-container">
-              <span class="counter-value">{{ product.current_count }}</span>
-              <p *ngIf="product.current_count === product.max_amount" class="warning-text">
+              <span class="counter-value">{{ product?.current_count }}</span>
+              <p *ngIf="product?.current_count === product?.max_amount" class="warning-text">
                 ¡Stock máximo!
               </p>
-              
             </div>
             <ion-button
               *ngIf="isAdmin"
@@ -58,7 +86,6 @@
               <ion-icon name="add-circle-outline"></ion-icon>
             </ion-button>
           </div>
-    
           <ion-button
             *ngIf="isAdmin"
             expand="block"
@@ -70,17 +97,16 @@
           </ion-button>
         </div>
       </ion-item>
-    
       <!-- Opciones de deslizamiento -->
-      <ion-item-options *ngIf="isAdmin" side="end" (ionDrag)="onDrag(slidingItem)">
-        <ion-item-option 
-          color="primary" 
-          (click)="viewProduct(product.product_id)">
-          Ver Artículo
+      <ion-item-options *ngIf="isAdmin && product" side="end">
+        <ion-item-option (click)="handleClick(product)">
+          Ver producto
         </ion-item-option>
       </ion-item-options>
     </ion-item-sliding>
-    
+    <!-- Botón "Mostrar más" -->
+    <ion-button (click)="loadMoreProducts()" *ngIf="hasMoreProducts()" expand="full">
+      Mostrar más
+    </ion-button>
   </ion-list>
 </ion-content>
-

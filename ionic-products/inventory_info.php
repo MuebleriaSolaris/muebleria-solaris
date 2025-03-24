@@ -23,7 +23,8 @@ try {
 
     // Consulta SQL base
     $sql = "
-        SELECT 
+        SELECT
+            products.image as image_url,
             products.id AS product_id,
             products.name AS product_name,
             products.credit_price AS credit_price,
@@ -31,7 +32,9 @@ try {
             inventory.current_amount AS current_stock,
             inventory.max_amount as max_amount,
             provedores.name AS provider_name,
-            products.prov_price AS prov_price
+            products.prov_price AS prov_price,
+            products.category_id as category_id,
+            products.sub_category_id as sub_category_id
         FROM 
             products
         INNER JOIN 
@@ -54,6 +57,9 @@ try {
             products.name LIKE '%$search%' OR 
             provedores.name LIKE '%$search%'";
     }
+
+    // Ordenar por `updated_at` en orden descendente
+    $sql .= " ORDER BY products.updated_at DESC";
 
     $stmt = $conn->prepare($sql);
 

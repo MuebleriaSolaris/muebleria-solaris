@@ -98,6 +98,10 @@ const routes: Routes = [
   {
     path: 'usuarios-info/:id',
     loadChildren: () => import('./pages/usuarios-info/usuarios-info.module').then( m => m.UsuariosInfoPageModule)
+  },
+  {
+    path: 'agregar-subcategoria',
+    loadChildren: () => import('./pages/agregar-subcategoria/agregar-subcategoria.module').then( m => m.AgregarSubcategoriaPageModule)
   }
 ];
 

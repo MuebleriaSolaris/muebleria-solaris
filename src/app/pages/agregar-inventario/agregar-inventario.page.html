@@ -17,6 +17,14 @@
           <ion-input [(ngModel)]="newProduct.name" name="name" required></ion-input>
         </ion-item>
 
+        <!-- Imagen del Producto -->
+        <ion-item class="form-item">
+          <ion-label class="title-item" position="stacked">Imagen del Producto</ion-label>
+          <ion-avatar class="image-preview" (click)="presentImageOptions()">
+            <img [src]="imageUrl || 'assets/product_placeholder.png'" alt="Imagen del Producto" />
+          </ion-avatar>
+        </ion-item>
+
         <!-- Categoría -->
         <ion-item class="form-item">
           <ion-label class="title-item" position="stacked">Categoría</ion-label>
@@ -33,7 +41,6 @@
           </ion-select>
         </ion-item>
 
-        
         <!-- Proveedores -->
         <ion-item class="form-item">
           <ion-label class="title-item" position="stacked">Proveedor</ion-label>
@@ -41,7 +48,6 @@
             <ion-select-option *ngFor="let provider of providers" [value]="provider.id">{{ provider.name }}</ion-select-option>
           </ion-select>
         </ion-item>
-
 
         <!-- Detalles del Producto -->
         <ion-item class="form-item">
@@ -51,23 +57,30 @@
 
         <!-- Novedad -->
         <ion-item class="form-item">
-          <ion-label class="title-item" >Novedad</ion-label>
+          <ion-label class="title-item">Novedad</ion-label>
           <ion-toggle [(ngModel)]="newProduct.novedad_act" name="novedad_act" (ionChange)="toggleNovedad($event)"></ion-toggle>
         </ion-item>
 
         <!-- Precio de Crédito -->
         <ion-item class="form-item">
-          <ion-label class="title-item"  position="stacked">Precio de Crédito</ion-label>
+          <ion-label class="title-item" position="stacked">Precio de Crédito</ion-label>
           <ion-input [(ngModel)]="newProduct.credit_price" name="credit_price" type="number" required></ion-input>
         </ion-item>
 
+        <!-- Precio de Proveedor -->
+        <ion-item class="form-item" *ngIf="esGerente">
+          <ion-label class="title-item" position="stacked">Precio de Provedor</ion-label>
+          <ion-input [(ngModel)]="newProduct.prov_price" name="prov_price" type="number" required></ion-input>
+        </ion-item>
+
         <!-- Marca -->
-        <ion-item class="form-item">
+        <ion-item class="form-item" >
           <ion-label class="title-item" position="stacked">Marca</ion-label>
           <ion-select [(ngModel)]="newProduct.brand_id" name="brand_id" placeholder="Seleccione una" required>
             <ion-select-option *ngFor="let brand of brands" [value]="brand.id">{{ brand.name }}</ion-select-option>
           </ion-select>
         </ion-item>
+
       </ion-list>
 
       <!-- Botón Guardar -->

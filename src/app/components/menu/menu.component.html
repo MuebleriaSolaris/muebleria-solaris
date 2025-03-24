@@ -14,8 +14,8 @@
       <!-- Panel Informativo -->
       <ion-item
         *ngIf="isAdmin"
-        routerLink="/dashboard"
-        routerLinkActive="active-item">
+        (click)="navigateOrReload('/dashboard')"
+        [class.active-item]="isActive('/dashboard')">
         <ion-icon slot="start" name="analytics-outline"></ion-icon>
         <ion-label>Panel Informativo</ion-label>
       </ion-item>
@@ -23,8 +23,8 @@
       <!-- Clientes -->
       <ion-item
         *ngIf="isAdmin || !isAdmin"
-        routerLink="/clientes"
-        routerLinkActive="active-item">
+        (click)="navigateOrReload('/clientes')"
+        [class.active-item]="isActive('/clientes')">
         <ion-icon slot="start" name="people-outline"></ion-icon>
         <ion-label>Clientes</ion-label>
       </ion-item>
@@ -32,8 +32,8 @@
       <!-- Agregar Clientes -->
       <ion-item
         *ngIf="isAdmin"
-        routerLink="/agregar-clientes"
-        routerLinkActive="active-item">
+        (click)="navigateOrReload('/agregar-clientes')"
+        [class.active-item]="isActive('/agregar-clientes')">
         <ion-icon slot="start" name="person-add-outline"></ion-icon>
         <ion-label>Agregar Clientes</ion-label>
       </ion-item>
@@ -41,8 +41,8 @@
       <!-- Inventario -->
       <ion-item
         *ngIf="isAdmin || !isAdmin"
-        routerLink="/inventario"
-        routerLinkActive="active-item">
+        (click)="navigateOrReload('/inventario')"
+        [class.active-item]="isActive('/inventario')">
         <ion-icon slot="start" name="cube-outline"></ion-icon>
         <ion-label>Inventario</ion-label>
       </ion-item>
@@ -50,8 +50,8 @@
       <!-- Agregar Inventario -->
       <ion-item
         *ngIf="isAdmin"
-        routerLink="/agregar-inventario"
-        routerLinkActive="active-item">
+        (click)="navigateOrReload('/agregar-inventario')"
+        [class.active-item]="isActive('/agregar-inventario')">
         <ion-icon slot="start" name="add-circle-outline"></ion-icon>
         <ion-label>Agregar Inventario</ion-label>
       </ion-item>
@@ -59,8 +59,8 @@
       <!-- Pedidos -->
       <ion-item
         *ngIf="isAdmin"
-        routerLink="/pedidos"
-        routerLinkActive="active-item">
+        (click)="navigateOrReload('/pedidos')"
+        [class.active-item]="isActive('/pedidos')">
         <ion-icon slot="start" name="document-text-outline"></ion-icon>
         <ion-label>Pedidos</ion-label>
       </ion-item>
@@ -68,8 +68,8 @@
       <!-- Proveedores -->
       <ion-item
         *ngIf="isAdmin"
-        routerLink="/proveedores"
-        routerLinkActive="active-item">
+        (click)="navigateOrReload('/proveedores')"
+        [class.active-item]="isActive('/proveedores')">
         <ion-icon slot="start" name="business-outline"></ion-icon>
         <ion-label>Proveedores</ion-label>
       </ion-item>
@@ -77,8 +77,8 @@
       <!-- Agregar Proveedor -->
       <ion-item
         *ngIf="isAdmin"
-        routerLink="/agregar-proveedor"
-        routerLinkActive="active-item">
+        (click)="navigateOrReload('/agregar-proveedor')"
+        [class.active-item]="isActive('/agregar-proveedor')">
         <ion-icon slot="start" name="person-add-outline"></ion-icon>
         <ion-label>Agregar Proveedor</ion-label>
       </ion-item>
@@ -86,8 +86,8 @@
       <!-- Marcas -->
       <ion-item
         *ngIf="isAdmin"
-        routerLink="/marcas-productos"
-        routerLinkActive="active-item">
+        (click)="navigateOrReload('/marcas-productos')"
+        [class.active-item]="isActive('/marcas-productos')">
         <ion-icon slot="start" name="pricetags-outline"></ion-icon>
         <ion-label>Marcas</ion-label>
       </ion-item>
@@ -95,8 +95,8 @@
       <!-- Agregar Marca Producto -->
       <ion-item
         *ngIf="isAdmin"
-        routerLink="/agregar-marca-producto"
-        routerLinkActive="active-item">
+        (click)="navigateOrReload('/agregar-marca-producto')"
+        [class.active-item]="isActive('/agregar-marca-producto')">
         <ion-icon slot="start" name="add-circle-outline"></ion-icon>
         <ion-label>Agregar Marca Producto</ion-label>
       </ion-item>
@@ -104,8 +104,8 @@
       <!-- Usuarios del Sistema -->
       <ion-item
         *ngIf="isAdmin"
-        routerLink="/usuarios-sistema"
-        routerLinkActive="active-item">
+        (click)="navigateOrReload('/usuarios-sistema')"
+        [class.active-item]="isActive('/usuarios-sistema')">
         <ion-icon slot="start" name="people-circle-outline"></ion-icon>
         <ion-label>Usuarios</ion-label>
       </ion-item>
@@ -113,8 +113,8 @@
       <!-- Crear Usuario -->
       <ion-item
         *ngIf="isAdmin"
-        routerLink="/crear-usuario"
-        routerLinkActive="active-item">
+        (click)="navigateOrReload('/crear-usuario')"
+        [class.active-item]="isActive('/crear-usuario')">
         <ion-icon slot="start" name="person-add-outline"></ion-icon>
         <ion-label>Crear Usuario</ion-label>
       </ion-item>
@@ -122,8 +122,8 @@
       <!-- Perfil -->
       <ion-item
         *ngIf="isAdmin || !isAdmin"
-        routerLink="/perfil"
-        routerLinkActive="active-item">
+        (click)="navigateOrReload('/perfil')"
+        [class.active-item]="isActive('/perfil')">
         <ion-icon slot="start" name="person-circle-outline"></ion-icon>
         <ion-label>Perfil</ion-label>
       </ion-item>

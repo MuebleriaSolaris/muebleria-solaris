@@ -40,17 +40,19 @@ try {
             credit_price = IFNULL(?, credit_price),
             id_proveedor = IFNULL(?, id_proveedor),
             prov_price = IFNULL(?, prov_price),
+            sub_category_id = IFNULL(?, sub_category_id), 
             updated_at = NOW()
         WHERE id = ?
     ";
     $stmtProducts = $conn->prepare($sqlProducts);
     $stmtProducts->bind_param(
-        "sddii", 
+        "sddiii", 
         $data['name'],         // Primero: name
         $data['credit_price'], // Segundo: credit_price
         $data['provider_id'],  // Tercero: id_proveedor
         $data['prov_price'],   // Cuarto: prov_price
-        $data['product_id']    // Quinto: product_id
+        $data['sub_category_id'], // Quinto: sub_category_id
+        $data['product_id']    // Sexto: product_id
     );
     $stmtProducts->execute();
 

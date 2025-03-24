@@ -14,11 +14,13 @@ import { AuthService } from './services/auth.service';  // Import AuthService
 
 // Import the new MenuComponent
 import { MenuComponent } from './components/menu/menu.component';
+//import { ImageViewerComponent } from './components/image-viewer/image-viewer.component'; // Importa el componente
 
 @NgModule({
   declarations: [
     AppComponent,
-    MenuComponent // Declare MenuComponent here
+    MenuComponent, // Declare MenuComponent here
+    //ImageViewerComponent, // Declara el componente ImageViewerComponent
   ],
   imports: [
     BrowserModule,

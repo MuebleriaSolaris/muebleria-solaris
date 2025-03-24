@@ -1,5 +1,5 @@
 <?php
-header("Content-Type: application/json");
+header("Content-Type: application/json; charset=utf-8");
 header("Access-Control-Allow-Origin: https://muebleriasolaris.com");
 header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
@@ -14,6 +14,7 @@ require_once __DIR__ . '/../ionic-database/Database.php';
 // Crear instancia de la clase Database
 $db = new Database();
 $conn = $db->getConnection();
+$conn->set_charset("utf8mb4");
 
 // Verificar el método HTTP
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -23,6 +24,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Validar que se enviaron los campos necesarios
     if (!isset($input['name']) || !isset($input['address']) || !isset($input['phone']) || !isset($input['type'])) {
         echo json_encode(["status" => "error", "message" => "Faltan datos necesarios"]);
+        exit();
+    }
+
+    // Verificar que los datos estén en UTF-8
+    if (!mb_check_encoding($input['name'], 'UTF-8')) {
+        echo json_encode(["status" => "error", "message" => "El nombre no está en UTF-8"]);
         exit();
     }
 

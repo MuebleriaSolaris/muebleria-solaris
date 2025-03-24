@@ -50,8 +50,10 @@ export class AgregarProveedorPage implements OnInit {
             this.inventoryService.saveProvider(this.newProvider).subscribe({
               next: (response) => {
                 if (response.success) {
-                  console.log('Proveedor guardado exitosamente:', response);
-                  this.router.navigate(['/proveedores']); // Redirige a la lista de proveedores
+                  // Redirige a la lista de proveedores y recarga la página
+                  this.router.navigateByUrl('/proveedores', { replaceUrl: true }).then(() => {
+                    window.location.reload(); // Recarga la página
+                  });
                 } else {
                   console.warn('Error al guardar el proveedor:', response.message);
                   this.showAlert('Error', 'No se pudo guardar el proveedor.');

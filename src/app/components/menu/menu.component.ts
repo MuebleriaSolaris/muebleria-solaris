@@ -1,6 +1,4 @@
-// src/app/components/menu/menu.component.ts
-
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { MenuController } from '@ionic/angular';
 import { AuthService } from '../../services/auth.service';
 import { Router, NavigationEnd } from '@angular/router';
@@ -22,6 +20,7 @@ export class MenuComponent implements OnInit {
   ];
   public filteredPages: { title: string; url: string; icon: string; roles: number[] }[] = [];
   isAdmin: boolean = false; // Variable to check if user is admin
+  currentRoute: string = ''; // Variable to store the current route
 
   constructor(
     public authService: AuthService,
@@ -43,13 +42,32 @@ export class MenuComponent implements OnInit {
       }
     });
 
-    // Update menu title based on current route
+    // Update menu title and current route based on navigation
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.updateMenuTitle(event.urlAfterRedirects);
+        this.currentRoute = event.urlAfterRedirects; // Update current route
         this.closeMenu(); // Cierra el menú
       }
     });
+
+    // Agregar el manejador de eventos para cerrar el menú al hacer clic fuera
+    document.addEventListener('click', this.handleClickOutside.bind(this));
+  }
+
+  ngOnDestroy() {
+    // Eliminar el manejador de eventos al destruir el componente
+    document.removeEventListener('click', this.handleClickOutside.bind(this));
+  }
+
+  handleClickOutside(event: MouseEvent) {
+    const menuElement = document.querySelector('ion-menu');
+    const targetElement = event.target as HTMLElement;
+
+    // Verificar si el clic fue fuera del menú
+    if (menuElement && !menuElement.contains(targetElement)) {
+      this.closeMenu();
+    }
   }
 
   updateMenuTitle(route: string) {
@@ -75,7 +93,6 @@ export class MenuComponent implements OnInit {
     });
     this.closeMenu(); // Close the side menu
   }
-  
 
   isCompact = false;
 
@@ -83,5 +100,19 @@ export class MenuComponent implements OnInit {
     this.isCompact = !this.isCompact;
   }
 
-  
+  // Método para verificar si la ruta está activa
+  isActive(route: string): boolean {
+    return this.currentRoute === route;
+  }
+
+  // Método para navegar o recargar la página
+  navigateOrReload(route: string) {
+    if (this.currentRoute === route) {
+      // Si ya está en la misma ruta, recargar la página
+      window.location.reload();
+    } else {
+      // Si no, navegar a la nueva ruta
+      this.router.navigate([route]);
+    }
+  }
 }

@@ -11,9 +11,10 @@ error_reporting(E_ALL);
 // Cargar el archivo de conexión a la base de datos
 require_once __DIR__ . '/../ionic-database/Database.php';
 
-// Crear instancia de la conexión
+// Crear instancia de la clase Database
 $db = new Database();
 $conn = $db->getConnection();
+$conn->set_charset("utf8mb4");
 
 try {
     // Leer datos de entrada
