@@ -1,0 +1,46 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Subcategorías</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="goToAddSubcategory()">
+        <ion-icon slot="icon-only" name="add-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list class="subcategory-list">
+    <!-- Subcategoría deslizante -->
+    <ion-item-sliding *ngFor="let subcategory of subcategories">
+      <ion-item class="subcategory-card">
+        <ion-thumbnail slot="start">
+          <img src="assets/sub_categories.png" alt="{{ subcategory.name }}">
+        </ion-thumbnail>
+        <ion-label>
+          <p>Subcategoría</p>
+          <h2 class="subcategory-name">{{ subcategory.name }}</h2>
+          <p class="subcategory-date">Creada: {{ formatDate(subcategory.created_at) }}</p>
+        </ion-label>
+      </ion-item>
+      <!-- Opciones al deslizar -->
+      <ion-item-options side="end">
+        <ion-item-option color="primary" (click)="viewSubcategoryDetails(subcategory.id)">
+          Ver Detalles
+        </ion-item-option>
+        <ion-item-option color="danger" (click)="confirmDelete(subcategory)">
+          Eliminar
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+
+  <!-- Mensaje cuando no hay subcategorías -->
+  <div class="empty-state" *ngIf="subcategories.length === 0">
+    <ion-icon name="folder-open-outline"></ion-icon>
+    <p>No hay subcategorías registradas</p>
+    <ion-button fill="outline" (click)="goToAddSubcategory()">
+      Agregar Subcategoría
+    </ion-button>
+  </div>
+</ion-content>

@@ -11,14 +11,11 @@
       class="search-bar"
       [(ngModel)]="searchTerm" 
       (ionInput)="onSearchInput()"
-      placeholder="Buscar por nombre, dirección o télefono">
+      placeholder="Buscar por nombre, dirección o teléfono"
+      debounce="500">
     </ion-searchbar>
   
-    <ion-button 
-      *ngIf="isAdmin"
-      class="add-client-button" 
-      color="primary" 
-      (click)="goToAddClient()">
+    <ion-button *ngIf="isAdmin" class="add-client-button" color="primary" (click)="goToAddClient()">
       <ion-icon slot="start" name="add-outline"></ion-icon>
       Agregar Cliente
     </ion-button>
@@ -27,25 +24,28 @@
   <!-- Tabla de clientes -->
   <ion-grid class="customer-table">
     <ion-row class="header-row">
-      <ion-col size="3"><strong>Nombre</strong></ion-col>
-      <ion-col size="3"><strong>Dirección</strong></ion-col>
-      <ion-col size="3"><strong>Teléfono</strong></ion-col>
-      <ion-col size="3"><strong>Tipo de Cliente</strong></ion-col>
+      <ion-col class="name-col"><strong>Nombre</strong></ion-col>
+      <ion-col class="address-col"><strong>Dirección</strong></ion-col>
+      <ion-col class="phone-col"><strong>Teléfono</strong></ion-col>
+      <ion-col class="type-col"><strong>Tipo</strong></ion-col>
     </ion-row>
-    
-    <!-- Add swipe gestures to each row -->
-    <ion-item-sliding *ngFor="let customer of paginatedCustomers">
-      <ion-item  class="item-val">
-        <ion-col size="3">{{ customer?.name }}</ion-col>
-        <ion-col size="3">{{ customer.address }}</ion-col>
-        <ion-col size="3" class="cel-center">{{ customer.phone }}</ion-col>
-        <ion-col size="3" class="customer-type">
+  
+    <ion-item-sliding *ngFor="let customer of customers">
+      <ion-item class="item-val">
+        <ion-col class="name-col">{{ customer?.name }}</ion-col>
+        <ion-col class="address-col">{{ customer.address }}</ion-col>
+        <ion-col class="phone-col">
+          {{ customer.phone }}
+          <ion-badge *ngIf="customer.has_pending_changes" color="warning" style="margin-left: 5px;">
+            Actualizado
+          </ion-badge>
+        </ion-col>
+        <ion-col class="type-col">
           <span [ngClass]="getCustomerTypeClass(customer.type)" class="type-label">
             {{ getCustomerTypeName(customer.type) }}
           </span>
         </ion-col>
-      </ion-item> 
-      <!-- Only admins see this "View Details" button on swipe -->
+      </ion-item>
       <ion-item-options side="start" *ngIf="isAdmin">
         <ion-item-option color="primary" (click)="viewCustomerDetails(customer.id)">
           Ver Perfil
@@ -54,10 +54,23 @@
     </ion-item-sliding>
   </ion-grid>
 
+  <div *ngIf="loading" class="loading-overlay">
+    <ion-spinner name="crescent" class="loading-spinner"></ion-spinner>
+  </div>
+
   <!-- Controles de paginación -->
-  <div class="pagination-controls">
-    <ion-button (click)="prevPage()" [disabled]="currentPage === 1">Anterior</ion-button>
-    <ion-button (click)="nextPage()" [disabled]="currentPage * itemsPerPage >= customers.length">Siguiente</ion-button>
+  <div class="pagination-container">
+    <div class="results-count">
+      Mostrando {{ getShowingRange() }} de {{ formatNumber(totalCount) }} clientes
+    </div>
+    <div class="pagination-controls">
+      <ion-button (click)="prevPage()" [disabled]="currentPage === 1 || loading">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </ion-button>
+      <ion-button (click)="nextPage()" [disabled]="currentPage * itemsPerPage >= totalCount || loading">
+        <ion-icon name="chevron-forward-outline"></ion-icon>
+      </ion-button>
+    </div>
   </div>
 </ion-content>
 <!-- Footer -->

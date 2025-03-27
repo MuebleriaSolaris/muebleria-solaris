@@ -8,6 +8,9 @@ import { ActionSheetController, Platform } from '@ionic/angular';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { ModalController } from '@ionic/angular';
 import { ImageViewerComponent } from '../../components/image-viewer/image-viewer.component'; // Crea este componente
+import { InventarioPage } from '../inventario/inventario.page';   // Importar InventarioPage
+import { lastValueFrom } from 'rxjs'; // Importar lastValueFrom
+import { LoadingController } from '@ionic/angular'; // Importar LoadingController
 
 
 
@@ -47,7 +50,8 @@ export class AgregarInventarioPage implements OnInit {
     private http: HttpClient,
     private authService: AuthService,
     private actionSheetController: ActionSheetController, // Inyecta ActionSheetController
-    private modalController: ModalController // Inyecta ModalController
+    private modalController: ModalController, // Inyecta ModalController
+    private loadingController: LoadingController // Inyecta LoadingController
   ) {}
 
   ngOnInit() {
@@ -115,35 +119,41 @@ export class AgregarInventarioPage implements OnInit {
       await this.showAlert('Error', 'No se ha obtenido un ID válido para el producto.');
       return;
     }
-
-    // Convertir la imagen a un archivo Blob
-    const response = await fetch(imagePath);
-    const blob = await response.blob();
-
-    // Crear un FormData para enviar la imagen
-    const formData = new FormData();
-    formData.append('image', blob, `product_${this.nextProductId}.jpg`);
-    formData.append('product_id', this.nextProductId.toString());
-
-    // Subir la imagen al servidor FTP
-    this.http.post('https://muebleriasolaris.com/ionic-products/ftp_image_upload.php', formData)
-        .subscribe({
-            next: (response: any) => {
-                console.log("Respuesta del servidor:", response); // Depuración
-                if (response.status === 'success') {
-                    this.selectedImage = response.image_url;
-                    this.imageUrl = response.image_url;
-                    console.log('Imagen subida correctamente:', this.imageUrl);
-                    this.showAlert('Éxito', 'Imagen subida correctamente.');
-                } else {
-                    this.showAlert('Error', response.message || 'No se pudo subir la imagen.');
-                }
-            },
-            error: (error) => {
-                console.error('Error al subir la imagen:', error);
-                this.showAlert('Error', 'Ocurrió un error al subir la imagen.');
-            },
-        });
+  
+    // Mostrar spinner al iniciar
+    const loading = await this.loadingController.create({
+      message: 'Subiendo imagen...',
+      spinner: 'crescent'
+    });
+    await loading.present();
+  
+    try {
+      const response = await fetch(imagePath);
+      const blob = await response.blob();
+      const formData = new FormData();
+      formData.append('image', blob, `product_${this.nextProductId}.jpg`);
+      formData.append('product_id', this.nextProductId.toString());
+  
+      // Convertir el observable a promesa para usar await
+      await lastValueFrom(
+        this.http.post('https://muebleriasolaris.com/ionic-products/ftp_image_upload.php', formData)
+      ).then((response: any) => {
+        if (response.status === 'success') {
+          this.selectedImage = response.image_url;
+          this.imageUrl = response.image_url;
+          console.log('Imagen subida correctamente:', this.imageUrl);
+          this.showAlert('Éxito', 'Imagen subida correctamente.');
+        } else {
+          throw new Error(response.message || 'No se pudo subir la imagen.');
+        }
+      });
+    } catch (error) {
+      console.error('Error al subir la imagen:', error);
+      await this.showAlert('Error', 'Ocurrió un error al subir la imagen.');
+    } finally {
+      // Ocultar spinner siempre, tanto en éxito como en error
+      await loading.dismiss();
+    }
   }
 
   async deleteImage() {
@@ -294,30 +304,26 @@ loadBrands() {
 
   async saveProduct() {
     const { name } = this.newProduct;
-  
-    // Validar que el campo "name" no esté vacío
+    
     if (!name) {
-      await this.showAlert(
-        'Campo obligatorio',
-        'Por favor, ingresa el nombre del producto.'
-      );
+      await this.showAlert('Campo obligatorio', 'Por favor, ingresa el nombre del producto.');
       return;
     }
-  
+    
     // Asignar valores por defecto si no se proporcionan
     const newProduct = {
-      name: this.newProduct.name, // Obligatorio
-      category_id: this.newProduct.category_id || 14, // Valor por defecto: 14
-      sub_category_id: this.newProduct.sub_category_id || 31, // Valor por defecto: 31
-      brand_id: this.newProduct.brand_id || 1, // Valor por defecto: 1
-      credit_price: this.newProduct.credit_price || 0, // Valor por defecto: 0
-      proveedor_id: this.newProduct.proveedor_id || 10, // Valor por defecto: 10
-      product_details: this.newProduct.product_details || "", // Valor por defecto: ""
-      novedad_act: this.newProduct.novedad_act ? 1 : 0, // Convertir a 1 o 0
-      prov_price: this.newProduct.prov_price || 0, // Valor por defecto: 0
-      image_url: this.imageUrl, // URL de la imagen subida
+      name: this.newProduct.name,
+      category_id: this.newProduct.category_id || 14,
+      sub_category_id: this.newProduct.sub_category_id || 31,
+      brand_id: this.newProduct.brand_id || 1,
+      credit_price: this.newProduct.credit_price || 0,
+      proveedor_id: this.newProduct.proveedor_id || 10,
+      product_details: this.newProduct.product_details || "",
+      novedad_act: this.newProduct.novedad_act ? 1 : 0,
+      prov_price: this.newProduct.prov_price || 0,
+      image_url: this.imageUrl,
     };
-  
+    
     // Mostrar confirmación antes de guardar
     const confirmAlert = await this.alertController.create({
       header: 'Confirmar',
@@ -329,31 +335,37 @@ loadBrands() {
         },
         {
           text: 'Guardar',
-          handler: () => {
-            this.inventoryService.addInventory(newProduct).subscribe({
-              next: async (response) => {
-                if (response.success) {
-                  await this.showAlert('Éxito', 'Producto agregado correctamente');
-                  this.router.navigate(['/inventario'], {
-                    state: { componentRef: this }
-                  }).then(() => {
-                    const nav = this.router.getCurrentNavigation();
-                    const state = nav?.extras?.state as any; // Casting a 'any'
-                    
-                    if (state?.['componentRef']) {
-                      state['componentRef'].instance.ngOnInit();
-                    }
-                  });
-                }
-              },
-              error: async (error) => {
-                console.error('Error:', error);
-                await this.showAlert('Error', 'Error en el servidor');
-              },
-              complete: () => {
-                console.log('Operación completada');
-              },
+          handler: async () => {
+            // Mostrar spinner al confirmar
+            const loading = await this.loadingController.create({
+              message: 'Guardando producto...',
+              spinner: 'bubbles'
             });
+            await loading.present();
+  
+            try {
+              // Convertir el observable a promesa
+              const response = await lastValueFrom(
+                this.inventoryService.addInventory(newProduct)
+              );
+  
+              if (response.success) {
+                await this.showAlert('Éxito', 'Producto agregado correctamente');
+                this.router.navigate(['/inventario']).then(() => {
+                  if (typeof InventarioPage.refreshData !== 'undefined') {
+                    InventarioPage.refreshData.next();
+                  }
+                });
+              } else {
+                throw new Error(response.message || 'Error al guardar el producto');
+              }
+            } catch (error) {
+              console.error('Error:', error);
+              const errorMessage = (error as any).message || 'Error en el servidor';
+              await this.showAlert('Error', errorMessage);
+            } finally {
+              await loading.dismiss();
+            }
           },
         },
       ],

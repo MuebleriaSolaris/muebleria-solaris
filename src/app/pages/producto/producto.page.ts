@@ -11,6 +11,8 @@ import { ImageViewerComponent } from '../../components/image-viewer/image-viewer
 import { ImageStateService } from '../../services/image-state.service'; // Importa ImageStateService
 import { Router } from '@angular/router';   // Importa Router
 import { ChangeDetectorService } from '../../services/change-detector.service'; // Importa ChangeDetectorService
+import { lastValueFrom } from 'rxjs'; // Importa lastValueFrom   
+import { LoadingController } from '@ionic/angular'; // Importa LoadingController 
 
 @Component({
   selector: 'app-producto',
@@ -38,7 +40,8 @@ export class ProductoPage implements OnInit {
     private modalController: ModalController, // Inyecta ModalController
     public imageState: ImageStateService, // Inyecta ImageStateService
     private platform: Platform, // Inyect Platform
-    private changeDetector: ChangeDetectorService // Inyecta ChangeDetectorService
+    private changeDetector: ChangeDetectorService, // Inyecta ChangeDetectorService
+    private loadingController: LoadingController // Inyecta LoadingController
   ) {}
 
   ngOnInit() {
@@ -107,58 +110,71 @@ export class ProductoPage implements OnInit {
   }
 
   async uploadImage(imagePath: string) {
-    const productId = this.product.product_id;
-    const response = await fetch(imagePath);
-    const blob = await response.blob();
-  
-    const formData = new FormData();
-    formData.append('image', blob, `product_${productId}.jpg`);
-    formData.append('product_id', productId.toString());
-  
-    this.http.post('https://muebleriasolaris.com/ionic-products/ftp_image_upload.php', formData)
-      .subscribe({
-        next: (response: any) => {
-          if (response.status === 'success') {
-            this.product.image_url = response.image_url;
-            this.imageState.getImageUrl(productId); // Actualizar el servicio
-            this.product = {...this.product}; // Forzar detección de cambios
-            this.changeDetector.setChangesDetected(`product_${this.product.product_id}`, true); // Marcar cambios detectados
-            this.showAlert('Éxito', 'Imagen actualizada correctamente.');
-          }
-        },
-        error: (error) => {
-          console.error('Error al subir la imagen:', error);
-          this.showAlert('Error', 'Ocurrió un error al subir la imagen.');
-        },
-      });
+    const loading = await this.loadingController.create({
+        message: 'Subiendo imagen...',
+        spinner: 'crescent'
+    });
+    await loading.present();
+
+    try {
+        const productId = this.product.product_id;
+        const response = await fetch(imagePath);
+        const blob = await response.blob();
+    
+        const formData = new FormData();
+        formData.append('image', blob, `product_${productId}.jpg`);
+        formData.append('product_id', productId.toString());
+    
+        const uploadResponse: any = await lastValueFrom(
+            this.http.post('https://muebleriasolaris.com/ionic-products/ftp_image_upload.php', formData)
+        );
+
+        if (uploadResponse.status === 'success') {
+            this.product.image_url = uploadResponse.image_url;
+            this.imageState.getImageUrl(productId);
+            this.product = {...this.product};
+            this.changeDetector.setChangesDetected(`product_${this.product.product_id}`, true);
+            await this.showAlert('Éxito', 'Imagen actualizada correctamente.');
+        } else {
+            throw new Error(uploadResponse.message || 'Error en la respuesta del servidor');
+        }
+    } catch (error) {
+        console.error('Error al subir la imagen:', error);
+        await this.showAlert('Error', 'Ocurrió un error al subir la imagen.');
+    } finally {
+        await loading.dismiss();
+    }
   }
 
   async deleteImage() {
-  const productId = this.product.product_id;
+    const loading = await this.loadingController.create({
+        message: 'Eliminando imagen...',
+        spinner: 'dots'
+    });
+    await loading.present();
 
-  // Crear un FormData para enviar el ID del producto
-  const formData = new FormData();
-  formData.append('product_id', productId.toString());
+    try {
+        const productId = this.product.product_id;
+        const formData = new FormData();
+        formData.append('product_id', productId.toString());
 
-  // Eliminar la imagen del servidor FTP
-  this.http.post('https://muebleriasolaris.com/ionic-products/ftp_image_delete.php', formData)
-      .subscribe({
-          next: (response: any) => {
-              console.log("Respuesta del servidor:", response); // Depuración
-              if (response.status === 'success') {
-                  // Restaurar el placeholder
-                  this.product.image_url = 'assets/product_placeholder.png';
-                  this.changeDetector.setChangesDetected(`product_${this.product.product_id}`, true); // Marcar cambios detectados
-                  this.showAlert('Éxito', 'Imagen eliminada correctamente.');
-              } else {
-                  this.showAlert('Error', response.message || 'No se pudo eliminar la imagen.');
-              }
-          },
-          error: (error) => {
-              console.error('Error al eliminar la imagen:', error);
-              this.showAlert('Error', 'Ocurrió un error al eliminar la imagen.');
-          },
-      });
+        const deleteResponse: any = await lastValueFrom(
+            this.http.post('https://muebleriasolaris.com/ionic-products/ftp_image_delete.php', formData)
+        );
+
+        if (deleteResponse.status === 'success') {
+            this.product.image_url = 'assets/product_placeholder.png';
+            this.changeDetector.setChangesDetected(`product_${this.product.product_id}`, true);
+            await this.showAlert('Éxito', 'Imagen eliminada correctamente.');
+        } else {
+            throw new Error(deleteResponse.message || 'Error en la respuesta del servidor');
+        }
+    } catch (error) {
+        console.error('Error al eliminar la imagen:', error);
+        await this.showAlert('Error', 'Ocurrió un error al eliminar la imagen.');
+    } finally {
+        await loading.dismiss();
+    }
   }
 
   async changeImage() {
@@ -278,85 +294,104 @@ export class ProductoPage implements OnInit {
   }
 
   // Función para guardar los cambios
-  saveChanges() {
+  async saveChanges() {
     if (!this.product || !this.product.product_id) {
         console.error('El producto no tiene un ID válido.');
         return;
     }
 
-    // Asegúrate de que los campos numéricos sean números
-    this.product.name = this.product.name; // Eliminar espacios en blanco al inicio y final
-    this.product.credit_price = parseFloat(this.product.credit_price);
-    this.product.prov_price = parseFloat(this.product.prov_price);
-    this.product.current_stock = parseInt(this.product.current_stock, 10);
-    this.product.max_amount = parseInt(this.product.max_amount, 10);
-
-    console.log('Datos enviados al backend:', this.product); // Depuración
-
-    this.inventoryService.saveProduct(this.product).subscribe({
-        next: (response: any) => {
-            if (response.success) {
-                this.showAlert('Éxito', 'Producto actualizado correctamente.');
-                this.originalProduct = { ...this.product }; // Actualiza la copia original
-                this.isEditMode = false; // Sale del modo de edición
-                this.changeDetector.setChangesDetected(`product_${this.product.product_id}`, true); // Marcar cambios detectados
-                window.location.reload();
-            } else {
-                this.showAlert('Error', 'Error al actualizar el producto: ' + response.message);
-            }
-        },
-        error: (error) => {
-            console.error('Error al actualizar el producto:', error);
-            this.showAlert('Error', 'Ocurrió un error al actualizar el producto.');
-        },
+    const loading = await this.loadingController.create({
+        message: 'Guardando cambios...',
+        spinner: 'bubbles'
     });
-}
+    await loading.present();
+
+    try {
+        // Mantenemos exactamente la misma lógica de tu versión original
+        this.product.name = this.product.name; // Conserva el valor original si no se modifica
+        this.product.credit_price = parseFloat(this.product.credit_price); // Convierte a número flotante
+        this.product.prov_price = parseFloat(this.product.prov_price); // Convierte a número flotante
+        this.product.current_stock = parseInt(this.product.current_stock, 10); // Convierte a número entero
+        this.product.max_amount = parseInt(this.product.max_amount, 10); // Convierte a número entero
+
+        console.log('Datos enviados al backend:', this.product); // Depuración
+
+        // Convertimos el observable a promesa para usar async/await
+        const response: any = await lastValueFrom(
+            this.inventoryService.saveProduct(this.product)
+        );
+
+        if (response.success) {
+            await this.showAlert('Éxito', 'Producto actualizado correctamente.');
+            this.originalProduct = { ...this.product };
+            this.isEditMode = false;
+            this.changeDetector.setChangesDetected(`product_${this.product.product_id}`, true);
+            window.location.reload(); // Recarga completa como en tu versión original
+        } else {
+            throw new Error(response.message || 'Error al actualizar el producto');
+        }
+    } catch (error) {
+        console.error('Error al actualizar el producto:', error);
+        await this.showAlert('Error', (error as Error).message || 'Ocurrió un error al actualizar el producto.');
+    } finally {
+        await loading.dismiss();
+    }
+  }
 
   // Función para confirmar la eliminación del producto
   async confirmDelete() {
-    const alert = await this.alertController.create({
-      header: 'Confirmar Eliminación',
-      message: '¿Estás seguro de que deseas eliminar este producto?',
-      buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel',
-          cssClass: 'secondary',
-        },
-        {
-          text: 'Eliminar',
-          handler: () => {
-            this.deleteProduct(); // Llama a la función deleteProduct si el usuario confirma
-          },
-        },
-      ],
-    });
-
-    await alert.present();
+    this.deleteProduct(); // Llama a la función deleteProduct si el usuario confirma
   }
 
   // Función para eliminar el producto
-  deleteProduct() {
+  async deleteProduct() {
     if (!this.product || !this.product.product_id) {
-      console.error('El producto no tiene un ID válido.');
-      return;
+        console.error('El producto no tiene un ID válido.');
+        return;
     }
 
-    this.inventoryService.deleteProduct(this.product.product_id).subscribe({
-      next: (response: any) => {
-        if (response.success) {
-          this.showAlert('Éxito', 'Producto eliminado correctamente.');
-          this.goBack(); // Redirige a la página anterior
-        } else {
-          this.showAlert('Error', 'Error al eliminar el producto: ' + response.message);
-        }
-      },
-      error: (error) => {
-        console.error('Error al eliminar el producto:', error);
-        this.showAlert('Error', 'Ocurrió un error al eliminar el producto.');
-      },
+    const confirmAlert = await this.alertController.create({
+        header: 'Confirmar eliminación',
+        message: '¿Estás seguro de que deseas eliminar este producto?',
+        buttons: [
+            {
+                text: 'Cancelar',
+                role: 'cancel'
+            },
+            {
+                text: 'Eliminar',
+                handler: async () => {
+                    const loading = await this.loadingController.create({
+                        message: 'Eliminando producto...',
+                        spinner: 'lines'
+                    });
+                    await loading.present();
+
+                    try {
+                        const response: any = await lastValueFrom(
+                            this.inventoryService.deleteProduct(this.product.product_id)
+                        );
+
+                        if (response.success) {
+                            await this.showAlert('Éxito', 'Producto eliminado correctamente.');
+                            this.changeDetector.setChangesDetected(`product_${this.product.product_id}`, true);
+                            this.goBack();
+                        } else {
+                            throw new Error(response.message || 'Error en la respuesta del servidor');
+                        }
+                    } catch (error) {
+                        console.error('Error al eliminar el producto:', error);
+                        await this.showAlert('Error', (error as any).message || 'Ocurrió un error al eliminar el producto.');
+                    } finally {
+                        await loading.dismiss();
+                    }
+                }
+            }
+        ]
     });
-  }
+
+    await confirmAlert.present();
+}
 
   // Función para mostrar alertas
   async showAlert(header: string, message: string, duration: number = 3000) { // Duración en milisegundos, por defecto 5000ms (5 segundos)

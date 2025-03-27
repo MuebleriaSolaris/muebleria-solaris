@@ -2,7 +2,6 @@ ion-content {
     --background: #f7f7f7;
 }
 
-/* Profile header styling */
 .profile-header {
     text-align: center;
     padding: 50px 20px;
@@ -18,7 +17,6 @@ ion-content {
     margin: 0 auto;
 }
 
-/* Profile avatar styling */
 .profile-avatar {
     width: 120px;
     height: 120px;
@@ -26,14 +24,12 @@ ion-content {
     border-radius: 50%;
     overflow: hidden;
     border: 3px solid white;
-    background-color: white;
 }
 
-/* Button container with Regresar and Editar buttons */
 .top-button-container {
     display: flex;
     justify-content: space-around;
-    gap: 20px; /* Adds space between buttons */
+    gap: 20px;
     padding: 10px 0;
     background: #3880ff;
     border-bottom-left-radius: 20px;
@@ -42,19 +38,16 @@ ion-content {
     margin: -20px auto 0 auto;
 }
 
-/* Styling for the buttons inside the top container */
 .top-button-container ion-button {
     width: auto;
     font-size: 0.9rem;
 }
 
-/* Specific styling for "Regresar" button */
 .regresar-button::part(native) {
     background-color: white !important;
-    color: darkslategray;
+    color: darkslategrey;
 }
 
-/* Account information section styling */
 .account-info {
     padding: 30px;
     margin: 30px auto;
@@ -65,7 +58,6 @@ ion-content {
     text-align: left;
 }
 
-/* Style adjustments for list items in account info */
 ion-list h2 {
     font-size: 1.1rem;
     color: #333;
@@ -78,7 +70,6 @@ ion-list p {
     color: #666;
 }
 
-/* Styling for bottom action buttons */
 .bottom-action-buttons {
     display: flex;
     justify-content: space-between;
@@ -87,7 +78,6 @@ ion-list p {
     max-width: 700px;
 }
 
-/* Styling for individual bottom buttons */
 .bottom-action-buttons ion-button {
     flex: 1;
     margin: 0 10px;
@@ -97,18 +87,15 @@ ion-list p {
     --padding: 10px 0;
 }
 
-/* Styling for "Guardar" button */
 .guardar-button::part(native) {
     --background: linear-gradient(to right, #28a745, #218838);
     color: white;
 }
 
-/* Styling for "Cancelar" button */
 .cancelar-button::part(native) {
     --background: linear-gradient(to right, #dc3545, #c82333);
 }
 
-/* Adjustments for large screens */
 @media (min-width: 768px) {
     .profile-header,
     .account-info,
@@ -120,63 +107,19 @@ ion-list p {
         margin-top: -15px;
     }
 }
+
 .edit-footer{
     box-shadow: none;
 }
 
-/* Estilo para el footer de edición */
-.edit-footer {
-    background: white;
-    padding: 15px;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-    position: sticky;
-    bottom: 0;
-    z-index: 10;
-  }
-  
-  .bottom-action-buttons {
-    display: flex;
-    gap: 15px;
-    max-width: 700px;
-    margin: 0 auto;
-    padding: 0 10px;
-  }
-  
-  .bottom-action-buttons ion-button {
-    flex: 1;
-    min-height: 50px;
-    margin: 0;
-    --border-radius: 8px;
-    font-weight: bold;
-  }
-  
-  .guardar-button {
-    --background: linear-gradient(to right, #28a745, #218838);
-    --background-activated: #218838;
-  }
-  
-  .cancelar-button {
-    --background: linear-gradient(to right, #dc3545, #c82333);
-    --background-activated: #c82333;
-  }
-  
-  /* Asegurar que el contenido no quede oculto detrás del footer */
-  ion-content {
-    --padding-bottom: 80px; /* Ajusta según la altura de tu footer */
-  }
-  
-  /* Responsive para pantallas pequeñas */
-  @media (max-width: 480px) {
-    .bottom-action-buttons {
-      flex-direction: column;
-      gap: 10px;
-    }
-    
-    .bottom-action-buttons ion-button {
-      width: 100%;
-    }
-    
-    ion-content {
-      --padding-bottom: 120px; /* Más espacio para botones apilados */
+ion-item {
+    ion-label {
+      p {
+        span {
+          font-size: 0.8rem;
+          color: var(--ion-color-medium);
+          margin-left: 5px;
+        }
+      }
     }
   }

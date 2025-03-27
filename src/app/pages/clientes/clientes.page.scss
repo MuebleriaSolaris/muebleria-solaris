@@ -1,3 +1,79 @@
+/* Estructura principal de la tabla */
+.customer-table {
+  width: 100%;
+  margin: 0 auto;
+  border-collapse: collapse;
+  
+  ion-row {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+    
+    ion-col {
+      padding: 12px 8px;
+      display: flex;
+      align-items: center;
+      min-width: 0; /* Permite que el texto largo se ajuste */
+    }
+  }
+}
+
+/* Estilos específicos para columnas */
+.name-col {
+  flex: 3; /* Tamaño relativo */
+  text-align: left;
+  justify-content: center; /* Alinea verticalmente */
+  white-space: normal; /* Permite múltiples líneas */
+  word-break: break-word; /* Rompe palabras largas */
+}
+
+.address-col {
+  flex: 3;
+  text-align: left;
+  justify-content: center;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.phone-col, .type-col {
+  flex: 2;
+  text-align: center;
+  justify-content: center;
+  white-space: normal;
+}
+
+/* Estilos para el header */
+.header-row {
+  background-color: #f0f0f0;
+  font-weight: bold;
+  border-bottom: 2px solid #ccc;
+  
+  ion-col {
+    font-weight: bold;
+    white-space: nowrap; /* Header en una sola línea */
+  }
+}
+
+/* Ajustes para móviles */
+@media (max-width: 576px) {
+  .customer-table {
+    ion-row {
+      flex-wrap: wrap;
+      
+      ion-col {
+        padding: 8px 4px;
+        font-size: 13px;
+        flex: 1 1 50%; /* 2 columnas en móviles */
+        
+        &.type-col, &.phone-col {
+          justify-content: flex-start; /* En móviles alinear a la izquierda */
+          text-align: left;
+        }
+      }
+    }
+  }
+}
+
 .customer-table {
   width: 100%;
   margin: 0 auto;
@@ -164,4 +240,187 @@
   .is-not-admin .search-bar {
     padding-bottom: 0px;
   }
+}
+
+/* Estilo para el item seleccionado */
+.item-selected {
+  background-color: rgba(0, 0, 0, 0.05) !important; /* Muy tenue - ajusta el valor según necesites */
+  transition: background-color 0.2s ease;
+}
+
+/* Estilo para las filas normales */
+.item-val {
+  --background: transparent;
+  --border-color: transparent;
+  cursor: pointer; /* Cambia el cursor para indicar que es clickeable */
+  transition: background-color 0.2s ease;
+}
+
+/* Efecto hover opcional */
+.item-val:hover {
+  background-color: rgba(0, 0, 0, 0.10);
+}
+
+/* Asegurar que el contenido no se traslape */
+.customer-table {
+  ion-row {
+    display: flex;
+    align-items: stretch;
+    
+    ion-col {
+      flex: 1;
+      min-width: 0; /* Permite que el texto se trunque en lugar de empujar */
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+}
+
+/* Efectos de animación mejorados */
+ion-item-sliding.active-slide {
+  ion-item {
+    transform: translateX(-100px); /* Igual al ancho del botón */
+    
+    ion-col {
+      opacity: 0.9; /* Ligera transparencia al deslizar */
+    }
+  }
+}
+
+/* Ajustes para el texto en móviles */
+@media (max-width: 576px) {
+  ion-item-sliding {
+    ion-item {
+      --min-height: 50px;
+      
+      ion-col {
+        padding: 8px 4px;
+        font-size: 13px;
+      }
+    }
+    
+    ion-item-options {
+      ion-item-option {
+        width: 80px;
+        font-size: 13px;
+      }
+    }
+  }
+}
+
+/* Mantener los estilos existentes con mejoras */
+.customer-table {
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+  border-collapse: collapse;
+  
+  .header-row {
+    background-color: #f0f0f0;
+    font-weight: bold;
+    text-align: center;
+    border-bottom: 2px solid #ccc;
+    padding: 10px 0;
+    
+    ion-col {
+      font-weight: bold;
+    }
+  }
+}
+
+/* Resto de tus estilos permanecen igual */
+.type-label {
+  display: inline-block;
+  padding: 4px 10px;
+  color: white;
+  font-weight: bold;
+  border-radius: 12px;
+  text-align: center;
+  min-width: 60px;
+  
+  &.success { background-color: #4CAF50; }
+  &.warning { background-color: #1e3a8a; }
+  &.danger { background-color: #cb2a2a; }
+  &.medium { background-color: #9E9E9E; }
+}
+
+/* Contenedor de paginación mejorado */
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  padding: 0 16px;
+  flex-wrap: wrap;
+}
+
+.results-count {
+  font-size: 14px;
+  color: #666;
+  padding: 8px 0;
+}
+
+.pagination-controls {
+  display: flex;
+  gap: 8px;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .pagination-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .results-count {
+    order: 1;
+    width: 100%;
+    text-align: center;
+  }
+  
+  .pagination-controls {
+    width: 100%;
+    justify-content: center;
+  }
+}
+/* Mejora para el texto del nombre */
+.text-left {
+  text-align: left;
+  justify-content: flex-start;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Formato de números grandes */
+.results-count {
+  font-size: 14px;
+  
+  /* Solo para navegadores que soportan ::ng-deep */
+  ::ng-deep .number {
+    font-weight: bold;
+  }
+}
+
+/* Estilos para el loading spinner */
+.loading-overlay {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+.loading-spinner {
+  width: 64px;
+  height: 64px;
+  color: var(--ion-color-primary);
 }

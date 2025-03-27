@@ -59,10 +59,6 @@ const routes: Routes = [
     path: 'cliente-info/:id',  // Updated route with :id parameter
     loadChildren: () => import('./pages/cliente-info/cliente-info.module').then(m => m.ClienteInfoPageModule)
   },
-  // {
-  //   path: 'producto',
-  //   loadChildren: () => import('./pages/producto/producto.module').then( m => m.ProductoPageModule)
-  // }
   {
     path: 'producto/:id',
     loadChildren: () => import('./pages/producto/producto.module').then(m => m.ProductoPageModule)
@@ -102,6 +98,14 @@ const routes: Routes = [
   {
     path: 'agregar-subcategoria',
     loadChildren: () => import('./pages/agregar-subcategoria/agregar-subcategoria.module').then( m => m.AgregarSubcategoriaPageModule)
+  },
+  {
+    path: 'categorias',
+    loadChildren: () => import('./pages/categorias/categorias.module').then( m => m.CategoriasPageModule)
+  },
+  {
+    path: 'sub-categorias-info/:id',
+    loadChildren: () => import('./pages/sub-categorias-info/sub-categorias-info.module').then( m => m.SubCategoriasInfoPageModule)
   }
 ];
 

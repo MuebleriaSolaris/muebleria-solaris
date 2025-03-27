@@ -4,6 +4,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { AuthService } from './services/auth.service';
 import { InfoClienteService } from './services/info-cliente.service'; // Servicio para obtener clientes
+import { InventoryService } from './services/inventory.service';
 import { filter } from 'rxjs/operators';
 
 @Component({
@@ -14,12 +15,14 @@ import { filter } from 'rxjs/operators';
 export class AppComponent implements OnInit {
   public menuTitle: string = 'Main Menu';
   public isLoginPage: boolean = false;  // Track if we are on the login page
+  product: any; // Producto actual que se edita
 
   constructor(
     private authService: AuthService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
-    private infoClienteService: InfoClienteService // Servicio agregado
+    private inventoryService: InventoryService, // Servicio agregado para obtener productos
+    private infoClienteService: InfoClienteService // Servicio agregado para obtener clientes
   ) {}
 
   ngOnInit() {
@@ -66,13 +69,47 @@ export class AppComponent implements OnInit {
         this.menuTitle = "Nuevo Usuario";
         break;
       case url.startsWith('/cliente-info/'):
-        this.setClienteTitle(); // Llama al método para manejar títulos de cliente
+        this.setClienteTitle();
         break;
-        case url.startsWith('/historial-cliente/'):
-          this.setHistorialClienteTitle(); // Llama al método para manejar títulos del historial
+      case url.startsWith('/historial-cliente/'):
+        this.setHistorialClienteTitle();
+        break;
+      case url === '/pedidos':
+        this.menuTitle = "Pedidos";
+        break;
+      case url.startsWith('/proveedores-info/'):
+        this.menuTitle = "Detalles Proveedor";
+        break;
+      case url.startsWith('/lista-pedido/'):
+        this.menuTitle = "Detalles Pedido";
+        break;
+      case url === '/marcas-productos':
+        this.menuTitle = "Marcas de Productos";
+        break;
+      case url === '/agregar-marca-producto':
+        this.menuTitle = "Agregar Marca";
+        break;
+      case url === '/usuarios-sistema':
+        this.menuTitle = "Usuarios del Sistema";
+        break;
+      case url.startsWith('/usuarios-info/'):
+        this.menuTitle = "Detalles Usuario";
+        break;
+      case url === '/categorias':
+        this.menuTitle = "Subcategorías";
+        break;
+      case url === '/agregar-subcategoria':
+        this.menuTitle = "Agregar Subcategoría";
+        break;
+      case url.startsWith('/sub-categorias-info/'):
+        this.menuTitle = "Detalles Subcategoría";
+        break;
+      case url === '/producto':
+      case url.startsWith('/producto/'):
+        this.menuTitle = "Detalles Producto";
         break;
       default:
-        this.menuTitle = "";  // Default title for other routes
+        this.menuTitle = "Menú Principal";
     }
   }
 
@@ -112,6 +149,7 @@ export class AppComponent implements OnInit {
       this.menuTitle = 'Historial Movimientos';
     }
   }
+
   // Método para navegar al perfil
   navigateToProfile() {
     this.router.navigate(['/perfil']);

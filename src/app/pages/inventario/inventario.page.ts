@@ -4,6 +4,7 @@ import { InventoryService } from '../../services/inventory.service';
 import { AuthService } from '../../services/auth.service';
 import { IonItemSliding } from '@ionic/angular';
 import { ChangeDetectorRef } from '@angular/core';
+import { Subject } from 'rxjs';
 import { ImageStateService } from '../../services/image-state.service';
 
 // Definir la interfaz Product fuera de la clase
@@ -43,11 +44,13 @@ export class InventarioPage implements OnInit {
 
   // Propiedades para la paginación
   currentPage: number = 1;
-  itemsPerPage: number = 10;
+  itemsPerPage: number = 5;
 
   // Variables para manejar el doble click
   private lastClickTime: number = 0;
   private doubleClickDelay: number = 300; // Retraso para considerar un doble click (en milisegundos)
+
+  static refreshData = new Subject<void>(); // Emite un evento para recargar los datos
 
   constructor(
     private inventoryService: InventoryService, // Inyecta InventoryService para obtener productos
@@ -62,6 +65,13 @@ export class InventarioPage implements OnInit {
     this.isAdmin = this.authService.isAdmin(); // Verificar si es administrador
 
     // Cargar productos, categorías y subcategorías
+
+    InventarioPage.refreshData.subscribe(() => {
+      this.fetchProducts(); // Vuelve a cargar los productos
+      this.fetchCategories(); // Vuelve a cargar categorías si es necesario
+      this.fetchSubCategories(); // Vuelve a cargar subcategorías si es necesario
+    });
+
     this.fetchProducts();
     this.fetchCategories();
     this.fetchSubCategories();

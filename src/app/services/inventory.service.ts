@@ -97,6 +97,36 @@ export class InventoryService {
     );
   }
 
+  // Método para guardar una subcategoría
+  saveSubcategory(subcategory: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/save_subcategory.php`, subcategory);
+  }
+  
+  // Método para obtener las subcategoría
+  getSubs(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/save_subcategory.php`);
+  }
+
+  // Método para borrar una subcategoría
+  deleteSubcategory(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/save_subcategory.php?id=${id}`);
+  }
+
+  // Método para actualizar una subcategoría
+  updateSubcategory(updatedSubcategory: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/save_subcategory.php`, updatedSubcategory);
+  }
+
+  // Método para obtener info de una subcategoría
+  getSubcategoryById(id: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/save_subcategory.php?id=${id}`);
+  }
+
+  // Método para obtener info de categorias por ID
+  getCategoryName(id: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/categories_name_id.php?id=${id}`);
+  }
+
   /**
    * Sincronizar stock actual de un producto
    * @param product El producto a sincronizar

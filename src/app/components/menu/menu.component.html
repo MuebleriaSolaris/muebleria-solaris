@@ -65,6 +65,24 @@
         <ion-label>Pedidos</ion-label>
       </ion-item>
 
+      <!-- Subcategorías -->
+      <ion-item
+      *ngIf="isAdmin"
+      (click)="navigateOrReload('/categorias')"
+      [class.active-item]="isActive('/categorias')">
+      <ion-icon slot="start" name="list-outline"></ion-icon>
+      <ion-label>Subcategorías</ion-label>
+      </ion-item>
+
+      <!-- Agregar Subcategoría -->
+      <ion-item
+      *ngIf="isAdmin"
+      (click)="navigateOrReload('/agregar-subcategoria')"
+      [class.active-item]="isActive('/agregar-subcategoria')">
+      <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+      <ion-label>Agregar Subcategoría</ion-label>
+      </ion-item>
+
       <!-- Proveedores -->
       <ion-item
         *ngIf="isAdmin"
