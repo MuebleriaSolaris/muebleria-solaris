@@ -5,6 +5,9 @@
 </ion-header>
 
 <ion-content>
+  <div *ngIf="loading" class="loading-overlay">
+    <ion-spinner name="crescent" class="loading-spinner"></ion-spinner>
+  </div>
   <ion-list>
     <ion-searchbar 
       [(ngModel)]="searchTerm" 
@@ -45,11 +48,17 @@
     <ion-item-sliding #slidingItem *ngFor="let product of displayedProducts">
       <ion-item class="inventory-item">
         <div class="left-info">
-          <ion-thumbnail slot="start">
+          <ion-thumbnail slot="start" class="image-container">
+            <ion-spinner *ngIf="!imageLoaded[product.product_id]" 
+                         name="crescent" 
+                         class="image-spinner">
+            </ion-spinner>
+            
             <ion-img 
-              [src]="imageState.getImageUrl(product)" 
+              [src]="product?.image_url || 'assets/product_placeholder.png'"
               alt="{{ product?.product_name }}"
-              loading="lazy">
+              (ionImgDidLoad)="setImageLoaded(product.product_id)"
+              (ionError)="imageLoadError($event, product)">
             </ion-img>
           </ion-thumbnail>
           <ion-label>

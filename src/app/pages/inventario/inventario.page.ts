@@ -6,6 +6,7 @@ import { IonItemSliding } from '@ionic/angular';
 import { ChangeDetectorRef } from '@angular/core';
 import { Subject } from 'rxjs';
 import { ImageStateService } from '../../services/image-state.service';
+import { AlertController, LoadingController } from '@ionic/angular';
 
 // Definir la interfaz Product fuera de la clase
 interface Product {
@@ -45,7 +46,11 @@ export class InventarioPage implements OnInit {
   // Propiedades para la paginación
   currentPage: number = 1;
   itemsPerPage: number = 5;
+ 
+  loading: boolean = false; // Variable para mostrar el spinner de carga
 
+  imageLoaded: {[key: number]: boolean} = {}; // Objeto para rastrear imágenes cargadas
+  
   // Variables para manejar el doble click
   private lastClickTime: number = 0;
   private doubleClickDelay: number = 300; // Retraso para considerar un doble click (en milisegundos)
@@ -57,24 +62,42 @@ export class InventarioPage implements OnInit {
     private router: Router, // Inyecta Router para la navegación
     private authService: AuthService,   // Inyecta AuthService para verificar
     private cdr: ChangeDetectorRef, // Inyecta ChangeDetectorRef para actualizar la vista
-    public imageState: ImageStateService // Inyecta el servicio de estado de imagen
+    public imageState: ImageStateService, // Inyecta el servicio de estado de imagen
+    private alertController: AlertController,  // Inyecta AlertController para mostrar alertas
+    private loadingController: LoadingController // Inyecta LoadingController para mostrar loaders
   ) {}
 
   ngOnInit() {
     console.log('Inicializando página de inventario...');
-    this.isAdmin = this.authService.isAdmin(); // Verificar si es administrador
+    this.isAdmin = this.authService.isAdmin();
+    this.loading = true; // Mostrar spinner al iniciar
 
     // Cargar productos, categorías y subcategorías
-
-    InventarioPage.refreshData.subscribe(() => {
-      this.fetchProducts(); // Vuelve a cargar los productos
-      this.fetchCategories(); // Vuelve a cargar categorías si es necesario
-      this.fetchSubCategories(); // Vuelve a cargar subcategorías si es necesario
+    Promise.all([
+      this.fetchProducts(),
+      this.fetchCategories(),
+      this.fetchSubCategories()
+    ]).finally(() => {
+      this.loading = false; // Ocultar spinner cuando todo esté cargado
     });
 
-    this.fetchProducts();
-    this.fetchCategories();
-    this.fetchSubCategories();
+    InventarioPage.refreshData.subscribe(() => {
+      this.loading = true; // Mostrar spinner al refrescar
+      Promise.all([
+        this.fetchProducts(),
+        this.fetchCategories(),
+        this.fetchSubCategories()
+      ]).finally(() => {
+        this.loading = false; // Ocultar spinner cuando todo esté cargado
+      });
+    });
+  }
+
+  // Método para marcar una imagen como cargada
+  setImageLoaded(productId: number) {
+    console.log('Imagen cargada para producto ID:', productId);
+    this.imageLoaded[productId] = true;
+    this.cdr.detectChanges(); // Forzar actualización de la vista
   }
 
   // Método para manejar el click
@@ -89,6 +112,7 @@ export class InventarioPage implements OnInit {
   }
 
   fetchProducts() {
+    this.loading = true; // Mostrar spinner al iniciar
     this.inventoryService.getProducts(this.searchTerm).subscribe(
       (response) => {
         if (response && response.success) {
@@ -107,12 +131,15 @@ export class InventarioPage implements OnInit {
   
           // Forzar la detección de cambios
           this.cdr.detectChanges();
+          this.loading = false; // Ocultar spinner cuando todo esté cargado
         } else {
           console.warn('Respuesta no válida de la API:', response);
+          this.loading = false; // Ocultar spinner cuando todo esté cargado
         }
       },
       (error) => {
         console.error('Error al obtener productos:', error);
+        this.loading = false; // Ocultar spinner cuando todo esté cargado
       }
     );
   }
@@ -194,10 +221,9 @@ export class InventarioPage implements OnInit {
     console.log('Productos filtrados:', this.filteredProducts);
 
     // Reiniciar la paginación y cargar los primeros productos
-    this.currentPage = 1;
-    this.displayedProducts = [];
-    this.loadMoreProducts();
-
+    this.currentPage = 1; 
+    this.displayedProducts = []; // Reiniciar los productos mostrados
+    this.loadMoreProducts(); // Cargar los primeros productos filtrados
     this.cdr.detectChanges(); // Forzar la detección de cambios
   }
 
@@ -249,6 +275,8 @@ export class InventarioPage implements OnInit {
 
   // Método para normalizar un producto
   normalizeProduct(product: Product): Product {
+      // Inicializa el estado de carga para esta imagen
+    this.imageLoaded[product.product_id] = false;
     return {
       image_url: product.image_url || 'assets/product_placeholder.png',
       product_id: product.product_id || 0,
@@ -263,6 +291,14 @@ export class InventarioPage implements OnInit {
       provider_name: product.provider_name || 'Proveedor desconocido',
       sub_category_id: product.sub_category_id || null, // Valor predeterminado para sub_category_id
     };
+  }
+
+  // En tu clase
+  imageLoadError(event: any, product: Product) {
+    console.error('Error cargando imagen para producto:', product.product_id, event);
+    event.target.src = 'assets/product_placeholder.png';
+    this.imageLoaded[product.product_id] = true;
+    this.cdr.detectChanges();
   }
 
   loadMoreProducts() {
@@ -321,40 +357,175 @@ export class InventarioPage implements OnInit {
     this.router.navigate(['/producto', product.product_id]);
   }
 
-  increaseCount(product: Product) {
+  async increaseCount(product: Product) {
     if (product.current_count < product.max_amount) {
-      product.current_count = product.current_count ? product.current_count + 1 : product.current_stock + 1;
+      product.current_count += 1;
     } else {
-      console.warn(`No se puede incrementar, valor máximo alcanzado (${product.max_amount})`);
-      alert(`Has alcanzado el stock máximo permitido: ${product.max_amount}`);
+      await this.presentAlert(
+        'Límite alcanzado',
+        `Has alcanzado el stock máximo permitido: ${product.max_amount}`,
+        'warning'
+      );
     }
   }
 
-  decreaseCount(product: Product) {
+  async decreaseCount(product: Product) {
     if (product.current_count > 0) {
       product.current_count--;
+    } else {
+      await this.presentAlert(
+        'Acción no permitida',
+        'No se puede disminuir, el contador ya está en 0',
+        'warning'
+      );
     }
   }
 
-  confirmAction(product: Product) {
+  private async presentAlert(
+    header: string,
+    message: string,
+    alertType: 'success' | 'warning' | 'error' = 'warning'
+  ) {
+    // Define colores según el tipo de alerta
+    const colorMap = {
+      success: 'success',
+      warning: 'warning',
+      error: 'danger'
+    };
+  
+    const alert = await this.alertController.create({
+      header,
+      message,
+      buttons: ['OK'],
+      cssClass: `custom-alert ${colorMap[alertType]}`,
+      mode: 'ios' // Puedes usar 'md' para Android o quitarlo para que se adapte
+    });
+  
+    await alert.present();
+  }
+
+  async confirmAction(product: Product) {
     const adjustment = product.current_count - product.current_stock;
+    
+    // Si no hay cambios, mostrar alerta y salir
     if (adjustment === 0) {
+      await this.presentAlert(
+        'Sin cambios',
+        'No se detectaron cambios en el inventario',
+        'warning'
+      );
       return;
     }
-
-    this.inventoryService.updateInventory(product.product_id, adjustment).subscribe({
-      next: (response: any) => {
-        if (response.success) {
-          product.current_stock = response.new_stock; // Actualiza el stock localmente
-          product.current_count = response.new_stock; // Reinicia el contador
-        } else {
-          console.warn('Error al actualizar el stock:', response.message);
+  
+    // Mostrar alerta de confirmación antes de actualizar
+    const confirm = await this.alertController.create({
+      header: 'Confirmar acción',
+      message: `¿Estás seguro de ${adjustment > 0 ? 'aumentar' : 'reducir'} el stock en ${Math.abs(adjustment)} unidades?`,
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          cssClass: 'secondary'
+        },
+        {
+          text: 'Confirmar',
+          handler: () => this.executeInventoryUpdate(product, adjustment)
         }
-      },
-      error: (error) => {
-        console.error('Error al realizar la solicitud:', error);
-      },
+      ]
     });
+  
+    await confirm.present();
+  }
+  
+  private async executeInventoryUpdate(product: Product, adjustment: number) {
+    // Mostrar loader mientras se procesa
+    const loading = await this.presentLoading('Actualizando inventario...');
+    
+    try {
+      this.inventoryService.updateInventory(product.product_id, adjustment).subscribe({
+        next: async (response: any) => {
+          await loading.dismiss();
+          
+          if (response.success) {
+            // Actualizar valores locales
+            product.current_stock = response.new_stock;
+            product.current_count = response.new_stock;
+            
+            // Mostrar alerta de éxito
+            await this.presentAlert(
+              '¡Éxito!',
+              `Inventario actualizado correctamente. Nuevo stock: ${response.new_stock}`,
+              'success'
+            );
+            
+            // Recargar datos manteniendo filtros
+            await this.reloadDataPreservingFilters();
+          } else {
+            await this.presentAlert(
+              'Error',
+              `No se pudo actualizar el inventario: ${response.message}`,
+              'error'
+            );
+          }
+        },
+        error: async (error) => {
+          await loading.dismiss();
+          await this.presentAlert(
+            'Error',
+            `Ocurrió un error al actualizar: ${error.message || 'Error desconocido'}`,
+            'error'
+          );
+        }
+      });
+    } catch (error) {
+      await loading.dismiss();
+      await this.presentAlert(
+        'Error',
+        'Ocurrió un error inesperado',
+        'error'
+      );
+    }
+  }
+  
+  private async reloadDataPreservingFilters() {
+    // Guardar el estado actual de los filtros
+    const currentFilters = {
+      searchTerm: this.searchTerm,
+      selectedCategory: this.selectedCategory,
+      selectedSubCategory: this.selectedSubCategory,
+      selectedSort: this.selectedSort
+    };
+  
+    // Mostrar loader mientras se recargan los datos
+    const loading = await this.presentLoading('Actualizando lista...');
+    
+    try {
+      // Recargar productos
+      await this.fetchProducts();
+      
+      // Reaplicar los filtros guardados
+      this.searchTerm = currentFilters.searchTerm;
+      this.selectedCategory = currentFilters.selectedCategory;
+      this.selectedSubCategory = currentFilters.selectedSubCategory;
+      this.selectedSort = currentFilters.selectedSort;
+      
+      this.applyFilters();
+    } catch (error) {
+      console.error('Error al recargar datos:', error);
+    } finally {
+      await loading.dismiss();
+    }
+  }
+  
+  private async presentLoading(message: string) {
+    const loading = await this.loadingController.create({
+      message,
+      spinner: 'crescent',
+      translucent: true
+    });
+    
+    await loading.present();
+    return loading;
   }
 
   getButtonColor(product: Product): string {
