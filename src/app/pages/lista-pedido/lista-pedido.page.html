@@ -25,25 +25,15 @@
             <th>Producto</th>
             <th>En Existencia</th>
             <th>Faltantes</th>
-            <!-- <th>Precio Unitario</th>
-            <th>Total</th> -->
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let item of providerProducts">
+          <tr *ngFor="let item of getProductsWithMissingItems()">
             <td>{{ item.product_name }}</td>
             <td>{{ item.current_stock }}</td>
             <td>{{ item.max_amount - item.current_stock }}</td>
-            <!-- <td>${{ item.credit_price }}</td>
-            <td>${{ (item.max_amount - item.current_stock) * item.credit_price }}</td> -->
           </tr>
-          <!-- Fila del total general -->
-          <!-- <tr>
-            <td colspan="3"></td>
-            <td colspan="1" style="text-align: center; font-weight: bold;">Total general</td>
-            <td style="font-weight: bold;">${{ totalCost }}</td>
-          </tr> -->
-        </tbody>
+        </tbody>      
       </table>
       <!-- Total general para vistas grandes -->
       <div class="table-total">
@@ -53,12 +43,10 @@
 
     <!-- Tarjetas para pantallas pequeñas -->
     <div class="pedido-list" *ngIf="!isLargeScreen">
-      <div class="pedido-card" *ngFor="let item of providerProducts">
+      <div class="pedido-card" *ngFor="let item of getProductsWithMissingItems()">
         <h3>{{ item.product_name }}</h3>
         <p><strong>En existencia:</strong> {{ item.current_stock }}</p>
         <p><strong>Faltantes:</strong> {{ item.max_amount - item.current_stock }}</p>
-        <!-- <p><strong>Precio Unitario:</strong> ${{ item.credit_price }}</p>
-        <p><strong>Total:</strong> ${{ (item.max_amount - item.current_stock) * item.credit_price }}</p> -->
       </div>
     </div>
   </div>

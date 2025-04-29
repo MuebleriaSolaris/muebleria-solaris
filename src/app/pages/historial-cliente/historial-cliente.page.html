@@ -16,11 +16,11 @@
       <ion-col [ngClass]="isMobile ? 'size-2' : 'size-2'">{{ change.phone }}</ion-col>
       <ion-col size="2" class="desktop-only">
         <span class="type-label" [ngClass]="{
-          'success': change.type === 1,
-          'warning': change.type === 2,
-          'danger': change.type === 0
+          'success': change.type === 0,
+          'warning': change.type === 1,
+          'danger': change.type === 2
         }">
-          {{ change.type === 1 ? 'Bueno' : change.type === 2 ? 'Regular' : 'Malo' }}
+          {{ change.type === 1 ? 'Regular' : change.type === 2 ? 'Malo' : 'Bueno' }}
         </span>
       </ion-col>
       <ion-col [ngClass]="isMobile ? 'size-2' : 'size-1'">{{ change.change_timestamp }}</ion-col>

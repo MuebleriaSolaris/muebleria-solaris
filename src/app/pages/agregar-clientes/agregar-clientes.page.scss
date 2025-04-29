@@ -1,7 +1,24 @@
-ion-content {
+  ion-content {
     --background: #f7f7f7;
   }
-  
+  /* Habilita selección de texto SOLO en el input interno */
+  ion-input.custom-input {
+    --highlight-color-focused: transparent;  /* Opcional: elimina el subrayado al enfocar */
+
+    & .native-input {
+      user-select: text !important;         /* Permite selección con mouse */
+      -webkit-user-select: text !important; /* Para compatibilidad con Safari/iOS */
+      cursor: text;                         /* Cambia el cursor al icono de texto */
+    }
+
+    & .native-wrapper {
+      pointer-events: auto !important;      /* Asegura que todo el área sea interactiva */
+    }
+  }
+  ion-input.custom-input {
+    contain: none !important;  /* Permite que eventos pasen al input */
+  }
+
   .form-container {
     max-width: 500px;
     margin: 40px auto;
@@ -79,24 +96,85 @@ ion-content {
 }
 
 
-/* Estilo del label */
-.custom-label {
-  font-size: 14px;
-  font-weight: bold;
-  color: #333;
-  position: absolute;
-  left: 10px;
-  top: 2%;
-  transform: translateY(-50%);
-  transition: all 0.3s ease-in-out;
-  pointer-events: none;
+/* Contenedor principal */
+.form-group {
+  position: relative;
+  margin-bottom: 25px;
+  width: 100%;
 }
 
-/* Cuando hay texto en el input, el label se mueve arriba y se hace más pequeño */
-.custom-label.shrink {
-  top: 5px;
+/* Label flotante */
+.floating-label {
+  position: absolute;
+  left: 10px;
+  top: 18px;
+  color: var(--ion-color-medium);
+  font-size: 16px;
+  transition: all 0.2s ease;
+  pointer-events: none;
+  background: var(--ion-background-color);
+  padding: 0 5px;
+  z-index: 1;
+}
+
+/* Estado cuando el input tiene valor */
+.floating-label.shrink {
+  top: -8px;
   font-size: 12px;
-  color: #3b4f65;
+  color: var(--ion-color-primary);
+}
+
+/* Input nativo */
+.native-input {
+  width: 100%;
+  padding: 16px 10px;
+  border: 1px solid var(--ion-color-medium);
+  border-radius: 8px;
+  font-size: 16px;
+  color: var(--ion-text-color);
+  background: transparent;
+  outline: none;
+  transition: border-color 0.3s;
+  
+  /* Habilitar selección de texto */
+  user-select: text;
+  -webkit-user-select: text;
+  cursor: text;
+}
+
+/* Focus state */
+.native-input:focus {
+  border-color: var(--ion-color-primary);
+}
+
+.native-input:focus + .floating-label {
+  color: var(--ion-color-primary);
+}
+
+/* Estilos para el select nativo */
+.native-select {
+  width: 100%;
+  padding: 16px 10px;
+  border: 1px solid var(--ion-color-medium);
+  border-radius: 8px;
+  font-size: 16px;
+  color: var(--ion-text-color);
+  background: transparent;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 20px;
+}
+
+.native-select:focus {
+  border-color: var(--ion-color-primary);
+}
+
+.native-select:focus + .floating-label {
+  color: var(--ion-color-primary);
 }
 
 /* Cuando el input está enfocado */

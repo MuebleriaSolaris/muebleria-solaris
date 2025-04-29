@@ -6,7 +6,9 @@ import { IonItemSliding } from '@ionic/angular';
 import { ChangeDetectorRef } from '@angular/core';
 import { Subject } from 'rxjs';
 import { ImageStateService } from '../../services/image-state.service';
-import { AlertController, LoadingController } from '@ionic/angular';
+import { AlertController, LoadingController, ToastController } from '@ionic/angular';
+import { lastValueFrom } from 'rxjs';  // Añade esto al inicio del archivo
+import { timeout } from 'rxjs/operators';
 
 // Definir la interfaz Product fuera de la clase
 interface Product {
@@ -21,7 +23,9 @@ interface Product {
   max_amount: number;
   prov_price: string;
   provider_name: string;
-  sub_category_id: number | null;
+  sub_category_id: number | null; 
+  position_index: number | null;
+  global_position: number | null;
 }
 
 @Component({
@@ -44,8 +48,8 @@ export class InventarioPage implements OnInit {
   subCategories: any[] = []; // Subcategorías obtenidas de la API
 
   // Propiedades para la paginación
-  currentPage: number = 1;
-  itemsPerPage: number = 5;
+  // currentPage: number = 1;
+  // itemsPerPage: number = 5;
  
   loading: boolean = false; // Variable para mostrar el spinner de carga
 
@@ -57,6 +61,10 @@ export class InventarioPage implements OnInit {
 
   static refreshData = new Subject<void>(); // Emite un evento para recargar los datos
 
+  allowGlobalReorder: boolean = true; // Habilitar reordenamiento global
+
+  isReordering: boolean = false; // Estado de reordenamiento
+
   constructor(
     private inventoryService: InventoryService, // Inyecta InventoryService para obtener productos
     private router: Router, // Inyecta Router para la navegación
@@ -64,7 +72,8 @@ export class InventarioPage implements OnInit {
     private cdr: ChangeDetectorRef, // Inyecta ChangeDetectorRef para actualizar la vista
     public imageState: ImageStateService, // Inyecta el servicio de estado de imagen
     private alertController: AlertController,  // Inyecta AlertController para mostrar alertas
-    private loadingController: LoadingController // Inyecta LoadingController para mostrar loaders
+    private loadingController: LoadingController, // Inyecta LoadingController para mostrar loaders
+    private toastController: ToastController // Inyecta ToastController para mostrar toasts
   ) {}
 
   ngOnInit() {
@@ -95,9 +104,11 @@ export class InventarioPage implements OnInit {
 
   // Método para marcar una imagen como cargada
   setImageLoaded(productId: number) {
+    this.loading = true; // Mostrar spinner al iniciar
     console.log('Imagen cargada para producto ID:', productId);
     this.imageLoaded[productId] = true;
     this.cdr.detectChanges(); // Forzar actualización de la vista
+    this.loading = false; // Ocultar spinner cuando todo esté cargado
   }
 
   // Método para manejar el click
@@ -110,39 +121,165 @@ export class InventarioPage implements OnInit {
       this.viewProduct(product);
     }, 100);
   }
+  // Modifica el método handleReorder
+  async handleReorder(event: CustomEvent) {
+    this.isReordering = true; // Cambia el estado de reordenamiento a verdadero
+    const { from, to } = event.detail;
+    const newItems = [...this.displayedProducts];
+    
+    // Mover el elemento
+    const movedItem = newItems.splice(from, 1)[0];
+    newItems.splice(to, 0, movedItem);
+    
+    // Actualizar visualmente
+    this.displayedProducts = newItems;
+    
+    const loading = await this.loadingController.create({ message: 'Guardando orden...' });
+    await loading.present();
+  
+    try {
+      const productIds = newItems.map(item => item.product_id);
+      const isGlobal = !this.selectedSubCategory;
+      
+      const response = await lastValueFrom(
+        this.inventoryService.updateProductOrder({
+          product_ids: productIds,
+          sub_category_id: isGlobal ? undefined : Number(this.selectedSubCategory),
+          is_global: isGlobal
+        }).pipe(timeout(5000))
+      );
+  
+      if (response.success) {
+        this.showToast('Orden guardado!');
+        // Actualizar los índices localmente
+        newItems.forEach((item, index) => {
+          if (isGlobal) {
+            item.global_position = index;
+          } else {
+            item.position_index = index;
+          }
+        });
+        
+        // Actualizar también en this.products para mantener consistencia
+        this.products = this.products.map(product => {
+          const updatedProduct = newItems.find(p => p.product_id === product.product_id);
+          return updatedProduct ? {...product, 
+            global_position: updatedProduct.global_position,
+            position_index: updatedProduct.position_index
+          } : product;
+        });
+      } else {
+        throw new Error('Error en servidor');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      this.showToast('Error al guardar. Recargando...', 'danger');
+      this.fetchProducts(); // Recargar datos completos
+    } finally {
+      loading.dismiss();
+      event.detail.complete();
+      this.isReordering = false;
+      event.detail.complete();
+      
+      // Forzar actualización de la vista
+      setTimeout(() => {
+        this.cdr.detectChanges();
+      }, 100);
+    }
+  }
+
+  getReorderGroupClass() {
+    return {
+      'reorder-visible': this.isAdmin,
+      'reordering': this.isReordering
+    };
+  }
+
+  // Método para mostrar toasts
+  private async showToast(message: string, color: string = 'success', duration: number = 2000) {
+    console.log(`Toast: ${message}`, color); // Log para depuración
+    const toast = await this.toastController.create({
+      message,
+      duration,
+      color,
+      position: 'top'
+    });
+    await toast.present();
+  }
 
   fetchProducts() {
-    this.loading = true; // Mostrar spinner al iniciar
-    this.inventoryService.getProducts(this.searchTerm).subscribe(
+    this.loading = true;
+    const subCategoryId = this.selectedSubCategory ? Number(this.selectedSubCategory) : undefined;
+    
+    this.inventoryService.getProducts(this.searchTerm, subCategoryId).subscribe(
       (response) => {
         if (response && response.success) {
-          // Normalizar los productos al cargarlos
-          this.products = response.data.map((product: any) => this.normalizeProduct(product));
-  
-          // Inicializar los valores de los productos
-          this.products.forEach(product => this.initializeProducts(product));
-  
-          // Asignar valores después de cargar los productos
-          this.assignValuesToProducts();
-  
-          this.filteredProducts = this.products; // Inicializa la lista filtrada
-          this.applyFilters(); // Aplica los filtros iniciales
-          this.loadMoreProducts(); // Carga los primeros productos
-  
-          // Forzar la detección de cambios
-          this.cdr.detectChanges();
-          this.loading = false; // Ocultar spinner cuando todo esté cargado
-        } else {
-          console.warn('Respuesta no válida de la API:', response);
-          this.loading = false; // Ocultar spinner cuando todo esté cargado
+          // Normalizar productos y asegurar current_stock
+          this.products = response.data.map((product: any) => {
+            const normalized = this.normalizeProduct(product);
+            // Asegurar que current_count refleje current_stock
+            normalized.current_count = normalized.current_stock;
+            return normalized;
+          });
+          
+          // Ordenar por posición
+          this.products.sort((a, b) => {
+            // Priorizar el orden por subcategoría si está seleccionada
+            if (subCategoryId) {
+              const aPos = a.position_index === null ? Infinity : a.position_index;
+              const bPos = b.position_index === null ? Infinity : b.position_index;
+              return aPos - bPos;
+            }
+            // Orden global por defecto
+            const aPos = a.global_position === null ? Infinity : a.global_position;
+            const bPos = b.global_position === null ? Infinity : b.global_position;
+            return aPos - bPos;
+          });
+          
+          this.filteredProducts = [...this.products];
+          this.applyFilters();
+          this.loading = false;
         }
       },
       (error) => {
         console.error('Error al obtener productos:', error);
-        this.loading = false; // Ocultar spinner cuando todo esté cargado
+        this.loading = false;
       }
     );
   }
+
+  // fetchProducts() {
+  //   this.loading = true; // Mostrar spinner al iniciar
+  //   this.inventoryService.getProducts(this.searchTerm).subscribe(
+  //     (response) => {
+  //       if (response && response.success) {
+  //         // Normalizar los productos al cargarlos
+  //         this.products = response.data.map((product: any) => this.normalizeProduct(product));
+  
+  //         // Inicializar los valores de los productos
+  //         this.products.forEach(product => this.initializeProducts(product));
+  
+  //         // Asignar valores después de cargar los productos
+  //         this.assignValuesToProducts();
+  
+  //         this.filteredProducts = this.products; // Inicializa la lista filtrada
+  //         this.applyFilters(); // Aplica los filtros iniciales
+  //         this.loadMoreProducts(); // Carga los primeros productos
+  
+  //         // Forzar la detección de cambios
+  //         this.cdr.detectChanges();
+  //         this.loading = false; // Ocultar spinner cuando todo esté cargado
+  //       } else {
+  //         console.warn('Respuesta no válida de la API:', response);
+  //         this.loading = false; // Ocultar spinner cuando todo esté cargado
+  //       }
+  //     },
+  //     (error) => {
+  //       console.error('Error al obtener productos:', error);
+  //       this.loading = false; // Ocultar spinner cuando todo esté cargado
+  //     }
+  //   );
+  // }
 
 
   // Método para asignar valores a los productos después de cargarlos
@@ -221,7 +358,7 @@ export class InventarioPage implements OnInit {
     console.log('Productos filtrados:', this.filteredProducts);
 
     // Reiniciar la paginación y cargar los primeros productos
-    this.currentPage = 1; 
+    //this.currentPage = 1; 
     this.displayedProducts = []; // Reiniciar los productos mostrados
     this.loadMoreProducts(); // Cargar los primeros productos filtrados
     this.cdr.detectChanges(); // Forzar la detección de cambios
@@ -233,50 +370,106 @@ export class InventarioPage implements OnInit {
       .replace(/[\u0300-\u036f]/g, ''); // Elimina los caracteres diacríticos
   }
 
+  // applyFilters() {
+  //   let filtered = [...this.products]; // Crear una copia de los productos
+  
+  //   // Filtrar por categoría
+  //   if (this.selectedCategory) {
+  //     const selectedCategoryId = Number(this.selectedCategory); // Convertir a número
+  //     filtered = filtered.filter((product) => {
+  //       return product && product.category_id === selectedCategoryId;
+  //     });
+  //   }
+  
+  //   // Filtrar por subcategoría
+  //   if (this.selectedSubCategory) {
+  //     const selectedSubCategoryId = Number(this.selectedSubCategory); // Convertir a número
+  //     filtered = filtered.filter((product) => {
+  //       return product && (product.sub_category_id === selectedSubCategoryId || !product.sub_category_id);
+  //     });
+  //   }
+  
+  //   // Ordenar
+  //   if (this.selectedSort === 'recent') {
+  //     filtered = filtered.sort(
+  //       (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+  //     );
+  //   } else if (this.selectedSort === 'alphabetical') {
+  //     filtered = filtered.sort((a, b) => a.product_name.localeCompare(b.product_name));
+  //   }
+  
+  //   // Normalizar los productos después de aplicar los filtros
+  //   this.filteredProducts = filtered.map((product) => this.normalizeProduct(product));
+  
+  //   // Reiniciar la paginación y cargar los primeros productos
+  //   this.currentPage = 1;
+  //   this.displayedProducts = [];
+  //   this.loadMoreProducts();
+  
+  //   // Forzar la detección de cambios
+  //   this.cdr.detectChanges();
+  // }
+
   applyFilters() {
-    let filtered = [...this.products]; // Crear una copia de los productos
-  
-    // Filtrar por categoría
+    let filtered = [...this.products];
+    
+    // 1. Filtrado por categoría/subcategoría
     if (this.selectedCategory) {
-      const selectedCategoryId = Number(this.selectedCategory); // Convertir a número
-      filtered = filtered.filter((product) => {
-        return product && product.category_id === selectedCategoryId;
-      });
+      const selectedCategoryId = Number(this.selectedCategory);
+      filtered = filtered.filter(product => product.category_id === selectedCategoryId);
     }
   
-    // Filtrar por subcategoría
     if (this.selectedSubCategory) {
-      const selectedSubCategoryId = Number(this.selectedSubCategory); // Convertir a número
-      filtered = filtered.filter((product) => {
-        return product && (product.sub_category_id === selectedSubCategoryId || !product.sub_category_id);
-      });
-    }
-  
-    // Ordenar
-    if (this.selectedSort === 'recent') {
-      filtered = filtered.sort(
-        (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+      const selectedSubCategoryId = Number(this.selectedSubCategory);
+      filtered = filtered.filter(product => 
+        product.sub_category_id === selectedSubCategoryId || !product.sub_category_id
       );
-    } else if (this.selectedSort === 'alphabetical') {
-      filtered = filtered.sort((a, b) => a.product_name.localeCompare(b.product_name));
     }
   
-    // Normalizar los productos después de aplicar los filtros
-    this.filteredProducts = filtered.map((product) => this.normalizeProduct(product));
+    // 2. Ordenamiento priorizando posición
+    filtered = filtered.sort((a, b) => {
+      // Caso 1: Hay subcategoría seleccionada -> usar position_index
+      if (this.selectedSubCategory) {
+        // Tratar null como infinito positivo para que vayan al final
+        const aPos = a.position_index === null ? Infinity : a.position_index;
+        const bPos = b.position_index === null ? Infinity : b.position_index;
+        return aPos - bPos;
+      }
+      // Caso 2: Vista global -> usar global_position
+      else {
+        // Tratar null como infinito positivo para que vayan al final
+        const aPos = a.global_position === null ? Infinity : a.global_position;
+        const bPos = b.global_position === null ? Infinity : b.global_position;
+        return aPos - bPos;
+      }
+    });
   
-    // Reiniciar la paginación y cargar los primeros productos
-    this.currentPage = 1;
+    // 3. Aplicar ordenamiento adicional solo si no hay posiciones definidas
+    const hasCustomOrder = filtered.some(p => 
+      this.selectedSubCategory ? p.position_index !== null : p.global_position !== null
+    );
+  
+    if (!hasCustomOrder) {
+      if (this.selectedSort === 'recent') {
+        filtered = filtered.sort(
+          (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+        );
+      } else if (this.selectedSort === 'alphabetical') {
+        filtered = filtered.sort((a, b) => a.product_name.localeCompare(b.product_name));
+      }
+    }
+  
+    this.filteredProducts = filtered;
+    // this.currentPage = 1;
     this.displayedProducts = [];
     this.loadMoreProducts();
-  
-    // Forzar la detección de cambios
-    this.cdr.detectChanges();
   }
 
   // Método para normalizar un producto
   normalizeProduct(product: Product): Product {
-      // Inicializa el estado de carga para esta imagen
+    // Inicializa el estado de carga para esta imagen
     this.imageLoaded[product.product_id] = false;
+    
     return {
       image_url: product.image_url || 'assets/product_placeholder.png',
       product_id: product.product_id || 0,
@@ -284,12 +477,14 @@ export class InventarioPage implements OnInit {
       credit_price: product.credit_price || 0,
       updated_at: product.updated_at || new Date().toISOString(),
       category_id: product.category_id || null,
-      current_count: product.current_count || 0,
-      current_stock: product.current_stock || 0,
+      current_count: product.current_stock || 0, // Inicializar con current_stock
+      current_stock: product.current_stock || 0, // Asegurar que siempre tenga valor
       max_amount: product.max_amount || 0,
       prov_price: product.prov_price || '0.00',
       provider_name: product.provider_name || 'Proveedor desconocido',
-      sub_category_id: product.sub_category_id || null, // Valor predeterminado para sub_category_id
+      sub_category_id: product.sub_category_id || null,
+      position_index: product.position_index !== undefined ? product.position_index : null,
+      global_position: product.global_position !== undefined ? product.global_position : null 
     };
   }
 
@@ -302,23 +497,23 @@ export class InventarioPage implements OnInit {
   }
 
   loadMoreProducts() {
-    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    const endIndex = startIndex + this.itemsPerPage;
+    // const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    // const endIndex = startIndex + this.itemsPerPage;
 
     // Obtén los nuevos productos de la lista filtrada
-    const newProducts = this.filteredProducts.slice(startIndex, endIndex);
+    // const newProducts = this.filteredProducts.slice(startIndex, endIndex);
 
     // Concatena los nuevos productos a la lista existente
-    this.displayedProducts = this.displayedProducts.concat(newProducts);
+    this.displayedProducts = [...this.filteredProducts];
 
     // Incrementa la página para la próxima carga
-    this.currentPage++;
+    // this.currentPage++;
   }
 
-  showMoreProducts() {
-    this.currentPage++; // Incrementa la página actual
-    this.loadMoreProducts(); // Carga los siguientes productos
-  }
+  // showMoreProducts() {
+  //   this.currentPage++; // Incrementa la página actual
+  //   this.loadMoreProducts(); // Carga los siguientes productos
+  // }
 
   onCategoryChange(event: any) {
     this.selectedCategory = event.detail.value;

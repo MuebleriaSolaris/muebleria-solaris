@@ -81,3 +81,8 @@
     margin: 0px auto;
   }
 }
+
+.guardar-button::part(native) {
+  --background: linear-gradient(to right, #28a745, #218838);
+  color: white;
+}

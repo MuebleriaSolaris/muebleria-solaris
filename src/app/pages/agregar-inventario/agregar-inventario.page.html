@@ -10,86 +10,172 @@
 
     <!-- Formulario para agregar producto -->
     <form (submit)="saveProduct()">
-      <ion-list lines="none">
+      <ion-list lines="none" class="custom-form-list">
         <!-- Nombre del Producto -->
-        <ion-item class="form-item">
-          <ion-label class="title-item" position="stacked">Nombre del Producto</ion-label>
-          <ion-input [(ngModel)]="newProduct.name" name="name" required></ion-input>
-        </ion-item>
+        <div class="form-group">
+          <label class="floating-label" [class.shrink]="hasValue(newProduct.name)">Nombre del Producto</label>
+          <input 
+            [(ngModel)]="newProduct.name" 
+            class="native-input"
+            name="name" 
+            required
+          >
+        </div>
+      
+        <!-- Categoría -->
+        <div class="form-group">
+          <label class="floating-label" [class.shrink]="hasValue(newProduct.category_id)">Categoría</label>
+          <select
+            [(ngModel)]="newProduct.category_id"
+            class="native-select"
+            name="category_id"
+            required
+          >
+            <option value="" disabled selected hidden>Seleccione una</option>
+            <option *ngFor="let category of categories" [value]="category.id">{{ category.name }}</option>
+          </select>
+        </div>
+      
+        <!-- Subcategoría -->
+        <div class="form-group">
+          <label class="floating-label" [class.shrink]="hasValue(newProduct.sub_category_id)">Subcategoría</label>
+          <select
+            [(ngModel)]="newProduct.sub_category_id"
+            class="native-select"
+            name="sub_category_id"
+            required
+          >
+            <option value="" disabled selected hidden>Seleccione una</option>
+            <option *ngFor="let subCategory of subCategories" [value]="subCategory.id">{{ subCategory.name }}</option>
+          </select>
+        </div>
+      
+        <!-- Proveedores -->
+        <div class="form-group">
+          <label class="floating-label" [class.shrink]="hasValue(newProduct.proveedor_id)">Proveedor</label>
+          <select
+            [(ngModel)]="newProduct.proveedor_id"
+            class="native-select"
+            name="proveedor_id"
+            required
+          >
+            <option value="" disabled selected hidden>Seleccione un proveedor</option>
+            <option *ngFor="let provider of providers" [value]="provider.id">{{ provider.name }}</option>
+          </select>
+        </div>
+      
+        <!-- Detalles del Producto -->
+        <div class="form-group">
+          <label class="floating-label" [class.shrink]="hasValue(newProduct.product_details)">Detalles del Producto</label>
+          <textarea
+            [(ngModel)]="newProduct.product_details"
+            class="native-textarea"
+            name="product_details"
+            rows="3"
+            style="width: 100%;"
+          ></textarea>
+        </div>
+      
+        <!-- Novedad -->
+        <div class="form-toggle-group"  style="margin-bottom: 25px; text-align: center;">
+          <label style="margin-right: 5px;">Novedad</label>
+          <input 
+            type="checkbox" 
+            [(ngModel)]="newProduct.novedad_act"
+            name="novedad_act"
+            class="native-toggle"
+            (change)="toggleNovedad($event)"
+          >
+        </div>
+      
+        <!-- Precio de Crédito -->
+        <div class="form-group">
+          <label class="floating-label" [class.shrink]="hasValue(newProduct.credit_price)" >Precio de Crédito</label>
+          <input 
+            [(ngModel)]="newProduct.credit_price" 
+            class="native-input"
+            name="credit_price" 
+            type="number" 
+            required
+          >
+        </div>
+      
+        <!-- Precio de Proveedor (solo para gerente) -->
+        <div class="form-group" *ngIf="esGerente">
+          <label class="floating-label" [class.shrink]="hasValue(newProduct.prov_price)">Precio de Proveedor</label>
+          <input 
+            [(ngModel)]="newProduct.prov_price" 
+            class="native-input"
+            name="prov_price" 
+            type="number" 
+            required
+          >
+        </div>
 
-        <!-- Imagen del Producto -->
-        <ion-item class="form-item">
-          <ion-label class="title-item" position="stacked">Imagen del Producto</ion-label>
-          <ion-avatar class="image-preview" (click)="presentImageOptions()">
+        <!-- Cantidad Máxima -->
+        <div class="form-group" *ngIf="esGerente">
+          <label class="floating-label" [class.shrink]="hasValue(newProduct.max_amount)">Cantidad Máxima</label>
+          <input 
+            [(ngModel)]="newProduct.max_amount" 
+            (change)="validateCurrentAmount()"
+            class="native-input"
+            name="max_amount" 
+            type="number" 
+            required
+            [value]="newProduct.max_amount"
+          >
+        </div>
+
+        <!-- Cantidad Actual -->
+        <div class="form-group" *ngIf="esGerente">
+          <label class="floating-label" [class.shrink]="hasValue(newProduct.current_amount)">Cantidad Actual</label>
+          <input 
+            [(ngModel)]="newProduct.current_amount" 
+            (change)="validateCurrentAmount()"
+            class="native-input"
+            name="current_amount" 
+            type="number" 
+            required
+            [value]="newProduct.current_amount"
+          >
+        </div>
+      
+        <!-- Marca -->
+        <div class="form-group">
+          <label class="floating-label" [class.shrink]="hasValue(newProduct.brand_id)">Marca</label>
+          <select
+            [(ngModel)]="newProduct.brand_id"
+            class="native-select"
+            name="brand_id"
+            required
+          >
+            <option value="" disabled selected hidden>Seleccione una</option>
+            <option *ngFor="let brand of brands" [value]="brand.id">{{ brand.name }}</option>
+          </select>
+        </div>
+      
+        <!-- Imagen del Producto (se mantiene como ion-avatar) -->
+        <div class="form-image-group" style="text-align: center;">
+          <label>Imagen del Producto</label>
+          <ion-avatar class="image-preview" (click)="presentImageOptions()" style="margin-top: 10px;">
             <img [src]="imageUrl || 'assets/product_placeholder.png'" alt="Imagen del Producto" />
           </ion-avatar>
-        </ion-item>
-
-        <!-- Categoría -->
-        <ion-item class="form-item">
-          <ion-label class="title-item" position="stacked">Categoría</ion-label>
-          <ion-select [(ngModel)]="newProduct.category_id" name="category_id" placeholder="Seleccione una" required>
-            <ion-select-option *ngFor="let category of categories" [value]="category.id">{{ category.name }}</ion-select-option>
-          </ion-select>
-        </ion-item>
-
-        <!-- Subcategoría -->
-        <ion-item class="form-item">
-          <ion-label class="title-item" position="stacked">Subcategoría</ion-label>
-          <ion-select [(ngModel)]="newProduct.sub_category_id" name="sub_category_id" placeholder="Seleccione una" required>
-            <ion-select-option *ngFor="let subCategory of subCategories" [value]="subCategory.id">{{ subCategory.name }}</ion-select-option>
-          </ion-select>
-        </ion-item>
-
-        <!-- Proveedores -->
-        <ion-item class="form-item">
-          <ion-label class="title-item" position="stacked">Proveedor</ion-label>
-          <ion-select [(ngModel)]="newProduct.proveedor_id" name="proveedor_id" placeholder="Seleccione un proveedor" required>
-            <ion-select-option *ngFor="let provider of providers" [value]="provider.id">{{ provider.name }}</ion-select-option>
-          </ion-select>
-        </ion-item>
-
-        <!-- Detalles del Producto -->
-        <ion-item class="form-item">
-          <ion-label class="title-item" position="stacked">Detalles del Producto</ion-label>
-          <ion-textarea [(ngModel)]="newProduct.product_details" name="product_details"></ion-textarea>
-        </ion-item>
-
-        <!-- Novedad -->
-        <ion-item class="form-item">
-          <ion-label class="title-item">Novedad</ion-label>
-          <ion-toggle [(ngModel)]="newProduct.novedad_act" name="novedad_act" (ionChange)="toggleNovedad($event)"></ion-toggle>
-        </ion-item>
-
-        <!-- Precio de Crédito -->
-        <ion-item class="form-item">
-          <ion-label class="title-item" position="stacked">Precio de Crédito</ion-label>
-          <ion-input [(ngModel)]="newProduct.credit_price" name="credit_price" type="number" required></ion-input>
-        </ion-item>
-
-        <!-- Precio de Proveedor -->
-        <ion-item class="form-item" *ngIf="esGerente">
-          <ion-label class="title-item" position="stacked">Precio de Provedor</ion-label>
-          <ion-input [(ngModel)]="newProduct.prov_price" name="prov_price" type="number" required></ion-input>
-        </ion-item>
-
-        <!-- Marca -->
-        <ion-item class="form-item" >
-          <ion-label class="title-item" position="stacked">Marca</ion-label>
-          <ion-select [(ngModel)]="newProduct.brand_id" name="brand_id" placeholder="Seleccione una" required>
-            <ion-select-option *ngFor="let brand of brands" [value]="brand.id">{{ brand.name }}</ion-select-option>
-          </ion-select>
-        </ion-item>
-
+        </div>
       </ion-list>
 
       <!-- Botón Guardar -->
-      <ion-footer class="footer edit-footer">
-        <ion-button expand="block" color="primary" type="submit">
+      <!-- <ion-footer class="footer edit-footer">
+        <ion-button class="guardar-button" expand="block" color="success" type="submit">
           <ion-icon slot="start" name="checkmark-outline"></ion-icon>
           Guardar Producto
         </ion-button>
-      </ion-footer>
+      </ion-footer> -->
+      <div class="form-footer">
+        <button type="submit" class="native-button" color="success">
+          <ion-icon name="checkmark-outline"></ion-icon>
+          Guardar Producto
+        </button>
+      </div>
     </form>
   </div>
 </ion-content>

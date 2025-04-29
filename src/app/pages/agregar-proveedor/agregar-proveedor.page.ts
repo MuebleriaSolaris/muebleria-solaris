@@ -82,4 +82,9 @@ export class AgregarProveedorPage implements OnInit {
 
     await alert.present();
   }
+
+  // Validar si el campo tiene valor
+  hasValue(value: any): boolean {
+    return value !== null && value !== undefined && value !== '';
+  }
 }

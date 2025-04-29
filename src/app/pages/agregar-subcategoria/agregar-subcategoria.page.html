@@ -8,44 +8,62 @@
   <div class="form-card">
     <h2>Introduce los detalles de la subcategoría</h2>
 
-    <form (submit)="saveSubcategory()">
-      <ion-list lines="none">
-        <!-- Nombre de la Subcategoría -->
-        <ion-item class="form-item">
-          <ion-label class="title-item" position="stacked">Nombre de la Subcategoría</ion-label>
-          <ion-input [(ngModel)]="newSubcategory.name" name="name" required></ion-input>
-        </ion-item>
+    <form (submit)="saveSubcategory()" class="custom-form">
+      <!-- Nombre de la Subcategoría -->
+      <div class="form-group">
+        <label class="floating-label" [class.shrink]="hasValue(newSubcategory.name)">Nombre de la Subcategoría</label>
+        <input 
+          [(ngModel)]="newSubcategory.name" 
+          class="native-input"
+          name="name" 
+          required
+        >
+      </div>
 
-        <!-- Selección de Categoría Padre (Opcional) -->
-        <ion-item class="form-item" *ngIf="categories.length > 0">
-          <ion-label class="title-item" position="stacked">Categoría Padre</ion-label>
-          <ion-select [(ngModel)]="newSubcategory.category_id" name="category_id" interface="action-sheet">
-            <ion-select-option *ngFor="let category of categories" [value]="category.id">
-              {{ category.name }}
-            </ion-select-option>
-          </ion-select>
-        </ion-item>
+      <!-- Selección de Categoría Padre (Opcional) -->
+      <div class="form-group" *ngIf="categories.length > 0">
+        <label class="floating-label" [class.shrink]="hasValue(newSubcategory.category_id)">Categoría Padre</label>
+        <select
+          [(ngModel)]="newSubcategory.category_id"
+          class="native-select"
+          name="category_id"
+        >
+          <option value="" disabled selected hidden>Seleccione una categoría</option>
+          <option *ngFor="let category of categories" [value]="category.id">
+            {{ category.name }}
+          </option>
+        </select>
+      </div>
 
-        <!-- Fecha de Creación (Solo Lectura) -->
-        <ion-item class="form-item">
-          <ion-label class="title-item" position="stacked">Fecha de Creación</ion-label>
-          <ion-input [(ngModel)]="newSubcategory.created_at" name="created_at" readonly></ion-input>
-        </ion-item>
+      <!-- Fecha de Creación (Solo Lectura) -->
+      <div class="form-group">
+        <label class="floating-label" [class.shrink]="hasValue(newSubcategory.created_at)">Fecha de Creación</label>
+        <input 
+          [(ngModel)]="newSubcategory.created_at" 
+          class="native-input"
+          name="created_at" 
+          readonly
+        >
+      </div>
 
-        <!-- Última Actualización (Solo Lectura) -->
-        <ion-item class="form-item">
-          <ion-label class="title-item" position="stacked">Última Actualización</ion-label>
-          <ion-input [(ngModel)]="newSubcategory.updated_at" name="updated_at" readonly></ion-input>
-        </ion-item>
-      </ion-list>
+      <!-- Última Actualización (Solo Lectura) -->
+      <div class="form-group">
+        <label class="floating-label" [class.shrink]="hasValue(newSubcategory.updated_at)">Última Actualización</label>
+        <input 
+          [(ngModel)]="newSubcategory.updated_at" 
+          class="native-input"
+          name="updated_at" 
+          readonly
+        >
+      </div>
 
       <!-- Botón Guardar -->
-      <ion-footer class="footer edit-footer">
-        <ion-button expand="block" color="primary" type="submit">
-          <ion-icon slot="start" name="checkmark-outline"></ion-icon>
+      <div class="form-footer">
+        <button type="submit" class="native-button">
+          <ion-icon name="checkmark-outline"></ion-icon>
           Guardar Subcategoría
-        </ion-button>
-      </ion-footer>
+        </button>
+      </div>
     </form>
   </div>
 </ion-content>

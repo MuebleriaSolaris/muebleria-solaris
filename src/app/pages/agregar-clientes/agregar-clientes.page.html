@@ -7,61 +7,103 @@
 <ion-content>
   <div class="form-container">
     <h2>Introduce los detalles del cliente</h2>
-
     <!-- Form Fields -->
     <form (submit)="saveClient()">
       <ion-list lines="full">
-
         <!-- Nombre -->
-          <label class="custom-label" [class.shrink]="newClient.name">Nombre Completo</label>
+
+          <!-- <label class="custom-label" [class.shrink]="newClient.name">Nombre Completo</label>
           <ion-input 
             [(ngModel)]="newClient.name" 
             class="custom-input" 
             name="name" 
             required 
             (ionInput)="capitalizeName($event)">
-          </ion-input>
-        
+          </ion-input> -->
+
+          <div class="form-group" style="margin-top: 5px;">
+            <label class="floating-label" [class.shrink]="hasValue(newClient.name)">Nombre Completo</label>
+            <input 
+              [(ngModel)]="newClient.name" 
+              class="native-input"
+              name="name"
+              required
+              (input)="capitalizeName($event)"
+            >
+          </div>
+          
+          <div class="form-group">
+            <label class="floating-label" [class.shrink]="hasValue(newClient.address)">Dirección</label>
+            <input 
+              [(ngModel)]="newClient.address" 
+              class="native-input"
+              name="address"
+              type="text"
+              required
+            >
+          </div>
 
         <!-- Dirección -->
-        <ion-item class="form-item">
+
+        <!-- <ion-item class="form-item">
           <ion-label position="floating">Dirección</ion-label>
           <ion-input [(ngModel)]="newClient.address" class="custom-input" name="address" required></ion-input>
-        </ion-item>
+        </ion-item> -->
 
         <!-- Teléfono -->
-        <ion-item class="form-item">
-          <ion-label position="floating">Teléfono</ion-label>
-          <ion-input 
+        <div class="form-group">
+          <label class="floating-label" [class.shrink]="hasValue(newClient.phone)">Teléfono</label>
+          <input 
             [(ngModel)]="newClient.phone" 
-            class="custom-input" 
+            class="native-input"
             name="phone"
-            type="tel" 
-            inputmode="numeric" 
-            maxlength="10" 
-            required 
-            (ionInput)="validateNumericInput($event)">
-          </ion-input>
-        </ion-item>
+            type="tel"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            maxlength="10"
+            required
+            (input)="validateNumericInput($event)"
+          >
+        </div>
 
         <!-- Tipo de Cliente -->
-        <ion-item class="form-item">
+        <div class="form-group" style="margin-bottom: 5px;">
+          <label class="floating-label" [class.shrink]="hasValue(newClient.type)">Tipo de Cliente</label>
+          <select 
+            [(ngModel)]="newClient.type" 
+            class="native-select"
+            name="type"
+            required
+          >
+            <option value="0">Bueno</option>
+            <option value="1">Regular</option>
+            <option value="2">Malo</option>
+          </select>
+        </div>
+
+        <!-- <ion-item class="form-item">
           <ion-label position="floating">Tipo de Cliente</ion-label>
-          <ion-select [(ngModel)]="newClient.type" name="type" placeholder="Seleccione uno" required>
-            <ion-select-option value="0">Bueno</ion-select-option>
+          <ion-select [(ngModel)]="newClient.type" class="custom-input" name="type" required>
+            <ion-select-option value="0" selected>Bueno</ion-select-option>
             <ion-select-option value="1">Regular</ion-select-option>
             <ion-select-option value="2">Malo</ion-select-option>
           </ion-select>
-        </ion-item>
+        </ion-item> -->
       </ion-list>
 
       <!-- Submit Button -->
-      <ion-footer class="footer edit-footer">
+      <!-- <ion-footer class="footer edit-footer">
         <ion-button  class="guardar-button" expand="block" color="success" type="submit">
           <ion-icon slot="start" name="checkmark-outline"></ion-icon>
           Guardar Cliente
         </ion-button>
-      </ion-footer>
+      </ion-footer> -->
+      <div class="form-footer">
+        <button type="submit" class="native-button">
+          <ion-icon name="checkmark-outline"></ion-icon>
+          Guardar Cliente
+        </button>
+      </div>
     </form>
   </div>
 </ion-content>

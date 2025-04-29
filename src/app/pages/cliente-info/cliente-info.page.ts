@@ -211,4 +211,15 @@ export class ClienteInfoPage implements OnInit {
         },
       });
   }
+
+  filterNumbers(event: any) {
+    if (this.isEditMode) {  // Solo aplica en modo edición
+      const input = event.target as HTMLInputElement;
+      let value = input.value.replace(/[^0-9]/g, '');  // Elimina todo lo que no sea número
+      if (this.customerInfo) {
+        this.customerInfo.phone = value;  // Actualiza el modelo
+      }
+      input.value = value;  // Actualiza visualmente el input
+    }
+  }
 }

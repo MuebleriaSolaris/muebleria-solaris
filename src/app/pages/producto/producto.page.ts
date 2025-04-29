@@ -12,7 +12,7 @@ import { ImageStateService } from '../../services/image-state.service'; // Impor
 import { Router } from '@angular/router';   // Importa Router
 import { ChangeDetectorService } from '../../services/change-detector.service'; // Importa ChangeDetectorService
 import { lastValueFrom } from 'rxjs'; // Importa lastValueFrom   
-import { LoadingController } from '@ionic/angular'; // Importa LoadingController 
+import { LoadingController, ToastController } from '@ionic/angular'; // Importa LoadingController y ToastController
 
 @Component({
   selector: 'app-producto',
@@ -28,6 +28,7 @@ export class ProductoPage implements OnInit {
   imageUrl: string | null = null; // Variable para almacenar la URL de la imagen
   subCategories: any[] = []; // Lista de subcategorías
   subCategoryName: string = ''; // Nombre de la subcategoría
+  isUpdating = false; // Bandera para indicar si se está actualizando la visibilidad del producto
 
   constructor(
     private route: ActivatedRoute, // Inyecta ActivatedRoute
@@ -41,7 +42,8 @@ export class ProductoPage implements OnInit {
     public imageState: ImageStateService, // Inyecta ImageStateService
     private platform: Platform, // Inyect Platform
     private changeDetector: ChangeDetectorService, // Inyecta ChangeDetectorService
-    private loadingController: LoadingController // Inyecta LoadingController
+    private loadingController: LoadingController, // Inyecta LoadingController
+    private toastController: ToastController // Inyecta ToastController
   ) {}
 
   ngOnInit() {
@@ -343,55 +345,77 @@ export class ProductoPage implements OnInit {
     this.deleteProduct(); // Llama a la función deleteProduct si el usuario confirma
   }
 
-  // Función para eliminar el producto
-  async deleteProduct() {
-    if (!this.product || !this.product.product_id) {
-        console.error('El producto no tiene un ID válido.');
-        return;
-    }
+    // Función para eliminar el producto
+    async deleteProduct() {
+      if (!this.product || !this.product.product_id) {
+          console.error('El producto no tiene un ID válido.');
+          await this.showAlert('Error', 'El producto no tiene un ID válido.');
+          return;
+      }
 
-    const confirmAlert = await this.alertController.create({
-        header: 'Confirmar eliminación',
-        message: '¿Estás seguro de que deseas eliminar este producto?',
-        buttons: [
-            {
-                text: 'Cancelar',
-                role: 'cancel'
-            },
-            {
-                text: 'Eliminar',
-                handler: async () => {
-                    const loading = await this.loadingController.create({
-                        message: 'Eliminando producto...',
-                        spinner: 'lines'
-                    });
-                    await loading.present();
+      const confirmAlert = await this.alertController.create({
+          header: 'Confirmar eliminación',
+          message: `¿Estás seguro de que deseas eliminar "${this.product.product_name}" (ID: ${this.product.product_id})?`,
+          buttons: [
+              {
+                  text: 'Cancelar',
+                  role: 'cancel',
+                  cssClass: 'secondary'
+              },
+              {
+                  text: 'Eliminar',
+                  handler: async () => {
+                      const loading = await this.loadingController.create({
+                          message: 'Eliminando producto...',
+                          spinner: 'lines',
+                          duration: 15000 // Timeout de 15 segundos
+                      });
+                      
+                      try {
+                          await loading.present();
 
-                    try {
-                        const response: any = await lastValueFrom(
-                            this.inventoryService.deleteProduct(this.product.product_id)
-                        );
+                          // Usar await directamente en lugar de lastValueFrom
+                          const response = await this.inventoryService.deleteProduct(this.product.product_id).toPromise();
 
-                        if (response.success) {
-                            await this.showAlert('Éxito', 'Producto eliminado correctamente.');
-                            this.changeDetector.setChangesDetected(`product_${this.product.product_id}`, true);
-                            this.goBack();
-                        } else {
-                            throw new Error(response.message || 'Error en la respuesta del servidor');
-                        }
-                    } catch (error) {
-                        console.error('Error al eliminar el producto:', error);
-                        await this.showAlert('Error', (error as any).message || 'Ocurrió un error al eliminar el producto.');
-                    } finally {
-                        await loading.dismiss();
-                    }
-                }
-            }
-        ]
-    });
+                          if (response?.success) {
+                              await this.showToast('Producto eliminado correctamente', 'success');
+                              this.changeDetector.setChangesDetected(`product_${this.product.product_id}`, true);
+                              this.goBack();
+                          } else {
+                              throw new Error(response?.message || 'No se pudo eliminar el producto');
+                          }
+                      } catch (error) {
+                          console.error('Error al eliminar:', error);
+                          
+                          let errorMessage = 'Error desconocido al eliminar';
+                          if (error instanceof Error) {
+                              errorMessage = error.message;
+                          } else if (typeof error === 'string') {
+                              errorMessage = error;
+                          }
+                          
+                          await this.showAlert('Error', errorMessage);
+                      } finally {
+                          await loading.dismiss();
+                      }
+                  }
+              }
+          ]
+      });
 
-    await confirmAlert.present();
-}
+      await confirmAlert.present();
+  }
+
+  // Método auxiliar para mostrar toasts
+  private async showToast(message: string, color: string = 'danger') {
+      const toast = await this.toastController.create({
+          message,
+          duration: 3000,
+          color,
+          position: 'top'
+      });
+      await toast.present();
+  }
 
   // Función para mostrar alertas
   async showAlert(header: string, message: string, duration: number = 3000) { // Duración en milisegundos, por defecto 5000ms (5 segundos)
@@ -444,6 +468,44 @@ export class ProductoPage implements OnInit {
     } catch (error) {
       console.error('Error en goBack:', error);
       window.location.href = '/inventario';
+    }
+  }
+
+  // Método llamado al hacer clic en el toggle
+  async toggleProductVisibility() {
+    if (this.isUpdating || !this.product) return;
+  
+    // Si es undefined, asigna un valor por defecto (0)
+    if (this.product.hide_product === undefined) {
+      this.product.hide_product = 0;
+    }
+  
+    this.isUpdating = true;
+    const previousState = this.product.hide_product;
+  
+    // Cambio optimista
+    this.product.hide_product = this.product.hide_product === 0 ? 1 : 0;
+  
+    try {
+      const response = await lastValueFrom(
+        this.inventoryService.updateProductVisibility(
+          this.product.product_id,
+          this.product.hide_product // Envía el nuevo estado, no el anterior
+        )
+      );
+      
+      console.log('Respuesta del servidor:', response);
+      await this.showToast(
+        `Producto marcado como ${this.product.hide_product === 0 ? 'visible' : 'oculto'}`,
+        'success'
+      );
+    } catch (error) {
+      // Revertir en caso de error
+      this.product.hide_product = previousState;
+      console.error('Error completo:', error);
+      await this.showToast('Error al actualizar visibilidad', 'danger');
+    } finally {
+      this.isUpdating = false;
     }
   }
 

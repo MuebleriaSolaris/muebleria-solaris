@@ -36,24 +36,27 @@
       </ion-select>
     </ion-item> 
 
-    <ion-item>
+    <!-- <ion-item>
       <ion-label>Ordenar por</ion-label>
       <ion-select [(ngModel)]="selectedSort" (ionChange)="applyFilters()">
         <ion-select-option value="recent">Agregado reciente</ion-select-option>
         <ion-select-option value="alphabetical">Alfabético</ion-select-option>
       </ion-select>
-    </ion-item>
+    </ion-item> -->
 
     <!-- Lista de productos -->
-    <ion-item-sliding #slidingItem *ngFor="let product of displayedProducts">
-      <ion-item class="inventory-item">
-        <div class="left-info">
+    <ion-reorder-group 
+      (ionItemReorder)="handleReorder($event)" 
+      [disabled]="!isAdmin || (!selectedSubCategory && !allowGlobalReorder)"
+      [class]="getReorderGroupClass()">
+      <ion-item-sliding *ngFor="let product of displayedProducts">
+      <ion-item class="inventory-item" lines="full">
+        <div class="left-info" (click)="handleClick(product)">
           <ion-thumbnail slot="start" class="image-container">
             <ion-spinner *ngIf="!imageLoaded[product.product_id]" 
                          name="crescent" 
                          class="image-spinner">
             </ion-spinner>
-            
             <ion-img 
               [src]="product?.image_url || 'assets/product_placeholder.png'"
               alt="{{ product?.product_name }}"
@@ -105,14 +108,19 @@
             OK
           </ion-button>
         </div>
+        <ion-reorder slot="end" *ngIf="isAdmin && (selectedSubCategory || allowGlobalReorder)">
+          <ion-icon name="reorder-three-outline" class="reorder-icon"></ion-icon>
+          <!-- <ion-note>Mover</ion-note> -->
+        </ion-reorder>
       </ion-item>
       <!-- Opciones de deslizamiento -->
-      <ion-item-options *ngIf="isAdmin && product" side="end">
+      <!-- <ion-item-options *ngIf="isAdmin && product" side="end">
         <ion-item-option (click)="handleClick(product)">
           Ver producto
         </ion-item-option>
-      </ion-item-options>
+      </ion-item-options> -->
     </ion-item-sliding>
+    </ion-reorder-group>
     <!-- Botón "Mostrar más" -->
     <ion-button (click)="loadMoreProducts()" *ngIf="hasMoreProducts()" expand="full">
       Mostrar más

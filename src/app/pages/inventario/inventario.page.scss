@@ -17,10 +17,10 @@ ion-list {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
   
-  ion-item:hover {
-    transform: scale(1.02); /* Animación al pasar sobre el elemento */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  }
+  // ion-item:hover {
+  //   transform: scale(1.02); /* Animación al pasar sobre el elemento */
+  //   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  // }
   
   /* Imagen del producto */
   ion-thumbnail {
@@ -354,5 +354,60 @@ ion-img {
   .alert-button {
     color: inherit;
     font-weight: bold;
+  }
+}
+
+/* inventario.page.scss */
+
+/* Contenedor principal del reorden */
+ion-reorder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-inline-end: 16px;
+  opacity: 1 !important; /* Forzar visibilidad */
+  min-width: 24px;
+  
+  ion-icon {
+    color: var(--ion-color-medium);
+    font-size: 24px;
+    transition: all 0.2s ease;
+  }
+  
+  &:active, &:hover {
+    ion-icon {
+      color: var(--ion-color-primary);
+      transform: scale(1.1);
+    }
+  }
+}
+
+/* Estado durante reordenamiento */
+ion-reorder-group.reorder-group-enabled ion-item {
+  --background: var(--ion-color-light);
+  transition: transform 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  
+  &.item-reorder-active {
+    border-left: 3px solid var(--ion-color-primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  }
+}
+
+/* Asegurar visibilidad en modo iOS */
+.ios ion-reorder {
+  margin-inline-end: 12px;
+}
+
+/* Solución específica para sliding items */
+ion-item-sliding {
+  ion-item {
+    --padding-start: 0;
+    --inner-padding-end: 0;
+  }
+  
+  /* Asegurar que el reorden no se oculte */
+  ion-reorder {
+    z-index: 1;
   }
 }

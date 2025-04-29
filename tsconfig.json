@@ -16,20 +16,14 @@
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "importHelpers": true,
-    "target": "es2022",
+    "target": "es2019",
     "module": "es2020",
-    "lib": [
-      "es2018", 
-      "dom"
-    ],
+    "lib": ["es2019", "dom", "esnext"],
     "useDefineForClassFields": false, 
     "typeRoots": [
       "node_modules/@types"
     ],
-    "types": [
-      "jasmine",
-      "rxjs"
-    ]
+    "types": ["node", "jasmine", "rxjs"]
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

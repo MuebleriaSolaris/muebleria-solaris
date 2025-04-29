@@ -48,3 +48,208 @@ ion-app {
     background-color: transparent; /* Keeps the content area transparent */
   }
   
+/* Estilo para el input nativo para que coincida con ion-input */
+.native-input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-size: inherit;
+  color: inherit;
+}
+
+/* Elimina el resaltado azul en iOS */
+.native-input:focus {
+  outline: none;
+}
+
+/* Elimina el padding interno del input dentro de ion-input */
+ion-input .native-input {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* Asegura que el wrapper no añada espacio extra */
+ion-input .native-wrapper {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+
+/* Contenedor principal */
+.form-group {
+  position: relative;
+  margin-bottom: 25px;
+  width: 100%;
+}
+
+/* Label flotante */
+.floating-label {
+  position: absolute;
+  left: 10px;
+  top: 18px;
+  color: var(--ion-color-medium);
+  font-size: 16px;
+  transition: all 0.2s ease;
+  pointer-events: none;
+  background: var(--ion-background-color);
+  padding: 0 5px;
+  z-index: 1;
+}
+
+/* Estado cuando el input tiene valor */
+.floating-label.shrink {
+  top: -8px;
+  font-size: 12px;
+  color: var(--ion-color-primary);
+}
+
+/* Input nativo */
+.native-input {
+  width: 100%;
+  padding: 16px 10px;
+  border: 1px solid var(--ion-color-medium);
+  border-radius: 8px;
+  font-size: 16px;
+  color: var(--ion-text-color);
+  background: transparent;
+  outline: none;
+  transition: border-color 0.3s;
+  
+  /* Habilitar selección de texto */
+  user-select: text;
+  -webkit-user-select: text;
+  cursor: text;
+}
+
+/* Focus state */
+.native-input:focus {
+  border-color: var(--ion-color-primary);
+}
+
+.native-input:focus + .floating-label {
+  color: var(--ion-color-primary);
+}
+
+/* Estilos para el select nativo */
+.native-select {
+  width: 100%;
+  padding: 16px 10px;
+  border: 1px solid var(--ion-color-medium);
+  border-radius: 8px;
+  font-size: 16px;
+  color: var(--ion-text-color);
+  background: transparent;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 20px;
+}
+
+.native-select:focus {
+  border-color: var(--ion-color-primary);
+}
+
+.native-select:focus + .floating-label {
+  color: var(--ion-color-primary);
+}
+
+/* Cuando el input está enfocado */
+.custom-input:focus {
+  border-color: #007bff;
+}
+
+/* Estilos específicos para la tarjeta de formulario */
+.form-card {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  background: var(--ion-background-color);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  
+  h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: var(--ion-color-primary);
+    font-weight: 600;
+  }
+}
+
+/* Estilos para el botón nativo */
+.native-button {
+  width: 100%;
+  padding: 16px;
+  background: var(--ion-color-primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: var(--ion-color-primary-shade);
+  }
+  
+  &:active {
+    transform: scale(0.98);
+  }
+  
+  ion-icon {
+    font-size: 20px;
+  }
+}
+
+/* Estilos para el pie de formulario */
+.form-footer {
+  margin-top: 30px;
+  padding: 0;
+}
+
+/* Estilos para inputs readonly */
+.native-input[readonly] {
+  background-color: var(--ion-color-light);
+  cursor: default;
+}
+
+/* Estilos para el formulario personalizado */
+.custom-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Grupo de contraseña */
+.password-group {
+  position: relative;
+  
+  .password-toggle-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--ion-color-medium);
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 2;
+  }
+}
+
+/* Botón success */
+.success-button {
+  background: var(--ion-color-success);
+  
+  &:hover {
+    background: var(--ion-color-success-shade);
+  }
+}

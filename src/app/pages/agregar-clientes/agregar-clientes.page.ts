@@ -47,8 +47,12 @@ export class AgregarClientesPage {
   async saveClient() {
     const { name, address, phone, type } = this.newClient;
 
+    if (!this.newClient.type) {
+      this.newClient.type = 0; // Asignar un valor por defecto si no se selecciona
+    }
+
     // Validar campos vacíos
-    if (!name || !address || !phone || type === 0) {
+    if (!name || !address || !phone) {
       await this.showAlert(
         'Campos incompletos',
         'Por favor, llena todos los campos antes de guardar.'
@@ -108,6 +112,11 @@ export class AgregarClientesPage {
       phone: '',
       type: 0,
     };
+  }
+  
+  // Validar si el campo tiene valor
+  hasValue(value: any): boolean {
+    return value !== null && value !== undefined && value !== '';
   }
 
   // Validar entrada numérica para el teléfono

@@ -22,7 +22,12 @@ export class ListaPedidoPage implements OnInit {
   ) {}
 
   ngOnInit() {
+    // Inicialización básica
     this.providerId = Number(this.route.snapshot.paramMap.get('id'));
+  }
+
+  // Este evento se ejecuta cada vez que la página está por mostrarse
+  ionViewWillEnter() {
     if (this.providerId) {
       this.loadProviderProducts(this.providerId);
     }
@@ -44,10 +49,7 @@ export class ListaPedidoPage implements OnInit {
           if (this.providerProducts.length > 0) {
             this.providerName = this.providerProducts[0]?.provider_name || '';
           }
-          
-          console.log('Productos cargados:', this.providerProducts);
-          console.log('Proveedor:', this.providerName);
-  
+
           // Calcular el costo total general
           this.calculateTotalCost();
           // El nombre del proveedor ya estará incluido en los datos si usas la consulta SQL actualizada.
@@ -61,13 +63,29 @@ export class ListaPedidoPage implements OnInit {
     });
     
   }
+  
+  getProductsWithMissingItems() {
+    return this.providerProducts.filter(item => {
+      // Filtrar productos que:
+      // 1. Tengan faltantes (max_amount - current_stock > 0)
+      // 2. NO estén ocultos (hide_product !== 1)
+      return (item.max_amount - item.current_stock) > 0 && item.hide_product !== 1;
+    });
+  }
+
   calculateTotalCost() {
     this.totalCost = this.providerProducts.reduce((acc, item) => {
-      const faltantes = item.max_amount - item.current_stock;
-      return acc + faltantes * item.credit_price;
+      // Solo sumar al total si el producto no está oculto
+      if (item.hide_product !== 1) {
+        const faltantes = item.max_amount - item.current_stock;
+        return acc + faltantes * item.credit_price;
+      }
+      return acc;
     }, 0);
   }
+
   goBack() {
     this.navCtrl.back(); // Navega a la página anterior
   }
+
 }

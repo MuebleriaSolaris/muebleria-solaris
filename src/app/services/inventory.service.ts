@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -10,9 +10,55 @@ export class InventoryService {
 
   constructor(private http: HttpClient) {}
 
-  getProducts(search: string = ''): Observable<any> {
-    const url = `${this.apiUrl}?search=${encodeURIComponent(search)}`;
-    return this.http.get(`${this.apiUrl}/inventory_info.php`);
+  // getProducts(search: string = ''): Observable<any> {
+  //   const url = `${this.apiUrl}?search=${encodeURIComponent(search)}`;
+  //   return this.http.get(`${this.apiUrl}/inventory_info.php`);
+  // }
+
+  getProducts(searchTerm?: string, subCategoryId?: number): Observable<any> {
+    const params = new HttpParams()
+      .set('search', searchTerm || '')
+      .set('sub_category_id', subCategoryId ? subCategoryId.toString() : '');
+  
+    return this.http.get(`${this.apiUrl}/inventory_info.php`, { params });
+  }
+  
+  // Modifica el método updateProductOrder
+  updateProductOrder(orderData: {
+    sub_category_id?: number,
+    is_global?: boolean,
+    product_ids: number[]
+  }): Observable<any> {
+    // Filtra propiedades undefined de manera segura
+    const body = {
+      ...orderData,
+      ...(orderData.sub_category_id === undefined ? {} : { sub_category_id: orderData.sub_category_id }),
+      ...(orderData.is_global === undefined ? {} : { is_global: orderData.is_global })
+    };
+  
+    return this.http.post(`${this.apiUrl}/update-product-order.php`, body);
+  }
+
+  updateProductVisibility(productId: number, hideProduct: number): Observable<any> {
+    const url = `${this.apiUrl}/update_visibility.php`;
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+
+    return this.http.post(url, { 
+      product_id: productId,
+      hide_product: hideProduct 
+    }, { headers });
+  }
+
+  /**
+   * Alterna el estado de visibilidad de un producto
+   * @param productId ID del producto
+   * @param currentStatus Estado actual (0 o 1)
+   */
+  toggleProductVisibility(productId: number, currentStatus: number): Observable<any> {
+    const newStatus = currentStatus === 0 ? 1 : 0;
+    return this.updateProductVisibility(productId, newStatus);
   }
 
   getProductsByProvider(id_provider: number): Observable<any> {

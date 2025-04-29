@@ -12,58 +12,81 @@ require_once __DIR__ . '/../ionic-database/Database.php';
 
 $db = new Database();
 $conn = $db->getConnection();
+$conn->set_charset("utf8mb4");
+
+// Inicializar statements
+$stmtIndex = $stmtInventory = $stmtProducts = null;
 
 try {
     $data = json_decode(file_get_contents("php://input"), true);
 
     if (!isset($data['product_id'])) {
-        echo json_encode([
-            "success" => false,
-            "message" => "ID de producto requerido"
-        ]);
-        exit;
+        throw new Exception("ID de producto requerido");
     }
 
-    $product_id = $data['product_id'];
+    $product_id = intval($data['product_id']);
+
+    // Verificar primero si el producto existe
+    $sqlCheck = "SELECT id FROM products WHERE id = ? LIMIT 1";
+    $stmtCheck = $conn->prepare($sqlCheck);
+    $stmtCheck->bind_param("i", $product_id);
+    $stmtCheck->execute();
+    
+    if ($stmtCheck->get_result()->num_rows === 0) {
+        throw new Exception("No se encontró el producto con ID: $product_id");
+    }
+    $stmtCheck->close();
 
     // Iniciar transacción
     $conn->begin_transaction();
 
-    // 1. Eliminar de inventory
+    // 1. Eliminar de index_inventory primero (relación)
+    $sqlIndex = "DELETE FROM index_inventory WHERE product_id = ?";
+    $stmtIndex = $conn->prepare($sqlIndex);
+    $stmtIndex->bind_param("i", $product_id);
+    $stmtIndex->execute();
+
+    // 2. Eliminar de inventory
     $sqlInventory = "DELETE FROM inventory WHERE id_product = ?";
     $stmtInventory = $conn->prepare($sqlInventory);
     $stmtInventory->bind_param("i", $product_id);
     $stmtInventory->execute();
 
-    // 2. Eliminar de products
+    // 3. Finalmente eliminar de products
     $sqlProducts = "DELETE FROM products WHERE id = ?";
     $stmtProducts = $conn->prepare($sqlProducts);
     $stmtProducts->bind_param("i", $product_id);
     $stmtProducts->execute();
 
+    if ($stmtProducts->affected_rows === 0) {
+        throw new Exception("No se pudo eliminar el producto (posiblemente ya fue eliminado)");
+    }
+
     // Confirmar transacción
     $conn->commit();
 
-    if ($stmtProducts->affected_rows > 0) {
-        echo json_encode([
-            "success" => true,
-            "message" => "Producto eliminado completamente"
-        ]);
-    } else {
-        echo json_encode([
-            "success" => false,
-            "message" => "No se encontró el producto"
-        ]);
-    }
+    echo json_encode([
+        "success" => true,
+        "message" => "Producto eliminado completamente",
+        "product_id" => $product_id
+    ]);
 
-    $stmtInventory->close();
-    $stmtProducts->close();
 } catch (Exception $e) {
-    $conn->rollback();
+    // Revertir en caso de error
+    if ($conn && $conn->errno) {
+        $conn->rollback();
+    }
+    
+    http_response_code(404); // 404 para "no encontrado"
     echo json_encode([
         "success" => false,
-        "message" => "Error al eliminar: " . $e->getMessage()
+        "message" => $e->getMessage(),
+        "product_id" => isset($product_id) ? $product_id : null
     ]);
 } finally {
-    $conn->close();
+    // Cerrar statements y conexión en orden inverso
+    if ($stmtIndex) $stmtIndex->close();
+    if ($stmtInventory) $stmtInventory->close();
+    if ($stmtProducts) $stmtProducts->close();
+    if ($conn) $conn->close();
 }

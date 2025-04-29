@@ -30,6 +30,8 @@ export class AgregarInventarioPage implements OnInit {
     brand_id: null,
     proveedor_id: null,
     prov_price: null,
+    max_amount: null,    
+    current_amount: null 
   };
 
   categories: any[] = [];
@@ -80,7 +82,10 @@ export class AgregarInventarioPage implements OnInit {
     this.loadSubCategories();
     this.loadprovider();
   }
-
+  // Validar si el campo tiene valor
+  hasValue(value: any): boolean {
+    return value !== null && value !== undefined && value !== '';
+  }
   // Método para obtener el siguiente ID disponible
   async getNextProductId() {
     try {
@@ -295,11 +300,26 @@ loadBrands() {
       credit_price: null,
       brand_id: null,
       proveedor_id: null,
+      max_amount: null,    
+      current_amount: null 
     };
   }
 
   toggleNovedad(event: any) {
     this.newProduct.novedad_act = event.detail.checked ? 1 : 0;
+  }
+
+  validateCurrentAmount() {
+    if (this.newProduct.max_amount !== null && 
+        this.newProduct.current_amount !== null && 
+        this.newProduct.current_amount > this.newProduct.max_amount) {
+      
+      // Mostrar alerta
+      this.showAlert('Valor inválido', 'La cantidad actual no puede ser mayor que el stock máximo');
+      
+      // Ajustar el valor
+      this.newProduct.current_amount = this.newProduct.max_amount;
+    }
   }
 
   async saveProduct() {
@@ -322,8 +342,12 @@ loadBrands() {
       novedad_act: this.newProduct.novedad_act ? 1 : 0,
       prov_price: this.newProduct.prov_price || 0,
       image_url: this.imageUrl,
+      max_amount: this.newProduct.max_amount || 15,    // Usar el valor del formulario o 15 por defecto
+      current_amount: this.newProduct.current_amount || 10 // Usar el valor del formulario o 10 por defecto
     };
     
+    
+
     // Mostrar confirmación antes de guardar
     const confirmAlert = await this.alertController.create({
       header: 'Confirmar',

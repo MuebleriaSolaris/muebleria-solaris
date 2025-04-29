@@ -71,4 +71,8 @@ export class AgregarMarcaProductoPage implements OnInit {
 
     await alert.present();
   }
+
+  hasValue(value: any): boolean {
+    return value !== null && value !== undefined && value !== '';
+  }
 }

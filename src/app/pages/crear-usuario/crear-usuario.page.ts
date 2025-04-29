@@ -130,4 +130,8 @@ export class CrearUsuarioPage {
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
   }
+
+  hasValue(value: any): boolean {
+    return value !== null && value !== undefined && value !== '';
+  }
 }

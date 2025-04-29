@@ -12,6 +12,7 @@ require_once __DIR__ . '/../ionic-database/Database.php';
 
 $db = new Database();
 $conn = $db->getConnection();
+$conn->set_charset("utf8mb4");
 
 try {
     // Leer datos de entrada

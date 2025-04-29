@@ -5,102 +5,86 @@
 </ion-header>
 
 <ion-content>
-  <div class="form-container">
+  <div class="form-card">
     <h2>Introduce los detalles del usuario</h2>
 
-    <!-- Form Fields -->
-    <form (submit)="saveUser()">
-      <ion-list lines="full">
+    <form (submit)="saveUser()" class="custom-form">
+      <!-- Nombre -->
+      <div class="form-group">
+        <label class="floating-label" [class.shrink]="hasValue(newUser.name)">Nombre</label>
+        <input 
+          [(ngModel)]="newUser.name" 
+          class="native-input"
+          name="name" 
+          required
+          (input)="capitalizeName()"
+        >
+      </div>
 
-        <!-- Nombre -->
-        <ion-item class="form-item">
-          <ion-label position="floating">Nombre</ion-label>
-          <ion-input [(ngModel)]="newUser.name" class="custom-input" name="name" required required (ionInput)="capitalizeName()"></ion-input>
-        </ion-item>
+      <!-- Nombre de Usuario -->
+      <div class="form-group">
+        <label class="floating-label" [class.shrink]="hasValue(newUser.username)">Nombre de Usuario</label>
+        <input 
+          [(ngModel)]="newUser.username" 
+          class="native-input"
+          name="username" 
+          required
+        >
+      </div>
 
-        <!-- Nombre de Usuario -->
-        <ion-item class="form-item">
-          <ion-label position="floating">Nombre de Usuario</ion-label>
-          <ion-input [(ngModel)]="newUser.username" class="custom-input" name="username" required></ion-input>
-        </ion-item>
+      <!-- Teléfono -->
+      <div class="form-group">
+        <label class="floating-label" [class.shrink]="hasValue(newUser.phone)">Teléfono</label>
+        <input 
+          [(ngModel)]="newUser.phone" 
+          class="native-input"
+          name="phone"
+          type="tel"
+          inputmode="numeric"
+          maxlength="10"
+          (input)="validateNumericInput($event)"
+        >
+      </div>
 
-        <!-- Correo Electrónico -->
-        <!-- <ion-item class="form-item">
-          <ion-label position="floating">Correo Electrónico</ion-label>
-          <ion-input [(ngModel)]="newUser.email" class="custom-input" name="email" type="email" required></ion-input>
-        </ion-item> -->
+      <!-- Rol -->
+      <div class="form-group">
+        <label class="floating-label" [class.shrink]="hasValue(newUser.role)">Rol</label>
+        <select
+          [(ngModel)]="newUser.role"
+          class="native-select"
+          name="role"
+          required
+        >
+          <option value="" disabled selected hidden>Seleccione un rol</option>
+          <option value="1">Administrador</option>
+          <option value="4">Vendedor</option>
+        </select>
+      </div>
 
-        <!-- Nombre de la Empresa -->
-        <!-- <ion-item class="form-item">
-          <ion-label position="floating">Nombre de la Empresa</ion-label>
-          <ion-input [(ngModel)]="newUser.company_name" class="custom-input" name="company_name"></ion-input>
-        </ion-item> -->
+      <!-- Contraseña con alternar visibilidad -->
+      <div class="form-group password-group">
+        <label class="floating-label" [class.shrink]="hasValue(newUser.password)">Contraseña</label>
+        <input 
+          [(ngModel)]="newUser.password"
+          class="native-input"
+          name="password"
+          [type]="showPassword ? 'text' : 'password'"
+          required
+        >
+        <ion-icon
+          [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"
+          class="password-toggle-icon"
+          (click)="togglePasswordVisibility()">
+        </ion-icon>
+      </div>
 
-        <!-- Dirección -->
-        <!-- <ion-item class="form-item">
-          <ion-label position="floating">Dirección</ion-label>
-          <ion-input [(ngModel)]="newUser.address" class="custom-input" name="address"></ion-input>
-        </ion-item> -->
-
-        <!-- Teléfono -->
-        <ion-item class="form-item">
-          <ion-label position="floating">Teléfono</ion-label>
-          <ion-input
-            [(ngModel)]="newUser.phone"
-            class="custom-input"
-            name="phone"
-            type="tel"
-            inputmode="numeric"
-            maxlength="10"
-            (ionInput)="validateNumericInput($event)">
-          </ion-input>
-        </ion-item>
-
-        <!-- Rol -->
-        <ion-item class="form-item">
-          <ion-label position="floating">Rol</ion-label>
-          <ion-select [(ngModel)]="newUser.role" name="role" placeholder="Seleccione un rol" required>
-            <!-- Opción con ícono para Administrador -->
-            <ion-select-option value="1">
-              <ion-icon name="person-outline" slot="start"></ion-icon>
-              Administrador
-            </ion-select-option>
-            <!-- Opción con ícono para Vendedor -->
-            <ion-select-option value="4">
-              <ion-icon name="cash-outline" slot="start"></ion-icon>
-              Vendedor
-            </ion-select-option>
-          </ion-select>
-        </ion-item>
-
-        <!-- Contraseña con alternar visibilidad -->
-        <ion-item class="form-item">
-          <ion-label position="floating">Contraseña</ion-label>
-          <ion-input
-            [(ngModel)]="newUser.password"
-            class="custom-input"
-            name="password"
-            [type]="showPassword ? 'text' : 'password'"
-            required>
-          </ion-input>
-          <ion-icon
-            [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"
-            slot="end"
-            class="password-toggle-icon"
-            (click)="togglePasswordVisibility()">
-          </ion-icon>
-        </ion-item>
-
-
-      </ion-list>
-
-      <!-- Submit Button -->
-      <ion-footer class="footer edit-footer">
-        <ion-button class="guardar-button" expand="block" color="success" type="submit">
-          <ion-icon slot="start" name="checkmark-outline"></ion-icon>
+      <!-- Botón Guardar -->
+      <div class="form-footer">
+        <button type="submit" class="native-button success-button">
+          <ion-icon name="checkmark-outline"></ion-icon>
           Guardar Usuario
-        </ion-button>
-      </ion-footer>
+        </button>
+      </div>
     </form>
   </div>
 </ion-content>

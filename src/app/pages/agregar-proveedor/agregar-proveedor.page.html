@@ -8,35 +8,47 @@
   <div class="form-card">
     <h2>Introduce los detalles del proveedor</h2>
 
-    <!-- Formulario para agregar proveedor -->
-    <form (submit)="saveProvider()">
-      <ion-list lines="none">
-        <!-- Nombre del Proveedor -->
-        <ion-item class="form-item">
-          <ion-label class="title-item" position="stacked">Nombre del Proveedor</ion-label>
-          <ion-input [(ngModel)]="newProvider.name" name="name" required></ion-input>
-        </ion-item>
+    <form (submit)="saveProvider()" class="custom-form">
+      <!-- Nombre del Proveedor -->
+      <div class="form-group">
+        <label class="floating-label" [class.shrink]="hasValue(newProvider.name)">Nombre del Proveedor</label>
+        <input 
+          [(ngModel)]="newProvider.name" 
+          class="native-input"
+          name="name" 
+          required
+        >
+      </div>
 
-        <!-- Fecha de Creación (Solo Lectura) -->
-        <ion-item class="form-item">
-          <ion-label class="title-item" position="stacked">Fecha de Creación</ion-label>
-          <ion-input [(ngModel)]="newProvider.created_at" name="created_at" readonly></ion-input>
-        </ion-item>
+      <!-- Fecha de Creación (Solo Lectura) -->
+      <div class="form-group">
+        <label class="floating-label" [class.shrink]="hasValue(newProvider.created_at)">Fecha de Creación</label>
+        <input 
+          [(ngModel)]="newProvider.created_at" 
+          class="native-input"
+          name="created_at" 
+          readonly
+        >
+      </div>
 
-        <!-- Última Actualización (Solo Lectura) -->
-        <ion-item class="form-item">
-          <ion-label class="title-item" position="stacked">Última Actualización</ion-label>
-          <ion-input [(ngModel)]="newProvider.updated_at" name="updated_at" readonly></ion-input>
-        </ion-item>
-      </ion-list>
+      <!-- Última Actualización (Solo Lectura) -->
+      <div class="form-group">
+        <label class="floating-label" [class.shrink]="hasValue(newProvider.updated_at)">Última Actualización</label>
+        <input 
+          [(ngModel)]="newProvider.updated_at" 
+          class="native-input"
+          name="updated_at" 
+          readonly
+        >
+      </div>
 
       <!-- Botón Guardar -->
-      <ion-footer class="footer edit-footer">
-        <ion-button expand="block" color="primary" type="submit">
-          <ion-icon slot="start" name="checkmark-outline"></ion-icon>
+      <div class="form-footer">
+        <button type="submit" class="native-button">
+          <ion-icon name="checkmark-outline"></ion-icon>
           Guardar Proveedor
-        </ion-button>
-      </ion-footer>
+        </button>
+      </div>
     </form>
   </div>
 </ion-content>

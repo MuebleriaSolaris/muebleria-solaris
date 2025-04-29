@@ -12,6 +12,16 @@
     </ion-avatar>
     <h2>{{ product?.product_name }}</h2>
     <p>ID: {{ product?.product_id }}</p>
+    
+    <!-- Botón de visibilidad mejorado -->
+    <div class="visibility-control" (click)="toggleProductVisibility()" *ngIf="esGerente">
+      <div class="toggle-container">
+        <div class="toggle-track" [class.hidden]="product?.hide_product === 1">
+          <div class="toggle-thumb"></div>
+        </div>
+        <ion-spinner *ngIf="isUpdating" name="crescent"></ion-spinner>
+      </div>
+    </div>
   </div>
 
   <!-- Botones principales -->
