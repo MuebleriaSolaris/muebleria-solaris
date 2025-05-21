@@ -1,43 +1,43 @@
 <?php
-
-header("Access-Control-Allow-Origin: https://muebleriasolaris.com");
-header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
-
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 class Database {
-    private $host = "localhost"; // Cambia localhost si el servidor está remoto
-    private $user = "muebxner_ionic_app"; // Nuevo usuario
-    private $password = "A3r3@ipZFNCDvMi"; // Nueva contraseña
-    private $db_name = "muebxner_solaris"; // Nombre de la base de datos
+    private $host = "localhost";
+    private $user = "muebxner_ionic_app";
+    private $password = "A3r3@ipZFNCDvMi";
+    private $db_name = "muebxner_solaris";
     public $conn;
 
-    // Método para obtener la conexión
     public function getConnection() {
-        $this->conn = null;
-
-        try {
-            $this->conn = new mysqli($this->host, $this->user, $this->password, $this->db_name);
-            
-            // Verificar si hay error de conexión
-            if ($this->conn->connect_error) {
-                return null; // Si hay error, devolver null
-            }
-        } catch (Exception $e) {
-            return null; // Retornar null si ocurre una excepción
+        // Reutilizar conexión existente si es válida
+        if ($this->conn instanceof mysqli && !$this->conn->connect_errno) {
+            return $this->conn;
         }
 
-        return $this->conn; // Devolver el objeto de conexión si todo es exitoso
+        try {
+            $this->conn = new mysqli(
+                $this->host, // Sin conexión persistente
+                $this->user,
+                $this->password,
+                $this->db_name
+            );
+
+            if ($this->conn->connect_error) {
+                error_log("Error de conexión: " . $this->conn->connect_error);
+                return null;
+            }
+
+            $this->conn->set_charset("utf8mb4");
+            return $this->conn;
+
+        } catch (Exception $e) {
+            error_log("Excepción en conexión: " . $e->getMessage());
+            return null;
+        }
     }
 
-    // Método para cerrar la conexión
     public function closeConnection() {
-        if ($this->conn) {
-            $this->conn->close(); // Cerrar la conexión si está abierta
+        if ($this->conn instanceof mysqli && !$this->conn->connect_errno) {
+            @$this->conn->close(); // "@" evita warnings
+            $this->conn = null;
         }
     }
 }
-

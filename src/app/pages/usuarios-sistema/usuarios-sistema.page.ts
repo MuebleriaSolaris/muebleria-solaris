@@ -18,17 +18,21 @@ export class UsuariosSistemaPage implements OnInit {
 
   // Cargar usuarios usando el servicio
   loadUsers() {
+    
     this.authService.getUsers().subscribe({
       next: (response) => {
-        if (response && Array.isArray(response.data)) { // Verifica si hay datos
+        
+        if (response.status === 'success') {
           this.users = response.data;
         } else {
-          console.warn('No se pudieron cargar los usuarios. Respuesta inesperada:', response);
+          console.error('Error del servidor:', response.message);
+          // Mostrar mensaje al usuario
         }
       },
       error: (error) => {
-        console.error('Error al cargar usuarios:', error);
-      },
+        console.error('Error de conexión:', error);
+        // Mostrar mensaje al usuario
+      }
     });
   }
 

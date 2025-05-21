@@ -13,7 +13,12 @@ export class UsuariosInfoPage implements OnInit {
   user: any = null;
   isEditMode = false;
   originalUserData: any;
-  userId!: string;
+  userId!: string; 
+  loading = false;
+  error: string | null = null; // Variable para almacenar el mensaje de error
+  isDeleting = false; // Variable para controlar el estado de eliminación
+  isUpdating = false;
+
 
   constructor(
     private route: ActivatedRoute,
@@ -32,15 +37,21 @@ export class UsuariosInfoPage implements OnInit {
   }
 
   loadUserDetails(userId: string) {
+    this.loading = true;
+    this.error = null;
+  
     this.authService.getUserDetails(userId).subscribe({
-      next: (response) => {
-        this.user = response; // Asegúrate de que response tenga la propiedad 'id'
-        this.originalUserData = { ...response };
-        console.log('Detalles del usuario cargados:', this.user); // Log para depuración
+      next: (userDetails) => {
+        this.loading = false;
+        this.user = userDetails;
+        this.originalUserData = { ...userDetails };
+        console.log('Detalles del usuario cargados:', this.user);
       },
       error: (error) => {
+        this.loading = false;
+        this.error = error.message || 'Error al cargar detalles del usuario';
         console.error('Error al cargar detalles del usuario:', error);
-      },
+      }
     });
   }
 
@@ -53,34 +64,66 @@ export class UsuariosInfoPage implements OnInit {
       header: 'Confirmar cambios',
       message: '¿Estás seguro de querer guardar los cambios?',
       buttons: [
-        { text: 'Cancelar', role: 'cancel' },
+        { 
+          text: 'Cancelar', 
+          role: 'cancel',
+          handler: () => {
+            this.resetForm(); // Opcional: resetear cambios si cancela
+          }
+        },
         {
           text: 'Guardar',
           handler: () => {
-            this.authService.updateUser(this.user.id, this.user).subscribe({
-              next: (response) => {
-                console.log('Response from updateUser:', response); // Log the response for debugging
-                if (response.status === 'success') {
-                  this.isEditMode = false;
-                  this.loadUserDetails(this.user.id);
-                  this.showAlert('Éxito', 'Usuario actualizado correctamente').then(() => {
-                    window.location.reload();
-                  });
-                } else {
-                  this.showAlert('Error', 'No se pudo actualizar el usuario');
-                }
-              },
-              error: (error) => {
-                console.error('Error updating user:', error); // Log the error for debugging
-                this.showAlert('Error', 'No se pudo actualizar el usuario');
-              }
-            });
+            this.confirmUpdate();
+            return false; // Evitar que el alert se cierre automáticamente
           }
         }
       ]
     });
+    
     await confirm.present();
-}
+  }
+  
+  private confirmUpdate() {
+    this.isUpdating = true;
+    
+    this.authService.updateUser(
+      this.user.id,
+      this.user.name,
+      this.user.username
+    ).subscribe({
+      next: (response) => {
+        this.isUpdating = false;
+        
+        // Verificación explícita del estado de actualización
+        if (response.updated === true) {
+          this.showAlert('Éxito', response.message).then(() => {
+            this.isEditMode = false;
+            // Forzar recarga de datos
+            this.loadUserDetails(this.user.id);
+            
+            // Cerrar cualquier modal abierto
+            if (this.alertController) {
+              this.alertController.dismiss();
+            }
+          });
+        } else {
+          this.showAlert('Información', 'No se realizaron cambios');
+        }
+      },
+      error: (error) => {
+        this.isUpdating = false;
+        this.showAlert('Error', error.message || 'Error al actualizar');
+      }
+    });
+  }
+  
+  private resetForm() {
+    // Restaurar datos originales si se cancela
+    if (this.originalUserData) {
+      this.user = {...this.originalUserData};
+    }
+  }
 
   cancelEdit() {
     this.user = { ...this.originalUserData };
@@ -115,31 +158,33 @@ export class UsuariosInfoPage implements OnInit {
       ]
     });
     await confirm.present();
-}
+  }
 
-  deleteUser() {
-    if (!this.user || !this.user.id) {
-      console.error('ID de usuario no definido'); // Log para depuración
-      this.showAlert('Error', 'No se pudo obtener el ID del usuario');
+  async deleteUser() {
+    if (!this.user?.id) {
+      await this.showAlert('Error', 'No se pudo obtener el ID del usuario');
       return;
     }
-  
-    console.log('Eliminando usuario con ID:', this.user.id); // Log para depuración
+
+    this.isDeleting = true;
+
     this.authService.deleteUser(this.user.id).subscribe({
-      next: (response: any) => {
-        console.log('Respuesta del servidor:', response); // Log para depuración
-        if (response.success) {
-          this.showAlert('Éxito', 'Usuario eliminado correctamente');
+      next: async (response) => {
+        this.isDeleting = false;
+        
+        if (response.success && response.deleted) {
+          await this.showAlert('Éxito', response.message);
           this.router.navigate(['/usuarios-sistema']).then(() => {
             window.location.reload();
           });
         } else {
-          this.showAlert('Error', 'Error al eliminar el usuario: ' + response.message);
+          await this.showAlert('Información', response.message || 'No se pudo eliminar el usuario');
         }
       },
-      error: (error) => {
-        console.error('Error en la solicitud:', error); // Log para depuración
-        this.showAlert('Error', 'No se pudo eliminar el usuario');
+      error: async (error) => {
+        this.isDeleting = false;
+        console.error('Error eliminando usuario:', error);
+        await this.showAlert('Error', error.message || 'Error al comunicarse con el servidor');
       }
     });
   }
@@ -148,12 +193,14 @@ export class UsuariosInfoPage implements OnInit {
     this.router.navigate(['/usuarios-sistema']);
   }
 
-  async showAlert(header: string, message: string) {
+  async showAlert(header: string, message: string): Promise<void> {
     const alert = await this.alertController.create({
       header,
       message,
       buttons: ['OK']
     });
+    
     await alert.present();
+    await alert.onDidDismiss(); // Espera a que se cierre el alert
   }
 }

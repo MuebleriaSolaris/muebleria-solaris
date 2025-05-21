@@ -13,6 +13,8 @@ import { Router } from '@angular/router';   // Importa Router
 import { ChangeDetectorService } from '../../services/change-detector.service'; // Importa ChangeDetectorService
 import { lastValueFrom } from 'rxjs'; // Importa lastValueFrom   
 import { LoadingController, ToastController } from '@ionic/angular'; // Importa LoadingController y ToastController
+import { NavController } from '@ionic/angular';
+import { InventarioPage } from '../inventario/inventario.page';
 
 @Component({
   selector: 'app-producto',
@@ -29,6 +31,7 @@ export class ProductoPage implements OnInit {
   subCategories: any[] = []; // Lista de subcategorías
   subCategoryName: string = ''; // Nombre de la subcategoría
   isUpdating = false; // Bandera para indicar si se está actualizando la visibilidad del producto
+  originalValues: { current_stock?: number, max_amount?: number } = {}; // Almacena los valores originales de stock y cantidad máxima
 
   constructor(
     private route: ActivatedRoute, // Inyecta ActivatedRoute
@@ -43,10 +46,12 @@ export class ProductoPage implements OnInit {
     private platform: Platform, // Inyect Platform
     private changeDetector: ChangeDetectorService, // Inyecta ChangeDetectorService
     private loadingController: LoadingController, // Inyecta LoadingController
+    private navCtrl: NavController, // Inyecta NavController
     private toastController: ToastController // Inyecta ToastController
   ) {}
 
   ngOnInit() {
+    
     // Obtener el ID del usuario desde AuthService
     const userId = this.authService.getUserId();
     
@@ -271,8 +276,39 @@ export class ProductoPage implements OnInit {
     this.isEditMode = !this.isEditMode;
   }
 
+  setEditMode(isEdit: boolean) {
+    this.isEditMode = isEdit;
+    if (isEdit) {
+        // Guardar los valores originales al entrar en modo edición
+        this.originalValues = {
+            current_stock: this.product?.current_stock,
+            max_amount: this.product?.max_amount
+        };
+    }
+  }
+
+  validateStocksBeforeSave(): boolean {
+    const current = Number(this.product?.current_stock) || 0;
+    const max = Number(this.product?.max_amount) || 0;
+    
+    if (current > max || max < current) {
+        // Mostramos alerta
+        this.showAlert(
+            'Error de Validación',
+            'El Stock Disponible no puede ser mayor que el Stock Máximo.'
+        );
+        return false;
+    }
+    return true;
+  }
   // Función para confirmar la actualización del producto
   async confirmSaveChanges() {
+
+    // Primero validamos los stocks
+    if (!this.validateStocksBeforeSave()) {
+        return; // Detenemos el proceso si hay error
+    }
+
     const alert = await this.alertController.create({
       header: 'Confirmar Actualización',
       message: '¿Estás seguro de que deseas actualizar este producto?',
@@ -297,9 +333,13 @@ export class ProductoPage implements OnInit {
 
   // Función para guardar los cambios
   async saveChanges() {
+    if (!this.validateStocksBeforeSave()) {
+      return; // Detenemos el proceso si hay error
+    }
+
     if (!this.product || !this.product.product_id) {
         console.error('El producto no tiene un ID válido.');
-        return;
+        return; 
     }
 
     const loading = await this.loadingController.create({
@@ -324,11 +364,15 @@ export class ProductoPage implements OnInit {
         );
 
         if (response.success) {
-            await this.showAlert('Éxito', 'Producto actualizado correctamente.');
+            await this.showToast(
+              `Producto actualizado correctamente`,
+              'success'
+            );
+            // await this.showAlert('Éxito', 'Producto actualizado correctamente.');
             this.originalProduct = { ...this.product };
             this.isEditMode = false;
             this.changeDetector.setChangesDetected(`product_${this.product.product_id}`, true);
-            window.location.reload(); // Recarga completa como en tu versión original
+            //window.location.reload(); // Recarga completa como en tu versión original
         } else {
             throw new Error(response.message || 'Error al actualizar el producto');
         }
@@ -412,7 +456,8 @@ export class ProductoPage implements OnInit {
           message,
           duration: 3000,
           color,
-          position: 'top'
+          position: 'top',
+          cssClass: 'white-toast' // Agrega esta clase
       });
       await toast.present();
   }
@@ -439,35 +484,33 @@ export class ProductoPage implements OnInit {
     this.isEditMode = false;
   }
 
-  // producto.page.ts
   async goBack() {
     try {
       const productId = this.product?.product_id;
       const hasChanges = productId ? this.changeDetector.hasChanges(`product_${productId}`) : false;
       
       console.log(`Navegando a inventario. Cambios: ${hasChanges}`);
-  
-      // Navegación principal
-      await this.router.navigate(['/inventario'], {
-        replaceUrl: true,
-        state: { forceRefresh: hasChanges }
-      });
-  
-      // Recarga condicional
-      if (hasChanges) {
-        console.log('Forzando recarga...');
-        setTimeout(() => {
-          window.location.href = '/inventario';
-        }, 200);
-      }
-  
-      // Resetear cambios
+
+      // Resetear cambios primero
       if (productId) {
         this.changeDetector.reset(`product_${productId}`);
       }
+
+      if (hasChanges) {
+        console.log('Forzando recarga de datos...');
+        // Emitir el evento de refresco
+        InventarioPage.refreshData.next();
+        
+        // Pequeño delay para asegurar que la recarga comience
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+
+      // Navegar hacia atrás
+      this.navCtrl.back();
+      
     } catch (error) {
       console.error('Error en goBack:', error);
-      window.location.href = '/inventario';
+      this.router.navigate(['/inventario']);
     }
   }
 
@@ -494,11 +537,11 @@ export class ProductoPage implements OnInit {
         )
       );
       
-      console.log('Respuesta del servidor:', response);
       await this.showToast(
         `Producto marcado como ${this.product.hide_product === 0 ? 'visible' : 'oculto'}`,
         'success'
       );
+      
     } catch (error) {
       // Revertir en caso de error
       this.product.hide_product = previousState;
@@ -510,13 +553,43 @@ export class ProductoPage implements OnInit {
   }
 
   validateStockInput(event: any) {
-    let input = event.target.value;
-    input = input.replace(/[^0-9]/g, '');
-    if (input.length > 5) {
-      input = input.slice(0, 5);
+    let input = event.target;
+    let value = input.value;
+    value = value.replace(/[^0-9]/g, '');
+    if (value.length > 5) {
+        value = value.slice(0, 5);
     }
-    event.target.value = input;
-    this.product!.current_stock = input;
+    input.value = value;
+    this.product!.current_stock = Number(value);
+  }
+
+  validateMaxStockInput(event: any) {
+      let input = event.target;
+      let value = input.value;
+      value = value.replace(/[^0-9]/g, '');
+      if (value.length > 5) {
+          value = value.slice(0, 5);
+      }
+      input.value = value;
+      this.product!.max_amount = Number(value);
+  }
+
+  validateStockValues() {
+    // Convertimos a números por si acaso
+    const currentStock = Number(this.product?.current_stock) || 0;
+    const maxStock = Number(this.product?.max_amount) || 0;
+    
+    if (currentStock > maxStock || maxStock < currentStock) {
+        // Mostramos alerta
+        this.showAlert(
+            'Alerta de Inventario',
+            'El Stock Disponible no puede ser mayor que el Stock Máximo.'
+        );
+        
+        // Ajustamos los valores a los que corresponden por defecto
+        this.product!.current_stock = this.originalValues?.current_stock;
+        this.product!.max_amount = this.originalValues?.max_amount;
+    }
   }
 
   validateCreditPriceInput(event: any) {

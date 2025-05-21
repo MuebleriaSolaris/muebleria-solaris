@@ -11,27 +11,29 @@ import Chart from 'chart.js/auto';
 export class DashboardPage implements AfterViewInit, OnInit {
   esGerente: boolean = false;
   totalInventario: number | null = null; // Variable para almacenar el total del inventario
+  userId: number | null = null ; // Variable para almacenar el ID del usuario
 
   constructor(private authService: AuthService, private http: HttpClient) {} // Inyectar HttpClient
 
   ngOnInit() {
     // Obtener el ID del usuario desde AuthService
-    const userId = this.authService.getUserId();
+    const userIdString = this.authService.getUserId();
+    this.userId = userIdString !== null ? parseInt(userIdString, 10) : null;
     
-    if (userId) {
-      // Realizar la llamada HTTP directamente en el componente
-      this.http.get<any>(`https://muebleriasolaris.com/ionic-login/check_gerencia.php?userid=${userId}`)
-        .subscribe((response) => {
+    if (this.userId) {
+      this.authService.checkIfGerente(this.userId).subscribe({
+        next: (response) => {
           if (response.success) {
-            this.esGerente = response.isGerente;
+            this.esGerente = response.isGerente ?? false;
+            console.log('¿Es gerente?', this.esGerente);
           } else {
-            console.error('Error en la respuesta de la API:', response.error);
+            console.error('Error:', response.error);
           }
-          console.log('¿Es gerente?', this.esGerente);
-          console.log('ID de usuario:', userId);
-        }, (error) => {
-          console.error('Error en la llamada HTTP:', error);
-        });
+        },
+        error: (err) => {
+          console.error('Error en la llamada:', err);
+        }
+      });
     }
   }
 

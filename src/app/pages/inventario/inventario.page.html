@@ -16,16 +16,6 @@
     </ion-searchbar>
 
     <!-- Controles de filtro -->
-    <!-- <ion-item>
-      <ion-label>Categoría</ion-label>
-      <ion-select [(ngModel)]="selectedCategory" (ionChange)="applyFilters()">
-        <ion-select-option value="">Todas</ion-select-option>
-        <ion-select-option *ngFor="let category of categories" [value]="category.id">
-          {{ category.name }}
-        </ion-select-option>
-      </ion-select>
-    </ion-item> -->
-
     <ion-item>
       <ion-label>Subcategoría</ion-label>
       <ion-select [(ngModel)]="selectedSubCategory" (ionChange)="applyFilters()">
@@ -36,13 +26,11 @@
       </ion-select>
     </ion-item> 
 
-    <!-- <ion-item>
-      <ion-label>Ordenar por</ion-label>
-      <ion-select [(ngModel)]="selectedSort" (ionChange)="applyFilters()">
-        <ion-select-option value="recent">Agregado reciente</ion-select-option>
-        <ion-select-option value="alphabetical">Alfabético</ion-select-option>
-      </ion-select>
-    </ion-item> -->
+    <!-- Nuevo filtro para mostrar productos ocultos -->
+    <ion-item *ngIf="esGerente">
+      <ion-label>Mostrar ocultos</ion-label>
+      <ion-toggle [(ngModel)]="showHiddenProducts" (ionChange)="applyFilters()"></ion-toggle>
+    </ion-item>
 
     <!-- Lista de productos -->
     <ion-reorder-group 
@@ -50,8 +38,8 @@
       [disabled]="!isAdmin || (!selectedSubCategory && !allowGlobalReorder)"
       [class]="getReorderGroupClass()">
       <ion-item-sliding *ngFor="let product of displayedProducts">
-      <ion-item class="inventory-item" lines="full">
-        <div class="left-info" (click)="handleClick(product)">
+        <ion-item class="inventory-item" lines="full" [class.hidden-product]="product?.hide_product === 1" >
+        <div class="left-info" (click)="isAdmin && handleClick(product)" [class.disabled-style]="!isAdmin">
           <ion-thumbnail slot="start" class="image-container">
             <ion-spinner *ngIf="!imageLoaded[product.product_id]" 
                          name="crescent" 
@@ -66,7 +54,7 @@
           </ion-thumbnail>
           <ion-label>
             <h2 class="product-name">{{ product?.product_name }}</h2>
-            <p>Proveedor: {{ product?.provider_name }}</p>
+            <p *ngIf="isAdmin">Proveedor: {{ product?.provider_name }}</p>
             <p>Precio a Crédito: ${{ product?.credit_price }}</p>
           </ion-label>
         </div>
@@ -85,7 +73,7 @@
             </ion-button>
             <div class="counter-value-container">
               <span class="counter-value">{{ product?.current_count }}</span>
-              <p *ngIf="product?.current_count === product?.max_amount" class="warning-text">
+              <p *ngIf="product?.current_count === product?.max_amount && isAdmin" class="warning-text">
                 ¡Stock máximo!
               </p>
             </div>
@@ -110,20 +98,9 @@
         </div>
         <ion-reorder slot="end" *ngIf="isAdmin && (selectedSubCategory || allowGlobalReorder)">
           <ion-icon name="reorder-three-outline" class="reorder-icon"></ion-icon>
-          <!-- <ion-note>Mover</ion-note> -->
         </ion-reorder>
       </ion-item>
-      <!-- Opciones de deslizamiento -->
-      <!-- <ion-item-options *ngIf="isAdmin && product" side="end">
-        <ion-item-option (click)="handleClick(product)">
-          Ver producto
-        </ion-item-option>
-      </ion-item-options> -->
     </ion-item-sliding>
-    </ion-reorder-group>
-    <!-- Botón "Mostrar más" -->
-    <ion-button (click)="loadMoreProducts()" *ngIf="hasMoreProducts()" expand="full">
-      Mostrar más
-    </ion-button>
+  </ion-reorder-group>
   </ion-list>
 </ion-content>

@@ -9,6 +9,7 @@ import { ImageStateService } from '../../services/image-state.service';
 import { AlertController, LoadingController, ToastController } from '@ionic/angular';
 import { lastValueFrom } from 'rxjs';  // Añade esto al inicio del archivo
 import { timeout } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http'; // Importar HttpClient
 
 // Definir la interfaz Product fuera de la clase
 interface Product {
@@ -26,6 +27,7 @@ interface Product {
   sub_category_id: number | null; 
   position_index: number | null;
   global_position: number | null;
+  hide_product: number | null; // Añadir hide_product aquí
 }
 
 @Component({
@@ -39,31 +41,22 @@ export class InventarioPage implements OnInit {
   displayedProducts: Product[] = []; // Productos mostrados actualmente
   searchTerm: string = ''; // Término de búsqueda
   isAdmin: boolean = false; // Variable para verificar si el usuario es administrador
-
   // Propiedades para los filtros
   selectedCategory: string = '';
   selectedSubCategory: string = '';
   selectedSort: string = 'recent';
   categories: any[] = []; // Categorías obtenidas de la API
   subCategories: any[] = []; // Subcategorías obtenidas de la API
-
-  // Propiedades para la paginación
-  // currentPage: number = 1;
-  // itemsPerPage: number = 5;
- 
   loading: boolean = false; // Variable para mostrar el spinner de carga
-
   imageLoaded: {[key: number]: boolean} = {}; // Objeto para rastrear imágenes cargadas
-  
   // Variables para manejar el doble click
   private lastClickTime: number = 0;
   private doubleClickDelay: number = 300; // Retraso para considerar un doble click (en milisegundos)
-
   static refreshData = new Subject<void>(); // Emite un evento para recargar los datos
-
   allowGlobalReorder: boolean = true; // Habilitar reordenamiento global
-
   isReordering: boolean = false; // Estado de reordenamiento
+  showHiddenProducts: boolean = false; // Estado para mostrar productos ocultos
+  esGerente: boolean = false; // Variable para verificar si el usuario es gerente
 
   constructor(
     private inventoryService: InventoryService, // Inyecta InventoryService para obtener productos
@@ -73,12 +66,29 @@ export class InventarioPage implements OnInit {
     public imageState: ImageStateService, // Inyecta el servicio de estado de imagen
     private alertController: AlertController,  // Inyecta AlertController para mostrar alertas
     private loadingController: LoadingController, // Inyecta LoadingController para mostrar loaders
+    private http: HttpClient,   // Inyecta HttpClient
     private toastController: ToastController // Inyecta ToastController para mostrar toasts
   ) {}
 
   ngOnInit() {
     console.log('Inicializando página de inventario...');
     this.isAdmin = this.authService.isAdmin();
+    const userId = this.authService.getUserId();
+    if (userId) {
+      // Realizar la llamada HTTP directamente en el componente
+      this.http.get<any>(`https://muebleriasolaris.com/ionic-login/check_gerencia.php?userid=${userId}`)
+        .subscribe((response) => {
+          if (response.success) {
+            this.esGerente = response.isGerente;
+          } else {
+            console.error('Error en la respuesta de la API:', response.error);
+          }
+          console.log('¿Es gerente?', this.esGerente);
+          console.log('ID de usuario:', userId);
+        }, (error) => {
+          console.error('Error en la llamada HTTP:', error);
+        });
+    }
     this.loading = true; // Mostrar spinner al iniciar
 
     // Cargar productos, categorías y subcategorías
@@ -206,7 +216,7 @@ export class InventarioPage implements OnInit {
     });
     await toast.present();
   }
-
+  
   fetchProducts() {
     this.loading = true;
     const subCategoryId = this.selectedSubCategory ? Number(this.selectedSubCategory) : undefined;
@@ -247,40 +257,6 @@ export class InventarioPage implements OnInit {
       }
     );
   }
-
-  // fetchProducts() {
-  //   this.loading = true; // Mostrar spinner al iniciar
-  //   this.inventoryService.getProducts(this.searchTerm).subscribe(
-  //     (response) => {
-  //       if (response && response.success) {
-  //         // Normalizar los productos al cargarlos
-  //         this.products = response.data.map((product: any) => this.normalizeProduct(product));
-  
-  //         // Inicializar los valores de los productos
-  //         this.products.forEach(product => this.initializeProducts(product));
-  
-  //         // Asignar valores después de cargar los productos
-  //         this.assignValuesToProducts();
-  
-  //         this.filteredProducts = this.products; // Inicializa la lista filtrada
-  //         this.applyFilters(); // Aplica los filtros iniciales
-  //         this.loadMoreProducts(); // Carga los primeros productos
-  
-  //         // Forzar la detección de cambios
-  //         this.cdr.detectChanges();
-  //         this.loading = false; // Ocultar spinner cuando todo esté cargado
-  //       } else {
-  //         console.warn('Respuesta no válida de la API:', response);
-  //         this.loading = false; // Ocultar spinner cuando todo esté cargado
-  //       }
-  //     },
-  //     (error) => {
-  //       console.error('Error al obtener productos:', error);
-  //       this.loading = false; // Ocultar spinner cuando todo esté cargado
-  //     }
-  //   );
-  // }
-
 
   // Método para asignar valores a los productos después de cargarlos
   assignValuesToProducts() {
@@ -370,46 +346,6 @@ export class InventarioPage implements OnInit {
       .replace(/[\u0300-\u036f]/g, ''); // Elimina los caracteres diacríticos
   }
 
-  // applyFilters() {
-  //   let filtered = [...this.products]; // Crear una copia de los productos
-  
-  //   // Filtrar por categoría
-  //   if (this.selectedCategory) {
-  //     const selectedCategoryId = Number(this.selectedCategory); // Convertir a número
-  //     filtered = filtered.filter((product) => {
-  //       return product && product.category_id === selectedCategoryId;
-  //     });
-  //   }
-  
-  //   // Filtrar por subcategoría
-  //   if (this.selectedSubCategory) {
-  //     const selectedSubCategoryId = Number(this.selectedSubCategory); // Convertir a número
-  //     filtered = filtered.filter((product) => {
-  //       return product && (product.sub_category_id === selectedSubCategoryId || !product.sub_category_id);
-  //     });
-  //   }
-  
-  //   // Ordenar
-  //   if (this.selectedSort === 'recent') {
-  //     filtered = filtered.sort(
-  //       (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
-  //     );
-  //   } else if (this.selectedSort === 'alphabetical') {
-  //     filtered = filtered.sort((a, b) => a.product_name.localeCompare(b.product_name));
-  //   }
-  
-  //   // Normalizar los productos después de aplicar los filtros
-  //   this.filteredProducts = filtered.map((product) => this.normalizeProduct(product));
-  
-  //   // Reiniciar la paginación y cargar los primeros productos
-  //   this.currentPage = 1;
-  //   this.displayedProducts = [];
-  //   this.loadMoreProducts();
-  
-  //   // Forzar la detección de cambios
-  //   this.cdr.detectChanges();
-  // }
-
   applyFilters() {
     let filtered = [...this.products];
     
@@ -424,6 +360,12 @@ export class InventarioPage implements OnInit {
       filtered = filtered.filter(product => 
         product.sub_category_id === selectedSubCategoryId || !product.sub_category_id
       );
+    }
+
+    // 2. Filtrado por productos ocultos (nuevo filtro)
+    if (this.showHiddenProducts) {
+      // Mostrar solo productos ocultos
+      filtered = filtered.filter(product => product.hide_product === 1);
     }
   
     // 2. Ordenamiento priorizando posición
@@ -471,20 +413,21 @@ export class InventarioPage implements OnInit {
     this.imageLoaded[product.product_id] = false;
     
     return {
-      image_url: product.image_url || 'assets/product_placeholder.png',
-      product_id: product.product_id || 0,
-      product_name: product.product_name || 'Producto sin nombre',
-      credit_price: product.credit_price || 0,
-      updated_at: product.updated_at || new Date().toISOString(),
-      category_id: product.category_id || null,
+      image_url: product.image_url || 'assets/product_placeholder.png', // Asegurar que image_url tenga un valor
+      product_id: product.product_id || 0, // Asegurar que product_id tenga un valor
+      product_name: product.product_name || 'Producto sin nombre', // Asegurar que product_name tenga un valor
+      credit_price: product.credit_price || 0, // Asegurar que credit_price tenga un valor
+      updated_at: product.updated_at || new Date().toISOString(), // Asegurar que updated_at tenga un valor
+      category_id: product.category_id || null, // Asegurar que category_id tenga un valor
       current_count: product.current_stock || 0, // Inicializar con current_stock
       current_stock: product.current_stock || 0, // Asegurar que siempre tenga valor
-      max_amount: product.max_amount || 0,
-      prov_price: product.prov_price || '0.00',
-      provider_name: product.provider_name || 'Proveedor desconocido',
-      sub_category_id: product.sub_category_id || null,
-      position_index: product.position_index !== undefined ? product.position_index : null,
-      global_position: product.global_position !== undefined ? product.global_position : null 
+      max_amount: product.max_amount || 0, // Asegurar que max_amount tenga un valor
+      prov_price: product.prov_price || '0.00', // Asegurar que prov_price tenga un valor
+      provider_name: product.provider_name || 'Proveedor desconocido', // Asegurar que provider_name tenga un valor
+      sub_category_id: product.sub_category_id || null, // Asegurar que sub_category_id tenga un valor
+      position_index: product.position_index !== undefined ? product.position_index : null, // Asegurar que position_index tenga un valor
+      global_position: product.global_position !== undefined ? product.global_position : null,  // Asegurar que global_position tenga un valor
+      hide_product: product.hide_product !== undefined ? product.hide_product : null // Asegurar que hide_product tenga un valor
     };
   }
 
@@ -497,23 +440,9 @@ export class InventarioPage implements OnInit {
   }
 
   loadMoreProducts() {
-    // const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    // const endIndex = startIndex + this.itemsPerPage;
-
-    // Obtén los nuevos productos de la lista filtrada
-    // const newProducts = this.filteredProducts.slice(startIndex, endIndex);
-
     // Concatena los nuevos productos a la lista existente
     this.displayedProducts = [...this.filteredProducts];
-
-    // Incrementa la página para la próxima carga
-    // this.currentPage++;
   }
-
-  // showMoreProducts() {
-  //   this.currentPage++; // Incrementa la página actual
-  //   this.loadMoreProducts(); // Carga los siguientes productos
-  // }
 
   onCategoryChange(event: any) {
     this.selectedCategory = event.detail.value;
@@ -786,11 +715,27 @@ export class InventarioPage implements OnInit {
 
   ionViewDidEnter() {
     const navigation = this.router.getCurrentNavigation();
+    const state = navigation?.extras?.state;
     if (navigation?.extras?.state?.['timestamp']) {
       // Cargar productos, categorías y subcategorías
       this.fetchProducts();
       this.fetchCategories();
       this.fetchSubCategories();
+    }
+    if (state?.['updatedProduct']) {
+      this.actualizarProductoEnLista(state['updatedProduct']);
+    }
+  }
+
+  
+  actualizarProductoEnLista(updatedProduct: any) {
+    const index = this.products.findIndex(p => p.product_id === updatedProduct.product_id);
+    if (index !== -1) {
+      // Actualiza solo el campo hide_product manteniendo el resto de datos
+      this.products[index].hide_product = updatedProduct.hide_product;
+      
+      // Si usas ChangeDetection.OnPush:
+      this.products = [...this.products]; // Crea nueva referencia para trigger de detección de cambios
     }
   }
 }

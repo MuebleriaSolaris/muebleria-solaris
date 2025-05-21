@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, NavController } from '@ionic/angular';
+import { ClientesService } from '../../services/clientes.services';
 
 @Component({
   selector: 'app-crear-usuario',
@@ -21,9 +22,11 @@ export class CrearUsuarioPage {
     is_active: 1, // Usuario activo por defecto
   };
 
+  isCreating: boolean = false; // Variable para controlar el estado de creación
   showPassword: boolean = true;
 
   constructor(
+    private clientesService: ClientesService,
     private route: ActivatedRoute,
     private router: Router,
     private http: HttpClient,
@@ -74,25 +77,29 @@ export class CrearUsuarioPage {
 
   // Crear usuario (lógica de guardado)
   createUser() {
-    const apiUrl = 'https://muebleriasolaris.com/ionic-users/add_user.php'; // Cambia la URL según tu API
+  this.isCreating = true; // Mostrar spinner/loading
 
-    this.http.post(apiUrl, this.newUser).subscribe({
-      next: (response: any) => {
-        if (response.status === 'success') {
-          this.showAlert('Éxito', 'Usuario creado correctamente.');
+  this.clientesService.createUser(this.newUser).subscribe({
+    next: (response) => {
+      this.isCreating = false;
+      
+      if (response.status === 'success' && response.created) {
+        this.showAlert('Éxito', response.message).then(() => {
           this.router.navigate(['/usuarios-sistema']).then(() => {
-            window.location.reload(); // Recarga la página después de la redirección
+            window.location.reload();
           });
-        } else {
-          this.showAlert('Error', response.message);
-        }
-      },
-      error: (error) => {
-        this.showAlert('Error', 'Hubo un problema al crear el usuario.');
-        console.error('Error creating user:', error);
-      },
-    });
-  }
+        });
+      } else {
+        this.showAlert('Error', response.message);
+      }
+    },
+    error: (error) => {
+      this.isCreating = false;
+      console.error('Error creating user:', error);
+      this.showAlert('Error', error.message || 'Error al comunicarse con el servidor');
+    }
+  });
+}
 
   // Validar formato de correo electrónico
   validateEmail(email: string): boolean {

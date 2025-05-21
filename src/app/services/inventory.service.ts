@@ -1,10 +1,20 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
+
+interface SaveBrandResponse {
+  success: boolean;
+  message: string;
+  id?: number;
+}
 
 @Injectable({
   providedIn: 'root',
 })
+
+
+
 export class InventoryService {
   private apiUrl = 'https://muebleriasolaris.com/ionic-products'; // URL base de tu API
 
@@ -89,12 +99,51 @@ export class InventoryService {
     return this.http.get(`${this.apiUrl}/save_inventory.php`);
   }
 
-  saveBrand(brand: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/save_brand.php`, brand,{
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+  saveBrand(brand: { name: string }): Observable<SaveBrandResponse> {
+    const url = `${this.apiUrl}/save_brand.php`;
+    
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+
+    // Añadir fechas automáticamente
+    const brandData = {
+      ...brand,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+
+    return this.http.post<SaveBrandResponse>(url, brandData, httpOptions).pipe(
+      map((response: any) => {
+        // Verificar estructura de respuesta
+        if (!response || typeof response !== 'object') {
+          throw new Error('Respuesta inválida del servidor');
+        }
+        
+        return {
+          success: response.success === true,
+          message: response.message || '',
+          id: response.id
+        };
+      }),
+      catchError((error: HttpErrorResponse) => {
+        let errorMessage = 'Error al guardar la marca';
+        
+        if (error.error instanceof ErrorEvent) {
+          errorMessage = `Error: ${error.error.message}`;
+        } else {
+          errorMessage = error.error?.message || 
+                       `Error ${error.status}: ${error.message}`;
+        }
+        
+        return throwError(() => ({
+          success: false,
+          message: errorMessage
+        }));
+      })
+    );
   }
 
   deleteBrand(brandId: number): Observable<any> {

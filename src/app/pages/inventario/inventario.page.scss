@@ -411,3 +411,27 @@ ion-item-sliding {
     z-index: 1;
   }
 }
+
+/* Estilo para productos ocultos */
+.inventory-item.hidden-product {
+  --background: #f5f5f5; /* Fondo gris claro */
+  opacity: 0.8; /* Ligera transparencia */
+  
+  .product-name, p {
+    color: #666 !important; /* Texto más oscuro para legibilidad */
+    font-style: italic; /* Opcional: texto en cursiva */
+  }
+  
+  ion-img {
+    filter: grayscale(70%); /* Imagen en escala de grises */
+  }
+  
+  .counter-value {
+    color: #666;
+  }
+}
+
+/* Mantén los estilos normales para cuando no está oculto */
+.inventory-item:not(.hidden-product) {
+  --background: white;
+}

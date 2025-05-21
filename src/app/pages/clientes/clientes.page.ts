@@ -21,6 +21,7 @@ export class ClientesPage implements OnInit {
   totalCount: number = 0; // Número total de clientes
   showingCount: number = 0; // Número de clientes mostrados 
   loading: boolean = false; // Variable para mostrar el spinner de carga
+  lastPage: number = 1; // Última página de la paginación
 
   constructor(
     private http: HttpClient,
@@ -43,20 +44,34 @@ export class ClientesPage implements OnInit {
 
     if (this.searchTerm.trim()) {
       apiUrl = 'https://muebleriasolaris.com/ionic-users/clientes_search.php';
-      params = params.set('search', this.searchTerm.trim());
+      params = params.set('search', this.searchTerm.trim())
+                  .set('page', page.toString());
     }
 
-    this.http.get<any>(apiUrl, { params }).subscribe(
-      response => {
+    this.http.get<any>(apiUrl, { params }).subscribe({
+      next: (response) => {
+        // Siempre usar la misma estructura de respuesta
         this.customers = response.data || [];
-        this.totalCount = response.total || 0;
+        
+        if (response.pagination) {
+          this.totalCount = response.pagination.total;
+          this.currentPage = response.pagination.current_page;
+          this.itemsPerPage = response.pagination.per_page;
+          this.lastPage = response.pagination.last_page;
+        } else {
+          // Fallback para APIs que no usan estructura pagination
+          this.totalCount = response.count || response.data.length;
+          this.currentPage = page;
+          this.lastPage = Math.ceil(this.totalCount / this.itemsPerPage);
+        }
+        
         this.loading = false;
       },
-      error => {
+      error: (error) => {
         console.error("Error al cargar clientes:", error);
         this.loading = false;
       }
-    );
+    });
   }
   
   selectCustomer(customerId: number) {

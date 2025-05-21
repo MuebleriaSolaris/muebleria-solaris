@@ -1,85 +1,109 @@
 <?php
+// Configuración estricta de headers
+header_remove();
 header("Content-Type: application/json");
 header("Access-Control-Allow-Origin: https://muebleriasolaris.com");
-header("Access-Control-Allow-Methods: PUT");
-header("Access-Control-Allow-Headers: Content-Type");
+header("Access-Control-Allow-Methods: PUT, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+// Configuración de errores
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+ini_set('error_log', __DIR__ . '/php_errors.log');
 
-// Cargar el archivo de conexión a la base de datos
-require_once __DIR__ . '/../ionic-database/Database.php';
+// Buffer de salida
+ob_start();
 
-// Conexión a la base de datos
-$db = new Database();
-$conn = $db->getConnection();
+// Respuesta JSON
+$response = [
+    'status' => 'error',
+    'message' => 'Error desconocido',
+    'updated' => false,
+    'userId' => null
+];
 
 try {
-    // Obtener el ID del usuario desde la URL
-    if (!isset($_GET['id']) || empty($_GET['id'])) {
-        echo json_encode(["status" => "error", "message" => "ID de usuario no proporcionado"]);
+    // Manejar preflight OPTIONS
+    if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+        http_response_code(204);
         exit();
     }
 
-    $userId = $_GET['id'];
-
-    // Obtener los datos del cuerpo de la solicitud
-    $inputData = json_decode(file_get_contents("php://input"), true);
-
-    if (empty($inputData)) {
-        echo json_encode(["status" => "error", "message" => "Datos no proporcionados"]);
-        exit();
+    // Validar método HTTP
+    if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
+        throw new Exception("Método no permitido", 405);
     }
 
-    if ($conn->connect_error) {
-        echo json_encode(["status" => "error", "message" => "Error de conexión a la base de datos"]);
-        exit();
+    // Validar ID
+    if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+        throw new Exception("ID de usuario no válido", 400);
+    }
+    $userId = (int)$_GET['id'];
+
+    // Obtener datos JSON
+    $json = file_get_contents('php://input');
+    if (empty($json)) {
+        throw new Exception("Datos no proporcionados", 400);
+    }
+    
+    $inputData = json_decode($json, true);
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        throw new Exception("JSON inválido", 400);
     }
 
-    // Preparar la consulta SQL para actualizar el usuario
-    $sql = "UPDATE users SET 
-            name = ?, 
-            email = ?, 
-            company_name = ?, 
-            address = ?, 
-            phone = ?, 
-            role = ? 
-            WHERE id = ?";
+    // Validar campos requeridos
+    if (!isset($inputData['name']) || !isset($inputData['username'])) {
+        throw new Exception("Faltan campos requeridos", 400);
+    }
 
-    $stmt = $conn->prepare($sql);
+    // Conexión a la base de datos
+    require_once __DIR__ . '/../ionic-database/Database.php';
+    $db = new Database();
+    $conn = $db->getConnection();
+    $conn->set_charset("utf8mb4");
+    
+    if (!$conn || $conn->connect_error) {
+        throw new Exception("Error de conexión a la base de datos", 500);
+    }
+
+    // Consulta preparada
+    $stmt = $conn->prepare("UPDATE users SET name = ?, username = ? WHERE id = ?");
     if (!$stmt) {
-        echo json_encode(["status" => "error", "message" => "Error al preparar la consulta"]);
-        exit();
+        throw new Exception("Error al preparar la consulta", 500);
     }
 
-    // Vincular los parámetros
-    $stmt->bind_param(
-        "ssssssi",
-        $inputData['name'],
-        $inputData['email'],
-        $inputData['company_name'],
-        $inputData['address'],
-        $inputData['phone'],
-        $inputData['role'],
-        $userId
-    );
-
-    // Ejecutar la consulta
-    if ($stmt->execute()) {
-        echo json_encode(["status" => "success", "message" => "Usuario actualizado correctamente"]);
-    } else {
-        echo json_encode(["status" => "error", "message" => "Error al actualizar el usuario"]);
+    $stmt->bind_param("ssi", $inputData['name'], $inputData['username'], $userId);
+    
+    if (!$stmt->execute()) {
+        throw new Exception("Error al ejecutar la actualización", 500);
     }
 
-    // Cerrar la conexión
+    $response = [
+        'status' => 'success',
+        'message' => 'Usuario actualizado correctamente',
+        'updated' => ($stmt->affected_rows > 0),
+        'userId' => $userId,
+        'changes' => [ // Incluir los cambios realizados
+            'name' => $inputData['name'],
+            'username' => $inputData['username']
+        ]
+    ];
+    
     $stmt->close();
-}catch (Exception $e) {
-    echo json_encode([
-        "success" => false,
-        "message" => "Error del servidor: " . $e->getMessage()
-    ]);
+
+} catch (Exception $e) {
+    http_response_code($e->getCode() ?: 500);
+    $response['message'] = $e->getMessage();
+    
 } finally {
-    // Cerrar la conexión
-    $conn->close();
+    // Limpiar buffer y asegurar salida JSON válida
+    if (ob_get_length()) ob_end_clean();
+    
+    // Cerrar conexión sin generar warnings
+    if (isset($db)) {
+        @$db->closeConnection();
+    }
+    
+    // Forzar salida JSON
+    die(json_encode($response));
 }

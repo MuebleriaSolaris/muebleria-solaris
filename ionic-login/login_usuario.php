@@ -1,46 +1,69 @@
 <?php
+// Desactivar visualización de errores en producción (pero registrarlos)
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+ini_set('error_log', __DIR__ . '/php_errors.log');
+
 header("Content-Type: application/json");
 header("Access-Control-Allow-Origin: https://muebleriasolaris.com");
 header("Access-Control-Allow-Methods: GET");
-header("Access-Control-Allow-Headers: Content-Type");
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-// Check for a valid user ID in the query parameters
-if (!isset($_GET['id']) || empty($_GET['id'])) {
-    echo json_encode(["status" => "error", "message" => "User ID is required"]);
-    exit();
-}
 
-$userId = $_GET['id'];
+// Iniciar buffer de salida
+ob_start();
 
-// Cargar el archivo de conexión a la base de datos
-require_once __DIR__ . '/../ionic-database/Database.php';
+try {
+    // Validar ID de usuario
+    if (!isset($_GET['id']) || empty($_GET['id'])) {
+        throw new Exception("User ID is required");
+    }
 
-// Database connection
-$db = new Database();
-$conn = $db->getConnection();
+    $userId = intval($_GET['id']);
 
-if ($conn->connect_error) {
-    echo json_encode(["status" => "error", "message" => "Connection failed"]);
-    exit();
-}
+    // Cargar conexión a la base de datos
+    require_once __DIR__ . '/../ionic-database/Database.php';
+    $db = new Database();
+    $conn = $db->getConnection();
+    $conn->set_charset("utf8mb4");
 
-// Prepare the SQL statement to fetch user data
-$stmt = $conn->prepare("SELECT name, username, email, company_name, address, phone, role FROM users WHERE id = ?");
-$stmt->bind_param("i", $userId);
-$stmt->execute();
-$result = $stmt->get_result();
+    if (!$conn) {
+        throw new Exception("Database connection failed");
+    }
 
-// Check if the user was found
-if ($result->num_rows > 0) {
-    // Fetch user data
+    // Preparar y ejecutar consulta
+    $stmt = $conn->prepare("SELECT name, username, email, company_name, address, phone, role FROM users WHERE id = ?");
+    if (!$stmt) {
+        throw new Exception("Prepare failed: " . $conn->error);
+    }
+
+    $stmt->bind_param("i", $userId);
+    if (!$stmt->execute()) {
+        throw new Exception("Execute failed: " . $stmt->error);
+    }
+
+    $result = $stmt->get_result();
+    if ($result->num_rows === 0) {
+        throw new Exception("User not found");
+    }
+
     $user = $result->fetch_assoc();
-    echo json_encode($user, JSON_PARTIAL_OUTPUT_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-} else {
-    echo json_encode(["status" => "error", "message" => "User not found"], JSON_PARTIAL_OUTPUT_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-}
+    $response = [
+        'status' => 'success',
+        'data' => $user
+    ];
 
-// Close connections
-$stmt->close();
-$conn->close();
+} catch (Exception $e) {
+    error_log("Error in login_usuario.php: " . $e->getMessage());
+    $response = [
+        'status' => 'error',
+        'message' => $e->getMessage()
+    ];
+} finally {
+    // Limpiar buffer y enviar respuesta JSON
+    ob_end_clean();
+    echo json_encode($response, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    
+    // Cerrar conexiones
+    if (isset($stmt)) $stmt->close();
+    if (isset($db)) $db->closeConnection();
+    exit();
+}

@@ -7,75 +7,93 @@ header("Access-Control-Allow-Headers: Content-Type");
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+ini_set('error_log', __DIR__ . '/php_errors.log');
 
-// Handle OPTIONS preflight request
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit(0);
 }
 
-// Cargar el archivo de conexión a la base de datos
 require_once __DIR__ . '/../ionic-database/Database.php';
 
-// Database connection
-$db = new Database();
-$conn = $db->getConnection();
+ob_start();
 
-// Verificar si la conexión fue exitosa
-if (!$conn) {
-    echo json_encode(["status" => "error", "message" => "Sin conexión a la base de datos"], JSON_PARTIAL_OUTPUT_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-    exit();
-}
+try {
+    $db = new Database();
+    $conn = $db->getConnection();
+    $conn->set_charset("utf8mb4");
 
-// Capture JSON input
-$input = json_decode(file_get_contents("php://input"), true);
+    if (!$conn) {
+        throw new Exception("Sin conexión a la base de datos");
+    }
 
-// Verificar si los datos necesarios están presentes
-if (!isset($input['username']) || !isset($input['password']) || !isset($input['platform'])) {
-    echo json_encode(["status" => "fail", "message" => "Usuario y/o Contraseña Faltante"], JSON_PARTIAL_OUTPUT_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-    exit();
-}
+    $input = json_decode(file_get_contents("php://input"), true);
+    
+    if (!isset($input['username']) || !isset($input['password']) || !isset($input['platform'])) {
+        throw new Exception("Datos incompletos: usuario, contraseña o plataforma faltante");
+    }
 
-$username = $input['username'];
-$password = $input['password'];
-$platform = $input['platform']; // 'web', 'android' o 'ios'
+    $username = $input['username'];
+    $password = $input['password'];
+    $platform = strtolower($input['platform']); // Normalizar a minúsculas
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Determinar la columna de contraseña según la plataforma
-    $passwordColumn = ($platform === 'android') ? 'android_pass' : (($platform === 'ios') ? 'pass_appcom' : 'pass_appcom');
+    // Definir qué columna usar según la plataforma
+    $passwordColumns = [
+        'android' => 'android_pass',
+        'ios' => 'pass_appcom',
+        'web' => 'password' // Agregué esta opción por si acaso
+    ];
 
-    // Consultar la base de datos para obtener el ID, rol y la contraseña cifrada
-    $stmt = $conn->prepare("SELECT id, role, $passwordColumn as password FROM users WHERE username = ?");
+    // Verificar que la plataforma sea válida
+    if (!array_key_exists($platform, $passwordColumns)) {
+        throw new Exception("Plataforma no soportada");
+    }
+
+    $passwordColumn = $passwordColumns[$platform];
+
+    $stmt = $conn->prepare("SELECT id, role, password, android_pass, pass_appcom FROM users WHERE username = ?");
     
     if ($stmt === false) {
-        echo json_encode(["status" => "error", "message" => "Error en la consulta SQL: " . $conn->error], JSON_PARTIAL_OUTPUT_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-        exit();
+        throw new Exception("Error en la consulta SQL: " . $conn->error);
     }
 
     $stmt->bind_param("s", $username);
     $stmt->execute();
     $result = $stmt->get_result();
 
-    if ($result->num_rows > 0) {
-        $user = $result->fetch_assoc();
-
-        // Usar password_verify para comparar la contraseña ingresada con la almacenada
-        if (password_verify($password, $user['password'])) {
-            echo json_encode([
-                "status" => "success",
-                "message" => "Login successful",
-                "role" => $user['role'],
-                "userId" => $user['id'] // Incluir el ID de usuario en la respuesta
-            ], JSON_PARTIAL_OUTPUT_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-        } else {
-            echo json_encode(["status" => "fail", "message" => "Usuario y/o Contraseña Incorrectos!"], JSON_PARTIAL_OUTPUT_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-        }
-    } else {
-        echo json_encode(["status" => "fail", "message" => "Usuario y/o Contraseña Incorrectos!"], JSON_PARTIAL_OUTPUT_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    if ($result->num_rows === 0) {
+        throw new Exception("Usuario no encontrado");
     }
 
-    // Cerrar las conexiones
-    $stmt->close();
-    $conn->close();
+    $user = $result->fetch_assoc();
+    
+    // Verificar la contraseña según la plataforma
+    if (password_verify($password, $user[$passwordColumn])) {
+        $response = [
+            "status" => "success",
+            "message" => "Login exitoso",
+            "role" => $user['role'],
+            "userId" => $user['id']
+        ];
+    } else {
+        // Para depuración - registrar qué contraseña falló
+        error_log("Falló la verificación para usuario: $username, plataforma: $platform");
+        throw new Exception("Credenciales incorrectas");
+    }
+} catch (Exception $e) {
+    error_log("Error en login API: " . $e->getMessage());
+    $response = [
+        "status" => (strpos($e->getMessage(), 'incorrectas') !== false) ? "fail" : "error",
+        "message" => $e->getMessage()
+    ];
+} finally {
+    ob_end_clean();
+    header('Content-Type: application/json');
+    echo json_encode($response, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    
+    if (isset($stmt)) $stmt->close();
+    if (isset($db)) $db->closeConnection();
+    exit();
 }
-?>

@@ -59,15 +59,37 @@
   </div>
 
   <!-- Controles de paginación -->
-  <div class="pagination-container">
-    <div class="results-count">
-      Mostrando {{ getShowingRange() }} de {{ formatNumber(totalCount) }} clientes
-    </div>
+  <!-- Versión para Desktop/Tablet -->
+  <div class="pagination-container desktop-view">
     <div class="pagination-controls">
-      <ion-button (click)="prevPage()" [disabled]="currentPage === 1 || loading">
+      <ion-button (click)="prevPage()" [disabled]="currentPage === 1 || loading" fill="clear" class="pagination-button">
         <ion-icon name="chevron-back-outline"></ion-icon>
       </ion-button>
-      <ion-button (click)="nextPage()" [disabled]="currentPage * itemsPerPage >= totalCount || loading">
+      
+      <div class="pagination-info">
+        <span class="results-count">Mostrando {{ getShowingRange() }} de {{ formatNumber(totalCount) }}</span>
+        <span class="page-indicator">Página {{ currentPage }} de {{ lastPage }}</span>
+      </div>
+      
+      <ion-button (click)="nextPage()" [disabled]="currentPage >= lastPage || loading" fill="clear" class="pagination-button">
+        <ion-icon name="chevron-forward-outline"></ion-icon>
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- Versión para Móviles -->
+  <div class="pagination-container mobile-view">
+    <div class="top-info">
+      <span class="page-indicator">Página {{ currentPage }} de {{ lastPage }}</span>
+      <span class="results-count">Mostrando {{ getShowingRange() }} de {{ formatNumber(totalCount) }}</span>
+    </div>
+    
+    <div class="pagination-controls">
+      <ion-button (click)="prevPage()" [disabled]="currentPage === 1 || loading" fill="clear" class="pagination-button">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </ion-button>
+      
+      <ion-button (click)="nextPage()" [disabled]="currentPage >= lastPage || loading" fill="clear" class="pagination-button">
         <ion-icon name="chevron-forward-outline"></ion-icon>
       </ion-button>
     </div>

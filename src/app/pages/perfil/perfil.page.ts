@@ -21,6 +21,9 @@ interface UserProfile {
 })
 export class PerfilPage implements OnInit {
   user: UserProfile | null = null; // Initialize as null
+  loading = true;
+  error: string | null = null;
+  userId: number | null = null ; // Variable para almacenar el ID del usuario
 
   constructor(
     private http: HttpClient,
@@ -33,23 +36,32 @@ export class PerfilPage implements OnInit {
   }
 
   // Debug role value after user profile is loaded
-loadUserProfile() {
-  const userId = this.authService.getUserId();
-  if (userId) {
-    this.http.get<UserProfile>(`https://muebleriasolaris.com/ionic-login/login_usuario.php?id=${userId}`)
-      .subscribe(
-        (data) => {
-          this.user = data;
-          console.log('User role:', this.user.role); // Log role for verification
+  loadUserProfile() {
+    const userIdString = this.authService.getUserId();
+    this.userId = userIdString !== null ? parseInt(userIdString, 10) : null;
+    
+    if (this.userId) {
+      this.authService.getUserProfile(this.userId).subscribe({
+        next: (response) => {
+          this.loading = false;
+          if (response.status === 'success' && response.data) {
+            this.user = response.data;
+            console.log('Perfil cargado:', this.user);
+          } else {
+            this.error = response.message || 'Error al cargar el perfil';
+          }
         },
-        (error) => {
-          console.error('Error fetching user profile:', error);
+        error: (err) => {
+          this.loading = false;
+          this.error = 'Error de conexión con el servidor';
+          console.error('Error en la solicitud:', err);
         }
-      );
-  } else {
-    console.error('User ID is not available');
+      });
+    } else {
+      this.loading = false;
+      this.error = 'ID de usuario no disponible';
+    }
   }
-}
   navigateHome() {
     const role = this.user?.role || this.authService.getRole(); // Use user role or fallback to AuthService role
 

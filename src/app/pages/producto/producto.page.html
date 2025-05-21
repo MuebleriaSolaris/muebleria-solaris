@@ -112,34 +112,34 @@
 
         <ion-item>
           <ion-icon name="layers-outline" slot="start"></ion-icon>
-
           <ion-label>
             <h2 [ngStyle]="{ 'font-weight': isEditMode ? 'bold' : 'normal' }">Stock Disponible</h2>
             <p *ngIf="!isEditMode">{{ product?.current_stock }}</p>
             <ion-input
-              *ngIf="isEditMode"
-              [(ngModel)]="product!.current_stock"
-              placeholder="Stock"
-              type="tel"
-              inputmode="numeric"
-              (ionInput)="validateStockInput($event)">
+                *ngIf="isEditMode"
+                #currentStockInput
+                [(ngModel)]="product.current_stock"
+                placeholder="Stock"
+                type="tel"
+                inputmode="numeric"
+                (ionInput)="validateStockInput($event)">
             </ion-input>
           </ion-label>
         </ion-item>
         
         <ion-item>
           <ion-icon name="analytics-outline" slot="start"></ion-icon>
-
           <ion-label>
             <h2 [ngStyle]="{ 'font-weight': isEditMode ? 'bold' : 'normal' }">Max Stock</h2>
             <p *ngIf="!isEditMode">{{ product?.max_amount }}</p>
             <ion-input
-              *ngIf="isEditMode"
-              [(ngModel)]="product!.max_amount"
-              placeholder="Stock"
-              type="tel"
-              inputmode="numeric"
-              (ionInput)="validateStockInput($event)">
+                *ngIf="isEditMode"
+                #maxStockInput
+                [(ngModel)]="product.max_amount"
+                placeholder="Stock"
+                type="tel"
+                inputmode="numeric"
+                (ionInput)="validateMaxStockInput($event)">
             </ion-input>
           </ion-label>
         </ion-item>

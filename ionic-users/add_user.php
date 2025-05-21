@@ -1,116 +1,125 @@
 <?php
+// Configuración estricta de headers
+header_remove();
 header("Content-Type: application/json");
 header("Access-Control-Allow-Origin: https://muebleriasolaris.com");
-header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type");
+header("Access-Control-Allow-Methods: POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+// Configuración de errores
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+ini_set('error_log', __DIR__ . '/php_errors.log');
 
-// Cargar el archivo de conexión a la base de datos
-require_once __DIR__ . '/../ionic-database/Database.php';
+// Buffer de salida
+ob_start();
 
-// Crear instancia de la clase Database
-$db = new Database();
-$conn = $db->getConnection();
+// Respuesta estándar
+$response = [
+    'status' => 'error',
+    'message' => 'Error desconocido',
+    'created' => false,
+    'userId' => null
+];
 
-// Verificar la conexión a la base de datos
-if (!$conn) {
-    die(json_encode(["status" => "error", "message" => "Error de conexión a la base de datos"]));
-}
-
-// Verificar el método HTTP
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Leer los datos JSON enviados desde el frontend
-    $input = json_decode(file_get_contents('php://input'), true);
-
-    // Validar que se enviaron los campos necesarios
-    if (
-        !isset($input['name']) ||
-        !isset($input['username']) ||
-        !isset($input['email']) ||
-        !isset($input['password']) ||
-        !isset($input['role'])
-    ) {
-        echo json_encode(["status" => "error", "message" => "Faltan datos necesarios"]);
+try {
+    // Manejar preflight OPTIONS
+    if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+        http_response_code(204);
         exit();
     }
 
-    // Sanitizar los datos recibidos
-    $name = $conn->real_escape_string($input['name']);
-    $username = $conn->real_escape_string($input['username']);
-    $email = $conn->real_escape_string($input['email']);
-    $company_name = isset($input['company_name']) ? $conn->real_escape_string($input['company_name']) : null;
-    $address = isset($input['address']) ? $conn->real_escape_string($input['address']) : null;
-    $phone = isset($input['phone']) ? $conn->real_escape_string($input['phone']) : null;
-    $role = $conn->real_escape_string($input['role']);
-    $password = password_hash($input['password'], PASSWORD_BCRYPT); // Encriptar la contraseña
-    $is_active = 1; // Usuario activo por defecto
+    // Validar método HTTP
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        throw new Exception("Método no permitido", 405);
+    }
+
+    // Obtener y validar datos JSON
+    $json = file_get_contents('php://input');
+    if (empty($json)) {
+        throw new Exception("Datos no proporcionados", 400);
+    }
+    
+    $inputData = json_decode($json, true);
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        throw new Exception("JSON inválido", 400);
+    }
+
+    // Validar campos requeridos
+    $requiredFields = ['name', 'username', 'email', 'password', 'role'];
+    foreach ($requiredFields as $field) {
+        if (!isset($inputData[$field])) {
+            throw new Exception("Falta el campo requerido: $field", 400);
+        }
+    }
+
+    // Conexión a la base de datos
+    require_once __DIR__ . '/../ionic-database/Database.php';
+    $db = new Database();
+    $conn = $db->getConnection();
+    $conn->set_charset("utf8mb4");
+    
+    if (!$conn || $conn->connect_error) {
+        throw new Exception("Error de conexión a la base de datos", 500);
+    }
+
+    // Preparar datos
+    $name = $conn->real_escape_string($inputData['name']);
+    $username = $conn->real_escape_string($inputData['username']);
+    $email = $conn->real_escape_string($inputData['email']);
+    $password = password_hash($inputData['password'], PASSWORD_BCRYPT);
+    $role = $conn->real_escape_string($inputData['role']);
+    $company_name = isset($inputData['company_name']) ? $conn->real_escape_string($inputData['company_name']) : null;
+    $address = isset($inputData['address']) ? $conn->real_escape_string($inputData['address']) : null;
+    $phone = isset($inputData['phone']) ? $conn->real_escape_string($inputData['phone']) : null;
+    $remember_token = bin2hex(random_bytes(32));
     $created_at = date("Y-m-d H:i:s");
-    $updated_at = $created_at;
 
-    // Generar un token único para "remember_token"
-    $remember_token = bin2hex(random_bytes(32)); // Token de 64 caracteres
-
-    // Insertar la información del usuario
-    $query = "INSERT INTO users (
-                name, 
-                username, 
-                email, 
-                company_name, 
-                address, 
-                phone, 
-                role, 
-                is_active,
-                password,  
-                created_at, 
-                updated_at,
-                remember_token,
-                android_pass,
-                pass_appcom
-              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    $stmt = $conn->prepare($query);
-
-    // Verificar si la preparación de la consulta fue exitosa
+    // Consulta preparada
+    $stmt = $conn->prepare("INSERT INTO users (
+        name, username, email, company_name, address, phone, 
+        role, password, remember_token, created_at, updated_at,
+        android_pass, pass_appcom, is_active
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)");
+    
     if (!$stmt) {
-        die(json_encode(["status" => "error", "message" => "Error en la preparación de la consulta: " . $conn->error]));
+        throw new Exception("Error al preparar la consulta", 500);
     }
 
-    // Vincular parámetros y ejecutar la consulta
     $stmt->bind_param(
-        "ssssssssssisss", // Añadir una 's' adicional para cada columna de contraseña
-        $name,
-        $username,
-        $email,
-        $company_name,
-        $address,
-        $phone,
-        $role,
-        $is_active,
-        $password,  // La contraseña cifrada se almacena en password
-        $created_at,
-        $updated_at,
-        $remember_token,
-        $password,  // La contraseña cifrada se almacena en password
-        $password  // La misma contraseña cifrada se almacena en pass_appcom
+        "sssssssssssss",
+        $name, $username, $email, $company_name, $address, $phone,
+        $role, $password, $remember_token, $created_at, $created_at,
+        $password, $password
     );
-
-    if ($stmt->execute()) {
-        echo json_encode([
-            "status" => "success",
-            "message" => "Usuario creado correctamente",
-            "remember_token" => $remember_token // Opcional: devolver el token en la respuesta
-        ]);
-    } else {
-        echo json_encode(["status" => "error", "message" => "Error al crear usuario: " . $stmt->error]);
+    
+    if (!$stmt->execute()) {
+        throw new Exception("Error al crear usuario", 500);
     }
 
+    $response = [
+        'status' => 'success',
+        'message' => 'Usuario creado correctamente',
+        'created' => true,
+        'userId' => $stmt->insert_id,
+        'remember_token' => $remember_token
+    ];
+    
     $stmt->close();
-} else {
-    echo json_encode(["status" => "error", "message" => "Método HTTP no permitido"]);
-}
 
-// Cerrar la conexión
-$conn->close();
-?>
+} catch (Exception $e) {
+    http_response_code($e->getCode() ?: 500);
+    $response['message'] = $e->getMessage();
+    
+} finally {
+    // Limpiar buffer y asegurar salida JSON válida
+    if (ob_get_length()) ob_end_clean();
+    
+    // Cerrar conexión sin generar warnings
+    if (isset($db)) {
+        @$db->closeConnection();
+    }
+    
+    // Forzar salida JSON
+    die(json_encode($response));
+}

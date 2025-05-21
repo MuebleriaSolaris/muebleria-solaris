@@ -243,3 +243,17 @@ ion-list p {
       --padding-bottom: 120px; /* Más espacio para botones apilados */
     }
   }
+
+  .white-toast {
+    --color: white !important;  // Color del texto blanco
+    
+    // Opcional: para mejorar legibilidad con fondos claros
+    &.toast-button {
+        color: white !important;
+    }
+    
+    // Si quieres que los íconos también sean blancos
+    ion-icon {
+        color: white !important;
+    }
+}
