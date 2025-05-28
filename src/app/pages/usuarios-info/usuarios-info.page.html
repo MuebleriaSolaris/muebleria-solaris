@@ -22,13 +22,152 @@
       <ion-icon name="create-outline" slot="start"></ion-icon>
       Editar
     </ion-button>
+    <ion-button color="tertiary" (click)="togglePasswordMode()" *ngIf="esGerente">
+      <ion-icon name="key-outline" slot="start"></ion-icon>
+      Contraseña
+    </ion-button>
     <ion-button color="danger" (click)="confirmDelete()">
       <ion-icon name="trash-outline" slot="start"></ion-icon>
       Eliminar
     </ion-button>
   </div>
 
-  <div class="account-info">
+  <!-- Formulario para cambiar contraseña (visible solo cuando isPasswordMode es true) -->
+  <div class="password-form account-info" *ngIf="isPasswordMode && esGerente">
+    <ion-card>
+      <ion-card-header>
+      <ion-card-title>Verificar Contraseñas Actuales</ion-card-title>
+      <ion-card-subtitle>Opcional - Solo para confirmación</ion-card-subtitle>
+    </ion-card-header>
+
+    <!-- Sección de verificación opcional -->
+    <ion-card-content>
+      <!-- Verificación Web -->
+      <ion-item>
+        <ion-icon name="globe-outline" slot="start"></ion-icon>
+        <ion-label position="stacked">Contraseña Web Actual</ion-label>
+        <ion-input 
+          type="text"
+          [(ngModel)]="verify.web" 
+          placeholder="Ingresa para verificar">
+          <ion-button 
+            fill="clear" 
+            slot="end" 
+            (click)="checkPassword('web')"
+            [color]="verify.webResult === true ? 'success' : (verify.webResult === false ? 'danger' : 'medium')">
+            <ion-icon 
+              [name]="verify.webResult === false ? 'close-outline' : 'checkmark-outline'"
+              [class.success-icon]="verify.webResult === true"
+              [class.danger-icon]="verify.webResult === false">
+            </ion-icon>
+          </ion-button>
+        </ion-input>
+      </ion-item>
+
+      <!-- Verificación Android -->
+      <ion-item>
+        <ion-icon name="logo-android" slot="start"></ion-icon>
+        <ion-label position="stacked">Contraseña Android Actual</ion-label>
+        <ion-input 
+          type="text"
+          [(ngModel)]="verify.android" 
+          placeholder="Ingresa para verificar">
+          <ion-button 
+            fill="clear" 
+            slot="end" 
+            (click)="checkPassword('android')"
+            [color]="verify.androidResult === true ? 'success' : (verify.androidResult === false ? 'danger' : 'medium')">
+            <ion-icon 
+              [name]="verify.androidResult === false ? 'close-outline' : 'checkmark-outline'"
+              [class.success-icon]="verify.androidResult === true"
+              [class.danger-icon]="verify.androidResult === false">
+            </ion-icon>
+          </ion-button>
+        </ion-input>
+      </ion-item>
+
+      <!-- Verificación iOS -->
+      <ion-item>
+        <ion-icon name="logo-apple" slot="start"></ion-icon>
+        <ion-label position="stacked">Contraseña iOS Actual</ion-label>
+        <ion-input 
+          type="text"
+          [(ngModel)]="verify.ios" 
+          placeholder="Ingresa para verificar">
+          <ion-button 
+            fill="clear" 
+            slot="end" 
+            (click)="checkPassword('ios')"
+            [color]="verify.iosResult === true ? 'success' : (verify.iosResult === false ? 'danger' : 'medium')">
+            <ion-icon 
+              [name]="verify.iosResult === false ? 'close-outline' : 'checkmark-outline'"
+              [class.success-icon]="verify.iosResult === true"
+              [class.danger-icon]="verify.iosResult === false">
+            </ion-icon>
+          </ion-button>
+        </ion-input>
+      </ion-item>
+    </ion-card-content>
+    </ion-card>
+
+    <!-- Sección para actualizar contraseñas -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Actualizar Contraseñas</ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <!-- Nueva contraseña Web -->
+        <ion-item>
+          <ion-icon name="globe-outline" slot="start"></ion-icon>
+          <ion-label position="stacked">Nueva Contraseña Web</ion-label>
+          <ion-input [type]="show.web ? 'text' : 'password'" [(ngModel)]="newPasswords.web" placeholder="Dejar vacío para no cambiar">
+            <ion-button fill="clear" slot="end" (click)="toggleShow('web')">
+              <ion-icon [name]="show.web ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+            </ion-button>
+          </ion-input>
+        </ion-item>
+
+        <!-- Nueva contraseña Android -->
+        <ion-item>
+          <ion-icon name="logo-android" slot="start"></ion-icon>
+          <ion-label position="stacked">Nueva Contraseña Android</ion-label>
+          <ion-input [type]="show.android ? 'text' : 'password'" [(ngModel)]="newPasswords.android" placeholder="Dejar vacío para no cambiar">
+            <ion-button fill="clear" slot="end" (click)="toggleShow('android')">
+              <ion-icon [name]="show.android ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+            </ion-button>
+          </ion-input>
+        </ion-item>
+
+        <!-- Nueva contraseña iOS -->
+        <ion-item>
+          <ion-icon name="logo-apple" slot="start"></ion-icon>
+          <ion-label position="stacked">Nueva Contraseña iOS</ion-label>
+          <ion-input [type]="show.ios ? 'text' : 'password'" [(ngModel)]="newPasswords.ios" placeholder="Dejar vacío para no cambiar">
+            <ion-button fill="clear" slot="end" (click)="toggleShow('ios')">
+              <ion-icon [name]="show.ios ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+            </ion-button>
+          </ion-input>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-footer class="edit-footer">
+      <div class="bottom-action-buttons">
+        <ion-button class="guardar-button" expand="block" color="success" (click)="updateAllPasswords()">
+          <ion-icon slot="start" name="save-outline"></ion-icon>
+          Guardar
+        </ion-button>
+        <ion-button class="cancelar-button" expand="block" color="danger" (click)="cancelPasswordChange()">
+          <ion-icon slot="start" name="close-outline"></ion-icon>
+          Cancelar
+        </ion-button>
+      </div>
+    </ion-footer>
+  </div>
+
+  <!-- Div de account-info normal (visible solo cuando NO está en modo contraseña) -->
+  <div class="account-info" *ngIf="!isPasswordMode">
     <div class="top-cliente"><h3>Detalles del Usuario</h3></div>
     <ion-list lines="none">
       <ion-item>
@@ -49,46 +188,27 @@
           <ion-input *ngIf="isEditMode" [(ngModel)]="user.username" placeholder="Nombre de usuario"></ion-input>
         </ion-label>
       </ion-item>
-        <!-- Correo Electrónico -->
-        <ion-item *ngIf="user?.email">
-          <ion-icon name="mail-outline" slot="start"></ion-icon>
-          <ion-label>
-            <h2 [ngStyle]="{ 'font-weight': isEditMode ? 'bold' : 'normal' }">Correo Electrónico</h2>
-            <p *ngIf="!isEditMode">{{ user?.email }}</p>
-            <ion-input *ngIf="isEditMode" [(ngModel)]="user.email" type="email" placeholder="Correo electrónico"></ion-input>
-          </ion-label>
-        </ion-item>
       
-        <!-- Empresa -->
-        <ion-item *ngIf="user?.company_name">
-          <ion-icon name="business-outline" slot="start"></ion-icon>
-          <ion-label>
-            <h2 [ngStyle]="{ 'font-weight': isEditMode ? 'bold' : 'normal' }">Empresa</h2>
-            <p *ngIf="!isEditMode">{{ user?.company_name }}</p>
-            <ion-input *ngIf="isEditMode" [(ngModel)]="user.company_name" placeholder="Empresa"></ion-input>
-          </ion-label>
-        </ion-item>
-      
-        <!-- Contraseña -->
-        <ion-item *ngIf="user?.password">
-          <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
-          <ion-label>
-            <h2 [ngStyle]="{ 'font-weight': isEditMode ? 'bold' : 'normal' }">Contraseña</h2>
-            <p *ngIf="!isEditMode">{{ user?.password }}</p>
-            <ion-input *ngIf="isEditMode" [(ngModel)]="user.password" type="password" placeholder="Contraseña"></ion-input>
-          </ion-label>
-        </ion-item>
-      
-        <!-- Teléfono -->
-        <ion-item *ngIf="user?.phone">
-          <ion-icon name="call-outline" slot="start"></ion-icon>
-          <ion-label>
-            <h2 [ngStyle]="{ 'font-weight': isEditMode ? 'bold' : 'normal' }">Teléfono</h2>
-            <p *ngIf="!isEditMode">{{ user?.phone }}</p>
-            <ion-input *ngIf="isEditMode" [(ngModel)]="user.phone" type="tel" placeholder="Teléfono"></ion-input>
-          </ion-label>
-        </ion-item>
-      </ion-list>
+      <!-- Contraseña -->
+      <ion-item *ngIf="user?.password">
+        <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+        <ion-label>
+          <h2 [ngStyle]="{ 'font-weight': isEditMode ? 'bold' : 'normal' }">Contraseña</h2>
+          <p *ngIf="!isEditMode">••••••••</p>
+          <ion-input *ngIf="isEditMode" [(ngModel)]="user.password" type="password" placeholder="Contraseña"></ion-input>
+        </ion-label>
+      </ion-item>
+    
+      <!-- Teléfono -->
+      <ion-item *ngIf="user?.phone">
+        <ion-icon name="call-outline" slot="start"></ion-icon>
+        <ion-label>
+          <h2 [ngStyle]="{ 'font-weight': isEditMode ? 'bold' : 'normal' }">Teléfono</h2>
+          <p *ngIf="!isEditMode">{{ user?.phone }}</p>
+          <ion-input *ngIf="isEditMode" [(ngModel)]="user.phone" type="tel" placeholder="Teléfono"></ion-input>
+        </ion-label>
+      </ion-item>
+    </ion-list>
 
     <ion-footer *ngIf="isEditMode" class="edit-footer">
       <div class="bottom-action-buttons">

@@ -12,18 +12,16 @@
         <ion-thumbnail slot="start">
           <img src="assets/user_src.png" alt="{{ user.name }}">
         </ion-thumbnail>
-        <ion-label>
-          <h2 class="user-name">{{ user.name }}</h2>
-          <p class="user-info">
-            <span class="label">Nombre Usuario:</span> {{ user.username }}
-          </p>
-          <p class="user-info">
-            <span class="label">Tipo Usuario:</span>
-            <span *ngIf="user.role === '1'">Admin</span>
-            <span *ngIf="user.role === '4'">Vendedor</span>
-            <span *ngIf="user.role !== '4' && user.role !== '1'">{{ user.role }}</span>
-          </p>
-        </ion-label>
+          <ion-label>
+            <h2>{{ user.name }}</h2>
+            <p>Usuario: {{ user.username }}</p>
+            <p>Rol: 
+              <span *ngIf="user.role === 1 && userRoles[user.id] === false">Administrador</span>
+              <span *ngIf="user.role === 4">Vendedor</span>
+              <span *ngIf="user.role !== 1 && user.role !== 4">Desconocido</span>
+              <span *ngIf="user.role === 1 && userRoles[user.id] === true">Gerente</span>
+            </p>
+          </ion-label>
       </ion-item>
       <!-- Opciones al deslizar -->
       <ion-item-options side="end">

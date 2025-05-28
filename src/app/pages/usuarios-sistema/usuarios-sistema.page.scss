@@ -95,3 +95,22 @@
       --ion-border-color: transparent; /* Asegúrate de eliminar cualquier borde aplicado con Ionic */
     }
   }
+
+  /* Estilos para los íconos de gerente */
+ion-icon[name="star"] {
+  color: var(--ion-color-warning);
+}
+
+ion-icon[name="star-outline"] {
+  color: var(--ion-color-medium);
+}
+
+.user-name {
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+/* Estilo para resaltar gerentes */
+.gerente-true {
+  background: rgba(var(--ion-color-warning-rgb), 0.1);
+}
